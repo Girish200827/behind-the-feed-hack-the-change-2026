@@ -32,7 +32,12 @@ export default function SummaryStrip({ timeline, samples }: { timeline: Timeline
 
 export function Strip({ children, cols = 4 }: { children: ReactNode; cols?: 4 | 5 }) {
   return (
-    <dl className={`grid divide-x divide-hairline border-y border-hairline ${cols === 5 ? 'grid-cols-5' : 'grid-cols-4'}`}>
+    // Five columns (day view): short numbers get less room, "Comedy · on [icon]" gets more.
+    <dl
+      className={`grid divide-x divide-hairline border-y border-hairline ${
+        cols === 5 ? 'grid-cols-[0.8fr_0.8fr_1.1fr_1.4fr_1.4fr]' : 'grid-cols-4'
+      }`}
+    >
       {children}
     </dl>
   )
@@ -42,7 +47,7 @@ export function Cell({ label, children, tight = false }: { label: string; childr
   return (
     <div className={`flex min-w-0 flex-col gap-3 py-6 first:pl-0 ${tight ? 'px-5' : 'px-6'}`}>
       <dt className="label truncate">{label}</dt>
-      <dd className="text-[34px] font-medium leading-none tracking-[-0.02em] text-ink">{children}</dd>
+      <dd className={`font-medium leading-none tracking-[-0.02em] text-ink ${tight ? 'text-[28px]' : 'text-[34px]'}`}>{children}</dd>
     </div>
   )
 }
@@ -57,18 +62,19 @@ export function Percent({ value }: { value: number | null }) {
   )
 }
 
-/** Category of a lift/drain; with `withPlatform`, a small "on Instagram" line underneath. */
+/** Category of a lift/drain; with `withPlatform`, "Comedy · on [icon]" (the platform's mark only, no name). */
 export function ShiftValue({ shift, color, withPlatform = false }: { shift: Shift | undefined; color: string; withPlatform?: boolean }) {
   if (!shift) return <span className="text-muted">—</span>
   return (
-    <span className="flex min-w-0 flex-col gap-2.5">
-      <span className="flex min-w-0 items-center gap-3">
-        <span className="h-2 w-2 shrink-0 rounded-full" style={{ background: color, boxShadow: `0 0 12px ${color}` }} />
-        <span className="truncate">{capitalize(shift.category)}</span>
-      </span>
+    <span className="flex min-w-0 items-center gap-3">
+      <span className="h-2 w-2 shrink-0 rounded-full" style={{ background: color, boxShadow: `0 0 12px ${color}` }} />
+      <span className="truncate">{capitalize(shift.category)}</span>
       {withPlatform && (
-        <span className="flex items-center gap-1.5 pl-5 text-[12px] font-normal tracking-normal text-muted">
-          on <PlatformIcon platform={shift.platform} size={12} /> {platformName(shift.platform)}
+        <span
+          className="flex shrink-0 items-center gap-1.5 text-[13px] font-normal tracking-normal text-muted"
+          aria-label={`on ${platformName(shift.platform)}`}
+        >
+          <span className="text-faint">·</span> on <PlatformIcon platform={shift.platform} size={15} />
         </span>
       )}
     </span>

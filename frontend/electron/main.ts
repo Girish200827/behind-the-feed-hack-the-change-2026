@@ -30,7 +30,9 @@ function createWindow(): void {
     webPreferences: {
       preload: join(__dirname, '../preload/preload.js'),
       contextIsolation: true,
-      sandbox: true
+      sandbox: true,
+      // Keep timers and animations running when the window is covered, so live data keeps refreshing (Phase 3).
+      backgroundThrottling: false
     }
   })
 

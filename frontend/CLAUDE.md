@@ -142,8 +142,10 @@ Done when: the fake session shows as a mood timeline with switches and labels th
   e.g. `realistic`, `extra/events,live`, `edge/no-samples`. Shortcuts: `npm run dev:realistic | dev:live | dev:empty | dev:no-samples`.
 - Mock only, so the demo always shows "today": finished files are shifted by whole days so their newest day is today
   and anything after now is cut; a live file is shifted to end now. Real API data is never shifted.
-- Chart pipeline (UI only, raw data untouched): drop samples with confidence < 0.4, then a centred 5 s rolling mean
-  (`src/lib/smooth.ts`). Summaries use the same chart-ready samples.
+- Chart pipeline (UI only, raw data untouched): drop samples with confidence < 0.4, then a centred rolling mean
+  (`src/lib/smooth.ts`): 18 s in the day view, 5 s in the single-session report. Summaries use the same samples.
+- Day ribbon: 240 px panels (fits a 1080p screen at 150% scaling), live panel sized by the time its readings cover,
+  chips laid out per session under each panel (`layoutSessionLanes`), clicking a panel opens the session.
 
 ## TODO
 - Pause endpoint must be agreed with Allen and added to contracts.md before wiring (Phase 3).

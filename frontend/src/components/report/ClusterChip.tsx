@@ -9,10 +9,12 @@ import TruncatedText from '../TruncatedText'
 const POPOVER_W = 340
 
 /** Fixed width so the lane layout can place the chip before it renders. */
-export const clusterChipWidth = (n: number) => 20 + 12 + 8 + (Math.min(n, 5) * 5 + 3) + 8 + 66
+export const clusterChipWidth = (n: number) => 20 + 12 + 8 + (Math.min(n, 5) * 5 + 3) + 8 + 74
 
 interface Props {
   members: MoodSwitch[]
+  /** Follows single chips of the same session: label reads "+N moments". */
+  plus?: boolean
   labelOf: (switchId: string) => ContextLabel | undefined
   active: boolean
   highlightId: string | null
@@ -24,7 +26,7 @@ interface Props {
 }
 
 /** Several close moments collapsed into one chip; expands into a list on hover or focus. */
-export default function ClusterChip({ members, labelOf, active, highlightId, style, bounds, onHighlight, onSelect }: Props) {
+export default function ClusterChip({ members, plus = false, labelOf, active, highlightId, style, bounds, onHighlight, onSelect }: Props) {
   const [open, setOpen] = useState(false)
   const left = Number(style.left ?? 0)
   const popShift = Math.min(0, bounds - POPOVER_W - left)
@@ -59,7 +61,10 @@ export default function ClusterChip({ members, labelOf, active, highlightId, sty
             <span key={i} className="-ml-[1px] h-1.5 w-1.5 rounded-full ring-1 ring-surface-2 first:ml-0" style={{ background: c }} />
           ))}
         </span>
-        <span className="text-ink">{members.length} moments</span>
+        <span className="text-ink">
+          {plus ? '+' : ''}
+          {members.length} moments
+        </span>
       </button>
 
       <AnimatePresence>

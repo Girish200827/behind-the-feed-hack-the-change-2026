@@ -4,7 +4,7 @@ import { Sunrise, Waves } from 'lucide-react'
 import { addDays, dayEnd, dayStart, isDayKey, todayKey, type DayKey } from '../data'
 import { useDay } from '../hooks/useDay'
 import { useNow } from '../hooks/useNow'
-import { smoothSamples } from '../lib/smooth'
+import { DAY_SMOOTH_WINDOW_S, smoothSamples } from '../lib/smooth'
 import { formatDayTitle, isLive, sessionSeconds } from '../lib/format'
 import DayHeader from '../components/day/DayHeader'
 import DayStrip from '../components/day/DayStrip'
@@ -44,9 +44,9 @@ export default function TodayPage() {
     return () => window.removeEventListener('keydown', onKey)
   })
 
-  // Chart-ready samples per session: low-confidence dropped, ~5 s rolling mean. Raw data stays untouched.
+  // Chart-ready samples per session: low-confidence dropped, ~18 s centred rolling mean. Raw data stays untouched.
   const items: RibbonSegment[] = useMemo(
-    () => (day.status === 'ready' ? day.data.timelines.map((t) => ({ timeline: t, samples: smoothSamples(t.samples) })) : []),
+    () => (day.status === 'ready' ? day.data.timelines.map((t) => ({ timeline: t, samples: smoothSamples(t.samples, DAY_SMOOTH_WINDOW_S) })) : []),
     [day]
   )
   const live = items.some((it) => isLive(it.timeline.session))
@@ -73,8 +73,6 @@ export default function TodayPage() {
       {day.status === 'ready' && items.length > 0 && (
         <>
           <DayStrip start={dayStart(date)} end={dayEnd(date)} items={items} now={now} onOpen={open} />
-          <DaySummary items={items} totalSeconds={totalSeconds} />
-
           <div>
             <h2 className="label mb-4">Mood across the day</h2>
             <MoodRibbon
@@ -85,6 +83,8 @@ export default function TodayPage() {
               onSelect={(_, sessionId) => open(sessionId)}
             />
           </div>
+
+          <DaySummary items={items} totalSeconds={totalSeconds} />
 
           <div>
             <h2 className="label mb-2">Platforms</h2>
