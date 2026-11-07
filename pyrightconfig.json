@@ -1,0 +1,9 @@
+{
+  "venvPath": "backend",
+  "venv": ".venv",
+  "typeCheckingMode": "standard",
+  "reportUnusedCallResult": "none",
+  "executionEnvironments": [
+    { "root": "backend" }
+  ]
+}
