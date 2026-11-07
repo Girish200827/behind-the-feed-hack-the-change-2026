@@ -1,0 +1,60 @@
+@import "tailwindcss";
+
+/* Calm wellness palette. Muted red is reserved for negative tone. */
+:root {
+  --bg: #f6f4f0;
+  --surface: #ffffff;
+  --surface-2: #efece6;
+  --border: #e4dfd6;
+  --text: #2e3338;
+  --muted: #6c727a;
+  --accent: #5a7bb0;
+  --positive: #5c9b83;
+  --neutral: #8a929b;
+  --negative: #b86a60;
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #1a1c1f;
+    --surface: #23262a;
+    --surface-2: #2b2f34;
+    --border: #353a40;
+    --text: #e7e4de;
+    --muted: #9ba1a8;
+    --accent: #8ba7d8;
+    --positive: #7fbca4;
+    --neutral: #9ea5ad;
+    --negative: #d38d83;
+    color-scheme: dark;
+  }
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-line: var(--border);
+  --color-ink: var(--text);
+  --color-muted: var(--muted);
+  --color-accent: var(--accent);
+  --color-positive: var(--positive);
+  --color-neutral: var(--neutral);
+  --color-negative: var(--negative);
+  --font-sans: "Segoe UI", system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
