@@ -1,0 +1,29 @@
+[
+  {"id": "s_031", "platform": "instagram", "start": 1794083100, "end": 1794083700},
+
+  {"ts": 1794083120.5, "emotion": "neutral", "valence": 0.05, "confidence": 0.77},
+  {"ts": 1794083190.5, "emotion": "neutral", "valence": 0.0, "confidence": 0.74},
+
+  {"id": "sw_0141", "ts": 1794083220.0, "from": "neutral", "to": "sad", "platform": "instagram"},
+  {"switch_id": "sw_0141", "ts": 1794083220.4, "platform": "instagram", "category": "news", "tone": "negative", "topic": "layoff headlines"},
+
+  {"ts": 1794083250.5, "emotion": "sad", "valence": -0.6, "confidence": 0.81},
+  {"ts": 1794083320.5, "emotion": "sad", "valence": -0.5, "confidence": 0.79},
+
+  {"id": "sw_0142", "ts": 1794083360.0, "from": "sad", "to": "happy", "platform": "instagram"},
+  {"switch_id": "sw_0142", "ts": 1794083360.4, "platform": "instagram", "category": "comedy", "tone": "positive", "topic": "cat fail videos"},
+
+  {"ts": 1794083390.5, "emotion": "happy", "valence": 0.7, "confidence": 0.88},
+  {"ts": 1794083460.5, "emotion": "happy", "valence": 0.6, "confidence": 0.85},
+
+  {"id": "sw_0143", "ts": 1794083500.0, "from": "happy", "to": "angry", "platform": "instagram"},
+  {"switch_id": "sw_0143", "ts": 1794083500.4, "platform": "instagram", "category": "politics", "tone": "negative", "topic": "election debate clips"},
+
+  {"ts": 1794083530.5, "emotion": "angry", "valence": -0.7, "confidence": 0.72},
+
+  {"id": "sw_0144", "ts": 1794083600.0, "from": "angry", "to": "neutral", "platform": "instagram"},
+  {"switch_id": "sw_0144", "ts": 1794083600.4, "platform": "instagram", "category": "friends", "tone": "neutral", "topic": "friend's vacation photos"},
+
+  {"ts": 1794083640.5, "emotion": "neutral", "valence": 0.1, "confidence": 0.8},
+  {"ts": 1794083690.5, "emotion": "neutral", "valence": 0.15, "confidence": 0.78}
+]
