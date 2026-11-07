@@ -43,7 +43,8 @@ export interface Session {
   id: string
   platform: Platform
   start: number
-  end: number
+  /** null while the session is still in progress (planned for Phase 3; confirm in contracts.md with Allen). */
+  end: number | null
 }
 
 export type ContractEvent =

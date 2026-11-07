@@ -120,8 +120,20 @@ Done when: the fake session shows as a mood timeline with switches and labels th
 - Make the Session Report readable on a projector for the demo.
 - Provide a short "How to run the frontend" section for the team README (Giresh owns the README).
 
+## Mock data
+- `src/mock/events.json` hand-written 10-min Instagram session; `realistic.json` 20-min TikTok session at 1 Hz with
+  jitter, low-confidence dips, 12 switches (one unlabelled); `live.json` a session in progress (`end: null`).
+- Regenerate realistic/live with `node scripts/generate-mock.mjs` (seeded).
+- `VITE_MOCK_FILE` picks files: `all` (default, top-level files only) | `none` | comma list of names without extension,
+  e.g. `realistic`, `events,live`, `edge/no-samples`. Shortcuts: `npm run dev:realistic | dev:live | dev:empty | dev:no-samples`.
+- Mock only: a file containing a live session is time-shifted at load so it ends "now". Real data is never shifted.
+- Chart pipeline (UI only, raw data untouched): drop samples with confidence < 0.4, then a centred 5 s rolling mean
+  (`src/lib/smooth.ts`). The summary strip uses the same chart-ready samples.
+
 ## TODO
 - Pause endpoint must be agreed with Allen and added to contracts.md before wiring (Phase 3).
+- `session.end` is `number | null` in our types (null = still in progress, needed for Phase 3 live refresh).
+  Confirm with Allen and get it written into contracts.md.
 - ApiSource paths in `src/data/constants.ts` are placeholders until confirmed with Allen (A4).
 
 ## Project layout

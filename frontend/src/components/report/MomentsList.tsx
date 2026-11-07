@@ -4,6 +4,7 @@ import type { Emotion } from '../../types/contracts'
 import { capitalize, formatClock } from '../../lib/format'
 import { emotionTone, toneVar } from '../../lib/mood'
 import PlatformIcon from '../PlatformIcon'
+import TruncatedText from '../TruncatedText'
 
 interface Props {
   timeline: Timeline
@@ -21,7 +22,7 @@ export default function MomentsList({ timeline, highlightId, onHighlight }: Prop
   return (
     <ol className="relative">
       {/* The rail */}
-      <span className="absolute bottom-6 left-[115.5px] top-6 w-px bg-hairline" aria-hidden />
+      <span className="absolute bottom-6 left-[131.5px] top-6 w-px bg-hairline" aria-hidden />
       {timeline.switches.map((sw, i) => {
         const label = labelFor(timeline, sw.id)
         const active = highlightId === sw.id
@@ -32,14 +33,14 @@ export default function MomentsList({ timeline, highlightId, onHighlight }: Prop
             initial={{ opacity: 0, y: 8 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: '-24px' }}
-            transition={{ duration: 0.28, delay: i * 0.05, ease: [0.22, 1, 0.36, 1] }}
+            transition={{ duration: 0.28, delay: Math.min(i, 6) * 0.05, ease: [0.22, 1, 0.36, 1] }}
             onPointerEnter={() => onHighlight(sw.id)}
             onPointerLeave={() => onHighlight(null)}
-            className={`grid scroll-mt-24 grid-cols-[88px_24px_1fr] items-center gap-4 rounded-[var(--radius-md)] px-0 py-4 transition-colors duration-150 ${
+            className={`grid scroll-mt-24 grid-cols-[104px_24px_1fr] items-center gap-4 rounded-[var(--radius-md)] px-0 py-4 transition-colors duration-150 ${
               active ? 'bg-surface-2' : 'hover:bg-surface'
             }`}
           >
-            <span className="pl-4 font-mono text-[12px] tabular-nums text-muted">{formatClock(sw.ts, true)}</span>
+            <span className="whitespace-nowrap pl-4 font-mono text-[12px] tabular-nums text-muted">{formatClock(sw.ts, true)}</span>
             <span className="flex justify-center">
               <span
                 className="relative h-2.5 w-2.5 rounded-full ring-4 ring-bg transition-transform duration-150"
@@ -57,9 +58,10 @@ export default function MomentsList({ timeline, highlightId, onHighlight }: Prop
               >
                 {label ? capitalize(label.category) : 'Pending'}
               </span>
-              <span className={`truncate text-[14px] ${label ? 'text-ink-2' : 'italic text-muted'}`}>
-                {label ? label.topic : 'Content label has not arrived yet'}
-              </span>
+              <TruncatedText
+                text={label ? label.topic : 'Content label has not arrived yet'}
+                className={`text-[14px] ${label ? 'text-ink-2' : 'italic text-muted'}`}
+              />
             </div>
           </motion.li>
         )

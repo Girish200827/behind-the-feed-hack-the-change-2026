@@ -62,7 +62,7 @@ export function detectEvent(raw: unknown): ContractEvent | string {
     return ok ? { kind: 'mood_switch', event: raw as unknown as MoodSwitch } : 'invalid mood_switch'
   }
   if ('start' in raw && 'end' in raw) {
-    const ok = isStr(raw.id) && oneOf(PLATFORMS, raw.platform) && isNum(raw.start) && isNum(raw.end)
+    const ok = isStr(raw.id) && oneOf(PLATFORMS, raw.platform) && isNum(raw.start) && (isNum(raw.end) || raw.end === null)
     return ok ? { kind: 'session', event: raw as unknown as Session } : 'invalid session'
   }
   if ('emotion' in raw && 'valence' in raw) {

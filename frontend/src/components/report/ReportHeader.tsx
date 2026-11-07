@@ -1,6 +1,8 @@
 import type { Session } from '../../types/contracts'
-import { formatClock, formatDate, formatDuration, platformName } from '../../lib/format'
+import { useNow } from '../../hooks/useNow'
+import { formatClock, formatDate, formatDuration, isLive, platformName, sessionSeconds } from '../../lib/format'
 import PlatformIcon from '../PlatformIcon'
+import LivePill from '../LivePill'
 import SessionPicker from './SessionPicker'
 
 interface Props {
@@ -10,6 +12,8 @@ interface Props {
 }
 
 export default function ReportHeader({ session, sessions, onPick }: Props) {
+  const live = session ? isLive(session) : false
+  const now = useNow(live)
   return (
     <header className="flex items-start justify-between gap-8">
       <div className="min-w-0">
@@ -20,13 +24,15 @@ export default function ReportHeader({ session, sessions, onPick }: Props) {
               <span>
                 {platformName(session.platform)}
                 <span className="mx-3 text-faint">·</span>
-                <span className="text-ink-2">{formatDuration(session.end - session.start)}</span>
+                <span className="text-ink-2">{formatDuration(sessionSeconds(session, now))}</span>
               </span>
+              {live && <LivePill />}
             </h1>
             <p className="mt-4 font-mono text-[13px] text-muted">
               {formatDate(session.start)}
               <span className="mx-2 text-faint">/</span>
-              {formatClock(session.start)} <span className="text-faint">→</span> {formatClock(session.end)}
+              {formatClock(session.start)} <span className="text-faint">→</span>{' '}
+              {session.end === null ? 'now' : formatClock(session.end)}
             </p>
           </>
         )}

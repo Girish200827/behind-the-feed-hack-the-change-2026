@@ -8,7 +8,8 @@ export interface Timeline {
   labels: ContextLabel[]
 }
 
-const inSession = (s: Session) => (e: { ts: number }) => e.ts >= s.start && e.ts <= s.end
+// A live session (end = null) takes everything from its start onward.
+const inSession = (s: Session) => (e: { ts: number }) => e.ts >= s.start && e.ts <= (s.end ?? Infinity)
 const byTs = (a: { ts: number }, b: { ts: number }) => a.ts - b.ts
 
 export function buildTimeline(

@@ -1,15 +1,20 @@
 // The "mood ribbon": valence over time as a monotone curve with teal/coral fills split exactly at neutral,
 // glowing dots at mood switches, a moments lane on the same time axis, and a hover scrubber.
+// It draws chart-ready samples (filtered + smoothed by the caller); raw data stays in the data layer.
 import { useId, useLayoutEffect, useMemo, useRef, useState, type PointerEvent } from 'react'
 import { motion, useReducedMotion } from 'motion/react'
 import { area, curveMonotoneX, line } from 'd3-shape'
 import { scaleLinear, scaleTime } from 'd3-scale'
 import { labelFor, type Timeline } from '../../data'
-import type { EmotionSample, MoodSwitch } from '../../types/contracts'
+import type { ContextLabel, EmotionSample, MoodSwitch } from '../../types/contracts'
 import { useElementWidth, useFontsReady } from '../../hooks/useElementWidth'
-import { formatClock, formatValence } from '../../lib/format'
+import { useNow } from '../../hooks/useNow'
+import { capitalize, formatClock, formatValence, isLive } from '../../lib/format'
+import { layoutLane } from '../../lib/laneLayout'
 import { emotionTone, nearestSample, toneVar } from '../../lib/mood'
+import { PulseDot } from '../LivePill'
 import MomentChip from './MomentChip'
+import ClusterChip, { clusterChipWidth } from './ClusterChip'
 
 // Geometry (px). Everything sits on a 4 px grid.
 const CHART_H = 340
@@ -20,11 +25,12 @@ const RIGHT = 16
 const LANE_GAP = 20
 const ROW_PITCH = 36
 const AXIS_H = 32
-const CHIP_GAP = 8
 const EASE = [0.22, 1, 0.36, 1] as const
 
 interface Props {
   timeline: Timeline
+  /** Chart-ready samples: low-confidence dropped and smoothed. */
+  samples: EmotionSample[]
   highlightId: string | null
   onHighlight: (id: string | null) => void
   onSelect: (id: string) => void
@@ -34,24 +40,31 @@ export default function MoodRibbon(props: Props) {
   const { ref, width } = useElementWidth<HTMLDivElement>()
   return (
     <div ref={ref} className="w-full">
-      {width > 0 && props.timeline.samples.length > 0 && <Ribbon key={props.timeline.session.id} width={width} {...props} />}
-      {props.timeline.samples.length === 0 && (
-        <p className="py-24 text-center text-[14px] text-muted">No mood readings were recorded during this session.</p>
+      {props.samples.length === 0 ? (
+        <EmptyRibbon rawCount={props.timeline.samples.length} />
+      ) : (
+        width > 0 && <Ribbon key={props.timeline.session.id} width={width} {...props} />
       )}
     </div>
   )
 }
 
-function Ribbon({ width, timeline, highlightId, onHighlight, onSelect }: Props & { width: number }) {
+function Ribbon({ width, timeline, samples, highlightId, onHighlight, onSelect }: Props & { width: number }) {
   const uid = useId().replace(/[^a-zA-Z0-9]/g, '')
   const reduce = useReducedMotion()
   const fontsReady = useFontsReady()
-  const { session, samples, switches } = timeline
+  const { session, switches } = timeline
+  const live = isLive(session)
+  const now = useNow(live)
+
+  // A live session runs up to now (or the newest reading, if the clock is behind it).
+  const lastTs = timeline.samples.length ? timeline.samples[timeline.samples.length - 1].ts : session.start
+  const endTs = session.end ?? Math.max(now, lastTs)
 
   // Scales
   const x = useMemo(
-    () => scaleTime().domain([new Date(session.start * 1000), new Date(session.end * 1000)]).range([LEFT, width - RIGHT]),
-    [session, width]
+    () => scaleTime().domain([new Date(session.start * 1000), new Date(endTs * 1000)]).range([LEFT, width - RIGHT]),
+    [session.start, endTs, width]
   )
   const y = useMemo(() => scaleLinear().domain([-1, 1]).range([CHART_H - PAD_BOTTOM, PAD_TOP]), [])
   const px = (ts: number) => x(new Date(ts * 1000))
@@ -87,33 +100,30 @@ function Ribbon({ width, timeline, highlightId, onHighlight, onSelect }: Props &
     })
   }, [linePath])
 
-  // Moments lane: measure chips, then pack them into rows so they never overlap.
+  // Moments lane: measure single chips, then pack into ≤ 2 rows, clustering whatever can't fit.
   const chipEls = useRef(new Map<string, HTMLElement>())
   const [chipW, setChipW] = useState<Record<string, number>>({})
   useLayoutEffect(() => {
     const next: Record<string, number> = {}
-    let changed = false
     chipEls.current.forEach((el, id) => {
-      next[id] = el.offsetWidth
-      if (Math.abs((chipW[id] ?? 0) - next[id]) > 0.5) changed = true
+      if (Math.abs((chipW[id] ?? 0) - el.offsetWidth) > 0.5) next[id] = el.offsetWidth
     })
-    if (changed) setChipW(next)
+    if (Object.keys(next).length) setChipW((prev) => ({ ...prev, ...next }))
   })
 
-  const chips = useMemo(() => {
-    const rowEnds: number[] = []
-    return switches.map((sw) => {
-      const w = chipW[sw.id] ?? estimateChipWidth(sw)
-      const cx = px(sw.ts)
-      const left = Math.min(Math.max(cx - w / 2, LEFT - 8), width - RIGHT - w)
-      let row = rowEnds.findIndex((end) => left >= end + CHIP_GAP)
-      if (row === -1) row = rowEnds.push(0) - 1
-      rowEnds[row] = left + w
-      return { sw, cx, left, row }
-    })
-  }, [switches, chipW, x, width, fontsReady])
+  const groups = useMemo(
+    () =>
+      layoutLane(switches, {
+        xOf: (sw) => px(sw.ts),
+        singleWidth: (sw) => chipW[sw.id] ?? estimateChipWidth(sw, labelFor(timeline, sw.id)),
+        clusterWidth: clusterChipWidth,
+        minLeft: LEFT - 8,
+        maxRight: width - RIGHT
+      }),
+    [switches, chipW, x, width, fontsReady, timeline]
+  )
 
-  const rows = Math.max(1, ...chips.map((c) => c.row + 1))
+  const rows = Math.max(1, ...groups.map((g) => g.row + 1))
   const laneTop = CHART_H + LANE_GAP
   const axisTop = laneTop + rows * ROW_PITCH
   const totalH = axisTop + AXIS_H
@@ -136,8 +146,8 @@ function Ribbon({ width, timeline, highlightId, onHighlight, onSelect }: Props &
       return
     }
     setHoverX(mx)
-    const near = chips.find((c) => Math.abs(c.cx - mx) <= 10)
-    setNear(near ? near.sw.id : null)
+    const near = switches.find((sw) => Math.abs(px(sw.ts) - mx) <= 10)
+    setNear(near ? near.id : null)
   }
   const onLeave = () => {
     setHoverX(null)
@@ -145,11 +155,14 @@ function Ribbon({ width, timeline, highlightId, onHighlight, onSelect }: Props &
   }
 
   const hovered = hoverX !== null ? nearestSample(samples, x.invert(hoverX).getTime() / 1000) : undefined
+
   // A few round-time ticks only: thin d3's suggestion down to at most 6 (4 on narrow widths).
   const maxTicks = width > 900 ? 6 : 4
   const rawTicks = x.ticks(maxTicks)
   const every = Math.ceil(rawTicks.length / maxTicks)
   const ticks = rawTicks.filter((_, i) => i % every === 0)
+
+  const last = samples[samples.length - 1]
 
   return (
     <div className="relative select-none" style={{ height: totalH }} onPointerMove={onMove} onPointerLeave={onLeave}>
@@ -174,17 +187,7 @@ function Ribbon({ width, timeline, highlightId, onHighlight, onSelect }: Props &
           </filter>
         </defs>
 
-        {/* Neutral line and scale marks */}
-        <line x1={LEFT} x2={width - RIGHT} y1={zeroY} y2={zeroY} stroke="var(--faint)" strokeDasharray="2 5" />
-        {[
-          ['+', y(0.85)],
-          ['0', zeroY],
-          ['−', y(-0.85)]
-        ].map(([t, ty]) => (
-          <text key={t} x={8} y={Number(ty)} dy="0.35em" className="font-mono" fontSize={12} fill="var(--muted)">
-            {t}
-          </text>
-        ))}
+        <NeutralScale y={y} width={width} />
 
         {/* Fills, split exactly at neutral */}
         <motion.g
@@ -223,21 +226,21 @@ function Ribbon({ width, timeline, highlightId, onHighlight, onSelect }: Props &
         )}
 
         {/* Lane ticks: where each moment sits on the time axis */}
-        {chips.map(({ sw, cx }) => (
-          <line key={sw.id} x1={cx} x2={cx} y1={laneTop - 10} y2={laneTop - 4} stroke="var(--faint)" />
+        {switches.map((sw) => (
+          <line key={sw.id} x1={px(sw.ts)} x2={px(sw.ts)} y1={laneTop - 10} y2={laneTop - 4} stroke="var(--faint)" />
         ))}
 
         {/* Switch dots */}
-        {chips.map(({ sw, cx }, i) => (
+        {switches.map((sw, i) => (
           <SwitchDot
             key={sw.id}
-            cx={cx}
-            cy={curveY(cx)}
+            cx={px(sw.ts)}
+            cy={curveY(px(sw.ts))}
             color={toneVar(labelFor(timeline, sw.id)?.tone)}
             active={highlightId === sw.id}
             connectTo={laneTop - 10}
             glowId={`glow${uid}`}
-            delay={reduce ? 0 : 0.55 + i * 0.04}
+            delay={reduce ? 0 : 0.55 + Math.min(i, 12) * 0.04}
             onEnter={() => onHighlight(sw.id)}
             onClick={() => onSelect(sw.id)}
           />
@@ -259,24 +262,98 @@ function Ribbon({ width, timeline, highlightId, onHighlight, onSelect }: Props &
         ))}
       </svg>
 
+      {/* Live: a pulsing dot where the newest reading is */}
+      {live && last && (
+        <span
+          className="pointer-events-none absolute -translate-x-1/2 -translate-y-1/2"
+          style={{ left: px(last.ts), top: curveY(px(last.ts)) }}
+        >
+          <PulseDot />
+        </span>
+      )}
+
       {/* Moments lane (HTML so chips get real focus and hover states) */}
-      {chips.map(({ sw, left, row }) => (
-        <MomentChip
-          key={sw.id}
-          ref={(el) => {
-            if (el) chipEls.current.set(sw.id, el)
-            else chipEls.current.delete(sw.id)
-          }}
-          sw={sw}
-          label={labelFor(timeline, sw.id)}
-          active={highlightId === sw.id}
-          style={{ left, top: laneTop + row * ROW_PITCH }}
-          onHighlight={onHighlight}
-          onSelect={onSelect}
-        />
-      ))}
+      {groups.map((g) => {
+        const style = { left: g.left, top: laneTop + g.row * ROW_PITCH }
+        if (g.members.length === 1) {
+          const sw = g.members[0]
+          return (
+            <MomentChip
+              key={g.key}
+              ref={(el) => {
+                if (el) chipEls.current.set(sw.id, el)
+                else chipEls.current.delete(sw.id)
+              }}
+              sw={sw}
+              label={labelFor(timeline, sw.id)}
+              active={highlightId === sw.id}
+              style={style}
+              onHighlight={onHighlight}
+              onSelect={onSelect}
+            />
+          )
+        }
+        return (
+          <ClusterChip
+            key={g.key}
+            members={g.members}
+            timeline={timeline}
+            active={g.members.some((m) => m.id === highlightId)}
+            highlightId={highlightId}
+            style={style}
+            bounds={width}
+            onHighlight={onHighlight}
+            onSelect={onSelect}
+          />
+        )
+      })}
 
       {hovered && hoverX !== null && <Readout sample={hovered} x={hoverX} width={width} />}
+    </div>
+  )
+}
+
+/** Faint dashed neutral line with "+ 0 −" marks. */
+function NeutralScale({ y, width }: { y: (v: number) => number; width: number }) {
+  return (
+    <>
+      <line x1={LEFT} x2={width - RIGHT} y1={y(0)} y2={y(0)} stroke="var(--faint)" strokeDasharray="2 5" />
+      {(
+        [
+          ['+', y(0.85)],
+          ['0', y(0)],
+          ['−', y(-0.85)]
+        ] as const
+      ).map(([t, ty]) => (
+        <text key={t} x={8} y={ty} dy="0.35em" className="font-mono" fontSize={12} fill="var(--muted)">
+          {t}
+        </text>
+      ))}
+    </>
+  )
+}
+
+/** Same frame as the ribbon, with a calm message instead of a curve. */
+function EmptyRibbon({ rawCount }: { rawCount: number }) {
+  const { ref, width } = useElementWidth<HTMLDivElement>()
+  const y = (v: number) => PAD_TOP + ((1 - v) / 2) * (CHART_H - PAD_TOP - PAD_BOTTOM)
+  return (
+    <div ref={ref} className="relative" style={{ height: CHART_H }}>
+      {width > 0 && (
+        <svg width={width} height={CHART_H} className="absolute inset-0" aria-hidden>
+          <NeutralScale y={y} width={width} />
+        </svg>
+      )}
+      <div className="absolute left-1/2 top-1/2 flex -translate-x-1/2 -translate-y-1/2 flex-col items-center gap-2 bg-bg px-8 py-4 text-center">
+        <span className="text-[15px] font-medium text-ink">
+          {rawCount === 0 ? 'No mood readings in this session' : 'Mood readings were too uncertain to chart'}
+        </span>
+        <span className="max-w-md text-[13px] text-muted">
+          {rawCount === 0
+            ? 'The camera may have been paused, or no face was in view.'
+            : 'The camera rarely had a clear view of your face, so nothing reliable can be shown.'}
+        </span>
+      </div>
     </div>
   )
 }
@@ -315,7 +392,7 @@ function Readout({ sample, x, width }: { sample: EmotionSample; x: number; width
   const flip = x > width - 200
   return (
     <div
-      className="pointer-events-none absolute top-0 rounded-[var(--radius-md)] border border-hairline-strong bg-elevated px-3 py-2 shadow-[var(--shadow-pop)]"
+      className="pointer-events-none absolute top-0 z-20 rounded-[var(--radius-md)] border border-hairline-strong bg-elevated px-3 py-2 shadow-[var(--shadow-pop)]"
       style={{ left: x, transform: `translateX(${flip ? 'calc(-100% - 12px)' : '12px'})` }}
     >
       <div className="font-mono text-[11px] text-muted">{formatClock(sample.ts, true)}</div>
@@ -328,5 +405,6 @@ function Readout({ sample, x, width }: { sample: EmotionSample; x: number; width
   )
 }
 
-/** First-render guess before the chip is measured. */
-const estimateChipWidth = (sw: MoodSwitch) => (sw.from.length + sw.to.length + 3) * 6.8 + 110
+/** First-render guess before a chip is measured (mono "from → to" + sans category + chrome). */
+const estimateChipWidth = (sw: MoodSwitch, label: ContextLabel | undefined) =>
+  62 + (sw.from.length + sw.to.length + 3) * 6.9 + (label ? capitalize(label.category) : 'Pending').length * 6.5

@@ -1,13 +1,14 @@
 import type { ReactNode } from 'react'
 import type { Timeline } from '../../data'
+import type { EmotionSample } from '../../types/contracts'
 import { capitalize } from '../../lib/format'
 import { biggestShifts, drainedShare } from '../../lib/mood'
 import CountUp from '../CountUp'
 
-/** One quiet row of headline numbers, separated by hairlines. */
-export default function SummaryStrip({ timeline }: { timeline: Timeline }) {
-  const drained = drainedShare(timeline.samples)
-  const { lift, drain } = biggestShifts(timeline)
+/** One quiet row of headline numbers, separated by hairlines. Uses the same chart-ready samples as the ribbon. */
+export default function SummaryStrip({ timeline, samples }: { timeline: Timeline; samples: EmotionSample[] }) {
+  const drained = samples.length ? drainedShare(samples) : null
+  const { lift, drain } = biggestShifts(timeline, samples)
   return (
     <dl className="grid grid-cols-4 divide-x divide-hairline border-y border-hairline">
       <Cell label="Mood switches">
@@ -16,10 +17,14 @@ export default function SummaryStrip({ timeline }: { timeline: Timeline }) {
         </span>
       </Cell>
       <Cell label="Time feeling drained">
-        <span className="font-mono">
-          <CountUp value={drained * 100} />
-          <span className="ml-0.5 text-[0.55em] text-muted">%</span>
-        </span>
+        {drained === null ? (
+          <span className="text-muted">—</span>
+        ) : (
+          <span className="font-mono">
+            <CountUp value={drained * 100} />
+            <span className="ml-0.5 text-[0.55em] text-muted">%</span>
+          </span>
+        )}
       </Cell>
       <Cell label="Biggest lift">
         <Category name={lift} color="var(--positive)" />

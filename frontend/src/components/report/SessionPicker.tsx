@@ -2,8 +2,9 @@ import { useEffect, useRef, useState, type KeyboardEvent } from 'react'
 import { AnimatePresence, motion } from 'motion/react'
 import { Check, ChevronDown } from 'lucide-react'
 import type { Session } from '../../types/contracts'
-import { formatClock, formatDate, formatDuration } from '../../lib/format'
+import { formatClock, formatDate, formatDuration, isLive, sessionSeconds } from '../../lib/format'
 import PlatformIcon from '../PlatformIcon'
+import LivePill from '../LivePill'
 
 interface Props {
   sessions: Session[]
@@ -99,8 +100,10 @@ function Option({ session }: { session: Session }) {
       <PlatformIcon platform={session.platform} size={14} tint />
       <span className="text-ink">{formatDate(session.start)}</span>
       <span className="font-mono text-[12px] text-muted">
-        {formatClock(session.start)} · {formatDuration(session.end - session.start)}
+        {formatClock(session.start)}
+        {!isLive(session) && ` · ${formatDuration(sessionSeconds(session, 0))}`}
       </span>
+      {isLive(session) && <LivePill size="sm" />}
     </span>
   )
 }

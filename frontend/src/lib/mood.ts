@@ -37,29 +37,27 @@ export function drainedShare(samples: EmotionSample[]): number {
   return span > 0 ? below / span : 0
 }
 
-/** Last sample at or before ts, and first sample after it. */
+const mean = (xs: EmotionSample[]) => (xs.length ? xs.reduce((a, s) => a + s.valence, 0) / xs.length : undefined)
+
+/**
+ * Mood level just before and just after a switch: the mean over ~10 s windows (the 2 s the new mood had to
+ * hold are excluded from "before"). Falls back to the nearest sample on each side when data is sparse.
+ */
 function around(samples: EmotionSample[], ts: number) {
-  let before: EmotionSample | undefined
-  let after: EmotionSample | undefined
-  for (const s of samples) {
-    if (s.ts <= ts) before = s
-    else {
-      after = s
-      break
-    }
-  }
+  const before = mean(samples.filter((s) => s.ts >= ts - 12 && s.ts < ts - 2)) ?? [...samples].reverse().find((s) => s.ts <= ts)?.valence
+  const after = mean(samples.filter((s) => s.ts > ts && s.ts <= ts + 10)) ?? samples.find((s) => s.ts > ts)?.valence
   return { before, after }
 }
 
-/** Category with the largest mood rise and the largest mood drop across a switch. */
-export function biggestShifts(t: Timeline): { lift?: Category; drain?: Category } {
+/** Category with the largest mood rise and the largest mood drop across a switch. Pass chart-ready (smoothed) samples. */
+export function biggestShifts(t: Timeline, samples: EmotionSample[]): { lift?: Category; drain?: Category } {
   let lift: { c: Category; d: number } | undefined
   let drain: { c: Category; d: number } | undefined
   for (const sw of t.switches) {
     const label = labelFor(t, sw.id)
-    const { before, after } = around(t.samples, sw.ts)
-    if (!label || !before || !after) continue
-    const d = after.valence - before.valence
+    const { before, after } = around(samples, sw.ts)
+    if (!label || before === undefined || after === undefined) continue
+    const d = after - before
     if (d > 0 && (!lift || d > lift.d)) lift = { c: label.category, d }
     if (d < 0 && (!drain || d < drain.d)) drain = { c: label.category, d }
   }

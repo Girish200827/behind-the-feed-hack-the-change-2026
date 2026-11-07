@@ -1,0 +1,6 @@
+[
+  {"id": "s_090", "platform": "facebook", "start": 1794070000, "end": 1794070480},
+  {"id": "sw_0900", "ts": 1794070120.0, "from": "neutral", "to": "happy", "platform": "facebook"},
+  {"switch_id": "sw_0900", "ts": 1794070120.6, "platform": "facebook", "category": "friends", "tone": "positive", "topic": "family reunion album"},
+  {"id": "sw_0901", "ts": 1794070300.0, "from": "happy", "to": "sad", "platform": "facebook"}
+]
