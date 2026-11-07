@@ -27,3 +27,6 @@ const PLATFORM_NAMES: Record<Platform, string> = {
 export const platformName = (p: Platform) => PLATFORM_NAMES[p] ?? p
 
 export const capitalize = (s: string) => s.charAt(0).toUpperCase() + s.slice(1)
+
+/** Signed valence with a true minus sign, e.g. "+0.70" or "−0.60". */
+export const formatValence = (v: number) => `${v > 0 ? '+' : v < 0 ? '−' : ''}${Math.abs(v).toFixed(2)}`

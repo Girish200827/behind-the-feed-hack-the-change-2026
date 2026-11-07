@@ -24,7 +24,18 @@ Do **NOT** build window detection, webcam access or screenshots in the frontend.
 
 ## Stack
 Electron + React + TypeScript (electron-vite), Tailwind CSS, Chart.js with react-chartjs-2 and
-chartjs-plugin-annotation, React Router.
+chartjs-plugin-annotation (kept for Phase 4 charts), React Router.
+Design layer: Geist Sans/Mono (`geist`), `motion`, `lucide-react`, `simple-icons` (platform marks),
+`d3-shape` + `d3-scale` (custom SVG "mood ribbon" on the Session Report).
+
+## Design system
+- Calm, dark-first, minimal (light mode via prefers-color-scheme). Frameless window with a custom draggable title strip.
+- All colors, radii and fonts are tokens in `src/index.css` (`:root` CSS variables + Tailwind `@theme`). Don't hard-code colors.
+- Mood colors: teal = uplifting (`--positive`), coral = draining (`--negative`), cool gray = neutral. Validated for
+  contrast and colorblind separation against both backgrounds. Color only where it carries meaning; `--accent` for UI focus/active.
+- Geist Mono for numbers, times and the small uppercase `.label`; Geist Sans for everything else.
+- Motion is 150–300 ms ease-out (line draw ~800 ms); everything respects prefers-reduced-motion.
+- Platform marks: `<PlatformIcon platform=... />`, monochrome by default, `tint` for a subtle brand tint.
 
 ## Event formats (copied from the team's contracts.md; never rename fields; times are Unix seconds)
 - **emotion_sample** (Raad → Allen, once a second):

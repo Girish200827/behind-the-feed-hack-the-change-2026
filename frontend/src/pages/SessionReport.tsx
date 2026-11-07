@@ -1,41 +1,58 @@
+import { useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { useSessions, useTimeline } from '../hooks/useReportData'
-import SessionHeader from '../components/report/SessionHeader'
-import SessionPicker from '../components/report/SessionPicker'
-import MoodTimeline from '../components/report/MoodTimeline'
-import SwitchList from '../components/report/SwitchList'
+import ReportHeader from '../components/report/ReportHeader'
+import SummaryStrip from '../components/report/SummaryStrip'
+import MoodRibbon from '../components/report/MoodRibbon'
+import MomentsList, { momentDomId } from '../components/report/MomentsList'
 import Notice from '../components/Notice'
 
 export default function SessionReport() {
   const [params, setParams] = useSearchParams()
   const sessions = useSessions()
+  const [highlightId, setHighlightId] = useState<string | null>(null)
 
   const list = sessions.status === 'ready' ? sessions.data : []
   const selectedId = params.get('session') ?? list[0]?.id
   const timeline = useTimeline(selectedId)
+  const session = list.find((s) => s.id === selectedId)
 
-  if (sessions.status === 'loading') return <Notice>Loading your sessions…</Notice>
-  if (sessions.status === 'error') return <Notice>Couldn't load sessions: {sessions.message}</Notice>
+  const scrollToMoment = (id: string) =>
+    document.getElementById(momentDomId(id))?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+
+  if (sessions.status === 'loading') return <Notice>Loading your sessions</Notice>
+  if (sessions.status === 'error') return <Notice>Sessions could not be loaded. {sessions.message}</Notice>
   if (!list.length)
-    return <Notice>No scroll sessions yet. Open Instagram, TikTok, YouTube, X or Facebook and they'll appear here.</Notice>
+    return <Notice>No scroll sessions yet. Open Instagram, TikTok, YouTube, X or Facebook and your first session will appear here.</Notice>
 
   return (
-    <section className="flex flex-col gap-6">
-      <div className="flex flex-wrap items-end justify-between gap-4">
-        <h1 className="text-2xl font-semibold">Session Report</h1>
-        <SessionPicker sessions={list} value={selectedId} onChange={(id) => setParams({ session: id })} />
-      </div>
+    <section className="flex flex-col gap-10">
+      <ReportHeader session={session} sessions={list} onPick={(id) => setParams({ session: id })} />
 
-      {timeline.status === 'loading' && <Notice>Loading session…</Notice>}
-      {timeline.status === 'error' && <Notice>Couldn't load this session: {timeline.message}</Notice>}
-      {timeline.status === 'ready' && !timeline.data && <Notice>This session couldn't be found.</Notice>}
+      {timeline.status === 'error' && <Notice>This session could not be loaded. {timeline.message}</Notice>}
+      {timeline.status === 'ready' && !timeline.data && <Notice>This session could not be found.</Notice>}
+      {timeline.status === 'loading' && <div className="h-[560px]" />}
       {timeline.status === 'ready' && timeline.data && (
         <>
-          <SessionHeader timeline={timeline.data} />
-          <MoodTimeline timeline={timeline.data} />
-          <SwitchList timeline={timeline.data} />
-          <p className="text-center text-xs text-muted">
-            These are mood signals from facial expression, not a diagnosis. Use them as a gentle prompt to reflect.
+          <SummaryStrip timeline={timeline.data} />
+
+          <div>
+            <h2 className="label mb-4">Mood over time</h2>
+            <MoodRibbon
+              timeline={timeline.data}
+              highlightId={highlightId}
+              onHighlight={setHighlightId}
+              onSelect={scrollToMoment}
+            />
+          </div>
+
+          <div>
+            <h2 className="label mb-2">Moments</h2>
+            <MomentsList timeline={timeline.data} highlightId={highlightId} onHighlight={setHighlightId} />
+          </div>
+
+          <p className="text-[12px] text-muted">
+            Mood signals, not a diagnosis. They come from facial expression and are meant as a gentle prompt to reflect.
           </p>
         </>
       )}

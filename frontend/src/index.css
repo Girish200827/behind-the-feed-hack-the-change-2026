@@ -1,33 +1,75 @@
 @import "tailwindcss";
 
-/* Calm wellness palette. Muted red is reserved for negative tone. */
-:root {
-  --bg: #f6f4f0;
-  --surface: #ffffff;
-  --surface-2: #efece6;
-  --border: #e4dfd6;
-  --text: #2e3338;
-  --muted: #6c727a;
-  --accent: #5a7bb0;
-  --positive: #5c9b83;
-  --neutral: #8a929b;
-  --negative: #b86a60;
-  color-scheme: light;
+/* ───────────────────────── Fonts ───────────────────────── */
+@font-face {
+  font-family: "Geist";
+  src: url("../node_modules/geist/dist/fonts/geist-sans/Geist-Variable.woff2") format("woff2");
+  font-weight: 100 900;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Geist Mono";
+  src: url("../node_modules/geist/dist/fonts/geist-mono/GeistMono-Variable.woff2") format("woff2");
+  font-weight: 100 900;
+  font-display: swap;
 }
 
-@media (prefers-color-scheme: dark) {
+/* ───────────────────────── Design tokens ─────────────────────────
+   Dark is the primary theme. Mood colors are validated (dataviz validator)
+   against each theme's background: teal = uplifting, coral = draining, gray = neutral. */
+:root {
+  --bg: #07080c;
+  --surface: #0b0d13;
+  --surface-2: #10131b;
+  --elevated: #141823;
+  --hairline: rgb(255 255 255 / 0.07);
+  --hairline-strong: rgb(255 255 255 / 0.13);
+
+  --ink: #eceff5;
+  --ink-2: #b9c0cf;
+  --muted: #8890a3;
+  --faint: #4b5265;
+
+  --accent: #9aa8ff;
+  --accent-soft: rgb(154 168 255 / 0.14);
+
+  --positive: #2eab93;
+  --positive-ink: #6fd8c1;
+  --negative: #e4685a;
+  --negative-ink: #f39a8f;
+  --neutral: #8890a3;
+
+  --shadow-pop: 0 1px 0 rgb(255 255 255 / 0.04) inset, 0 12px 32px -8px rgb(0 0 0 / 0.6);
+  --titlebar-h: 40px;
+
+  color-scheme: dark;
+}
+
+@media (prefers-color-scheme: light) {
   :root {
-    --bg: #1a1c1f;
-    --surface: #23262a;
-    --surface-2: #2b2f34;
-    --border: #353a40;
-    --text: #e7e4de;
-    --muted: #9ba1a8;
-    --accent: #8ba7d8;
-    --positive: #7fbca4;
-    --neutral: #9ea5ad;
-    --negative: #d38d83;
-    color-scheme: dark;
+    --bg: #f5f6f9;
+    --surface: #fbfbfd;
+    --surface-2: #eff1f5;
+    --elevated: #ffffff;
+    --hairline: rgb(12 18 40 / 0.08);
+    --hairline-strong: rgb(12 18 40 / 0.14);
+
+    --ink: #10131c;
+    --ink-2: #3a4152;
+    --muted: #5d6578;
+    --faint: #a3a9b8;
+
+    --accent: #4b5fd9;
+    --accent-soft: rgb(75 95 217 / 0.1);
+
+    --positive: #1a9a83;
+    --positive-ink: #137a68;
+    --negative: #d65a4b;
+    --negative-ink: #b0473a;
+    --neutral: #7a8296;
+
+    --shadow-pop: 0 12px 32px -10px rgb(16 19 28 / 0.18);
+    color-scheme: light;
   }
 }
 
@@ -35,16 +77,33 @@
   --color-bg: var(--bg);
   --color-surface: var(--surface);
   --color-surface-2: var(--surface-2);
-  --color-line: var(--border);
-  --color-ink: var(--text);
+  --color-elevated: var(--elevated);
+  --color-hairline: var(--hairline);
+  --color-hairline-strong: var(--hairline-strong);
+  --color-ink: var(--ink);
+  --color-ink-2: var(--ink-2);
   --color-muted: var(--muted);
+  --color-faint: var(--faint);
   --color-accent: var(--accent);
+  --color-accent-soft: var(--accent-soft);
   --color-positive: var(--positive);
-  --color-neutral: var(--neutral);
+  --color-positive-ink: var(--positive-ink);
   --color-negative: var(--negative);
-  --font-sans: "Segoe UI", system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
+  --color-negative-ink: var(--negative-ink);
+  --color-neutral: var(--neutral);
+
+  --font-sans: "Geist", ui-sans-serif, sans-serif;
+  --font-mono: "Geist Mono", ui-monospace, monospace;
+
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+
+  --shadow-pop: var(--shadow-pop);
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
 }
 
+/* ───────────────────────── Base ───────────────────────── */
 html,
 body,
 #root {
@@ -54,7 +113,48 @@ body,
 body {
   margin: 0;
   background: var(--bg);
-  color: var(--text);
+  color: var(--ink);
   font-family: var(--font-sans);
+  font-feature-settings: "ss01", "cv11";
   -webkit-font-smoothing: antialiased;
+  user-select: none;
+}
+
+::selection {
+  background: var(--accent-soft);
+}
+
+:focus-visible {
+  outline: 1.5px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* Small uppercase mono labels used across the app. */
+.label {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+/* Native-feeling window chrome: drag from the title strip, but keep controls clickable. */
+.drag {
+  -webkit-app-region: drag;
+}
+.no-drag {
+  -webkit-app-region: no-drag;
+}
+
+/* Quiet scrollbars. */
+::-webkit-scrollbar {
+  width: 10px;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--hairline-strong);
+  border: 3px solid var(--bg);
+  border-radius: 999px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
 }
