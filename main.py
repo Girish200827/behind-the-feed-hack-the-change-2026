@@ -1,5 +1,12 @@
+from mss import MSS
+
 def main():
-    print("working on behind the feed!")
+    """
+    grab the screenshot with mss
+    """
+    with MSS() as sct:
+        filename = sct.shot(mon=-1, output='fullscreen.png')
+        print(filename)
 
 if __name__ == "__main__":
     main()
