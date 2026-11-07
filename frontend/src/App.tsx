@@ -3,6 +3,7 @@ import { MotionConfig } from 'motion/react'
 import { Lightbulb, ShieldCheck, Target } from 'lucide-react'
 import Layout from './components/Layout'
 import SessionReport from './pages/SessionReport'
+import TodayPage from './pages/TodayPage'
 import PlaceholderPage from './pages/PlaceholderPage'
 
 // HashRouter so routes work when Electron loads the built index.html from disk.
@@ -13,8 +14,10 @@ export default function App() {
       <HashRouter>
         <Routes>
           <Route element={<Layout />}>
-            <Route index element={<Navigate to="/report" replace />} />
-            <Route path="/report" element={<SessionReport />} />
+            <Route index element={<Navigate to="/today" replace />} />
+            <Route path="/today" element={<TodayPage />} />
+            <Route path="/session/:id" element={<SessionReport />} />
+            <Route path="/report" element={<Navigate to="/today" replace />} />
             <Route
               path="/privacy"
               element={
@@ -45,7 +48,7 @@ export default function App() {
                 />
               }
             />
-            <Route path="*" element={<Navigate to="/report" replace />} />
+            <Route path="*" element={<Navigate to="/today" replace />} />
           </Route>
         </Routes>
       </HashRouter>

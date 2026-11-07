@@ -1,17 +1,20 @@
-import { NavLink } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
 import { motion } from 'motion/react'
 import { Activity, Lightbulb, ShieldCheck, Target, type LucideIcon } from 'lucide-react'
 import { dataSourceName } from '../data'
 import Wordmark from './Wordmark'
 
-const NAV: { to: string; label: string; icon: LucideIcon }[] = [
-  { to: '/report', label: 'Session Report', icon: Activity },
+const NAV: { to: string; label: string; icon: LucideIcon; also?: string[] }[] = [
+  { to: '/today', label: 'Today', icon: Activity, also: ['/session'] },
   { to: '/privacy', label: 'Privacy', icon: ShieldCheck },
   { to: '/insights', label: 'Insights', icon: Lightbulb },
   { to: '/goals', label: 'Goals', icon: Target }
 ]
 
 export default function Sidebar() {
+  const { pathname } = useLocation()
+  const isActive = (item: (typeof NAV)[number]) =>
+    [item.to, ...(item.also ?? [])].some((p) => pathname === p || pathname.startsWith(p + '/'))
   return (
     <aside className="flex w-[224px] shrink-0 flex-col border-r border-hairline">
       <div className="drag flex h-[var(--titlebar-h)] items-center px-5" />
@@ -20,15 +23,18 @@ export default function Sidebar() {
       </div>
 
       <nav className="flex flex-col gap-0.5 px-3">
-        {NAV.map(({ to, label, icon: Icon }) => (
-          <NavLink
+        {NAV.map((item) => {
+          const { to, label, icon: Icon } = item
+          const active = isActive(item)
+          return (
+          <Link
             key={to}
             to={to}
+            aria-current={active ? 'page' : undefined}
             className="group relative flex h-9 items-center gap-3 rounded-md px-3 text-[13px] outline-none transition-colors duration-150 focus-visible:outline-1 focus-visible:outline-accent"
           >
-            {({ isActive }) => (
               <>
-                {isActive && (
+                {active && (
                   <motion.span
                     layoutId="nav-active"
                     className="absolute inset-0 rounded-md border border-hairline bg-surface-2"
@@ -38,19 +44,19 @@ export default function Sidebar() {
                 <Icon
                   size={16}
                   strokeWidth={1.75}
-                  className={`relative transition-colors ${isActive ? 'text-accent' : 'text-muted group-hover:text-ink-2'}`}
+                  className={`relative transition-colors ${active ? 'text-accent' : 'text-muted group-hover:text-ink-2'}`}
                 />
                 <span
                   className={`relative transition-colors ${
-                    isActive ? 'font-medium text-ink' : 'text-muted group-hover:text-ink-2 group-active:text-ink'
+                    active ? 'font-medium text-ink' : 'text-muted group-hover:text-ink-2 group-active:text-ink'
                   }`}
                 >
                   {label}
                 </span>
               </>
-            )}
-          </NavLink>
-        ))}
+          </Link>
+          )
+        })}
       </nav>
 
       <div className="mt-auto flex flex-col gap-3 border-t border-hairline px-5 py-5">

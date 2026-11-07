@@ -1,7 +1,6 @@
 import { useState, type CSSProperties } from 'react'
 import { AnimatePresence, motion } from 'motion/react'
-import { labelFor, type Timeline } from '../../data'
-import type { MoodSwitch } from '../../types/contracts'
+import type { ContextLabel, MoodSwitch } from '../../types/contracts'
 import { capitalize, formatClock } from '../../lib/format'
 import { toneVar } from '../../lib/mood'
 import PlatformIcon from '../PlatformIcon'
@@ -14,7 +13,7 @@ export const clusterChipWidth = (n: number) => 20 + 12 + 8 + (Math.min(n, 5) * 5
 
 interface Props {
   members: MoodSwitch[]
-  timeline: Timeline
+  labelOf: (switchId: string) => ContextLabel | undefined
   active: boolean
   highlightId: string | null
   style: CSSProperties
@@ -25,11 +24,11 @@ interface Props {
 }
 
 /** Several close moments collapsed into one chip; expands into a list on hover or focus. */
-export default function ClusterChip({ members, timeline, active, highlightId, style, bounds, onHighlight, onSelect }: Props) {
+export default function ClusterChip({ members, labelOf, active, highlightId, style, bounds, onHighlight, onSelect }: Props) {
   const [open, setOpen] = useState(false)
   const left = Number(style.left ?? 0)
   const popShift = Math.min(0, bounds - POPOVER_W - left)
-  const tones = members.map((sw) => toneVar(labelFor(timeline, sw.id)?.tone))
+  const tones = members.map((sw) => toneVar(labelOf(sw.id)?.tone))
 
   return (
     <div
@@ -75,7 +74,7 @@ export default function ClusterChip({ members, timeline, active, highlightId, st
           >
             <ul className="rounded-[var(--radius-lg)] border border-hairline-strong bg-elevated p-1.5 shadow-[var(--shadow-pop)]">
               {members.map((sw) => {
-                const label = labelFor(timeline, sw.id)
+                const label = labelOf(sw.id)
                 return (
                   <li key={sw.id}>
                     <button

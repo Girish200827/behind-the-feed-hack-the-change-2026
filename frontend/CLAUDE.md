@@ -120,15 +120,30 @@ Done when: the fake session shows as a mood timeline with switches and labels th
 - Make the Session Report readable on a projector for the demo.
 - Provide a short "How to run the frontend" section for the team README (Giresh owns the README).
 
+## Screens
+- **Today** (`/today?date=YYYY-MM-DD`, default page): one local day across all platforms. Header with day arrows
+  (←/→ keys too), 24 h day strip, day summary, day mood ribbon (sessions side by side on a compressed axis with
+  "2h 10m later" gaps), platform breakdown, sessions list.
+- **Session detail** (`/session/:id`): the single-session report, opened from the day view, with a back link.
+- Data for the day comes from `getDay(date)` in `src/data/day.ts` (groups `getSessions()` by local start day and
+  loads each `getTimeline()`). No new backend fields.
+- `MoodRibbon` takes `segments` + `mode: 'session' | 'day'`; one chart implementation for both screens.
+  Samples are bucketed to ~1.5 px and dot/scrubber y comes from `lib/monotone.ts` (exact d3 monotone maths), so a
+  day of 6 sessions at 1 Hz stays smooth.
+
 ## Mock data
-- `src/mock/events.json` hand-written 10-min Instagram session; `realistic.json` 20-min TikTok session at 1 Hz with
-  jitter, low-confidence dips, 12 switches (one unlabelled); `live.json` a session in progress (`end: null`).
-- Regenerate realistic/live with `node scripts/generate-mock.mjs` (seeded).
+- `src/mock/realistic.json`: a week (7 days x 3-6 sessions) across all five platforms at 1 Hz, with patterns:
+  X news/politics drains, YouTube comedy/food lifts, Instagram friends lift / comparison dips, Facebook family lifts /
+  politics drains, late-night TikTok slowly drains. `live.json`: a session in progress (`end: null`).
+- `src/mock/extra/events.json`: the original hand-written 10-min session. `src/mock/edge/no-samples.json`: edge case.
+- Regenerate with `node scripts/generate-mock.mjs` (seeded). Wall-clock times use a fixed UTC offset
+  (default -6, Calgary as Electron resolves it); override with `MOCK_UTC_OFFSET`.
 - `VITE_MOCK_FILE` picks files: `all` (default, top-level files only) | `none` | comma list of names without extension,
-  e.g. `realistic`, `events,live`, `edge/no-samples`. Shortcuts: `npm run dev:realistic | dev:live | dev:empty | dev:no-samples`.
-- Mock only: a file containing a live session is time-shifted at load so it ends "now". Real data is never shifted.
+  e.g. `realistic`, `extra/events,live`, `edge/no-samples`. Shortcuts: `npm run dev:realistic | dev:live | dev:empty | dev:no-samples`.
+- Mock only, so the demo always shows "today": finished files are shifted by whole days so their newest day is today
+  and anything after now is cut; a live file is shifted to end now. Real API data is never shifted.
 - Chart pipeline (UI only, raw data untouched): drop samples with confidence < 0.4, then a centred 5 s rolling mean
-  (`src/lib/smooth.ts`). The summary strip uses the same chart-ready samples.
+  (`src/lib/smooth.ts`). Summaries use the same chart-ready samples.
 
 ## TODO
 - Pause endpoint must be agreed with Allen and added to contracts.md before wiring (Phase 3).

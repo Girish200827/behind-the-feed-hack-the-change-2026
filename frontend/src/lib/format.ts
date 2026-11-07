@@ -37,3 +37,29 @@ export const isLive = (s: Session) => s.end === null
 
 /** Session length in seconds; a live session counts up to `now`. */
 export const sessionSeconds = (s: Session, now: number) => Math.max(0, (s.end ?? now) - s.start)
+
+/** Compact span like "2h 10m", "45m" or "30s". */
+export function formatSpan(totalSeconds: number) {
+  const s = Math.max(0, Math.round(totalSeconds))
+  if (s < 60) return `${s}s`
+  const m = Math.round(s / 60)
+  if (m < 60) return `${m}m`
+  return m % 60 ? `${Math.floor(m / 60)}h ${m % 60}m` : `${Math.floor(m / 60)}h`
+}
+
+/** "Today", "Yesterday" or "Thu, Nov 5" for a local day key (YYYY-MM-DD). */
+export function formatDayTitle(key: string, today: string) {
+  if (key === today) return 'Today'
+  const [y, m, d] = key.split('-').map(Number)
+  const date = new Date(y, m - 1, d)
+  const [ty, tm, td] = today.split('-').map(Number)
+  const diff = Math.round((new Date(ty, tm - 1, td).getTime() - date.getTime()) / 86400000)
+  if (diff === 1) return 'Yesterday'
+  return date.toLocaleDateString([], { weekday: 'short', month: 'short', day: 'numeric' })
+}
+
+/** "Saturday, November 7" for a day key. */
+export function formatLongDate(key: string) {
+  const [y, m, d] = key.split('-').map(Number)
+  return new Date(y, m - 1, d).toLocaleDateString([], { weekday: 'long', month: 'long', day: 'numeric' })
+}
