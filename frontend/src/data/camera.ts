@@ -12,11 +12,21 @@ export class CameraControl {
   private paused = false
   private listeners = new Set<Listener>()
 
-  constructor(private source: DataSource) {}
+  constructor(
+    private source: DataSource,
+    /** API mode: Allen's GET /status ({ scrolling }). Returns null when the backend can't be reached. */
+    private scrolling?: () => Promise<{ scrolling: boolean } | null>
+  ) {}
 
   async getStatus(): Promise<CameraStatus> {
     if (this.paused) return 'paused'
-    // A live session (end = null) means Instagram, TikTok, YouTube, X or Facebook is the active window.
+    // Backend detector: a social platform is in front, so the camera may run.
+    if (this.scrolling) {
+      // API mode: the backend decides. If it can't be reached, the camera isn't running either.
+      const fromBackend = await this.scrolling()
+      return fromBackend?.scrolling ? 'watching' : 'off'
+    }
+    // Otherwise a live session (end = null) means Instagram, TikTok, YouTube, X or Facebook is the active window.
     const sessions = await this.source.getSessions().catch(() => [])
     return sessions.some((s) => s.end === null) ? 'watching' : 'off'
   }

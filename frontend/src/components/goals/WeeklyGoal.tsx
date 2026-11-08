@@ -1,29 +1,26 @@
-import type { WeekComparison } from '../../data'
-import { capitalize, formatSpan, platformName } from '../../lib/format'
+import type { WeekComparison, WeeklyGoalInfo } from '../../data'
+import { capitalize, formatSpan } from '../../lib/format'
 
 /**
- * The weekly goal. It will come from Allen's insights (A5) with Giresh's wording (G4); until those are connected
- * it's computed on this device from the same pattern, with template wording.
+ * This week's goal. The text comes from Allen's GET /goal (A5; Giresh's G4 may reword it there). Without the
+ * backend it's the same template computed on this device. The progress bar compares drained time with last week.
  */
-export default function WeeklyGoal({ week }: { week: WeekComparison }) {
-  const drain = week.topDrain
-  const title = drain
-    ? `Swap one ${drain.p ? platformName(drain.p) : ''} session a day for something that lifts you`.replace('  ', ' ')
-    : 'Notice which content lifts you, and choose more of it'
-  const ratio = week.lastWeekDrainedSeconds > 0 ? week.thisWeekDrainedSeconds / week.lastWeekDrainedSeconds : null
+export default function WeeklyGoal({ goal, week }: { goal: WeeklyGoalInfo; week: WeekComparison | null }) {
+  const ratio = week && week.lastWeekDrainedSeconds > 0 ? week.thisWeekDrainedSeconds / week.lastWeekDrainedSeconds : null
   return (
     <section className="rounded-[var(--radius-lg)] border border-hairline bg-surface px-8 py-7">
-      <div className="label">This week</div>
-      <h2 className="mt-2 text-[22px] font-medium tracking-[-0.01em] text-ink">{title}</h2>
-      <p className="mt-1 text-[13px] text-muted">
-        {drain
-          ? `Pattern: ${capitalize(drain.c)}${drain.p ? ` on ${platformName(drain.p)}` : ''} brought your mood down most often this week${
-              week.topLift ? `, while ${week.topLift} lifted it.` : '.'
-            }`
-          : 'Not enough data yet to spot a pattern.'}
-      </p>
+      <div className="flex items-center gap-3">
+        <span className="label">This week</span>
+        {goal.category && (
+          <span className="rounded-full border border-hairline px-2 py-0.5 font-mono text-[10px] uppercase tracking-[0.12em] text-muted">
+            {capitalize(goal.category)}
+            {goal.triggerScore !== null && ` · ${Math.round(goal.triggerScore * 100)}% trigger`}
+          </span>
+        )}
+      </div>
+      <h2 className="mt-3 max-w-3xl text-[20px] font-medium leading-snug tracking-[-0.01em] text-ink">{goal.text}</h2>
 
-      {ratio !== null && (
+      {ratio !== null && week && (
         <div className="mt-6">
           <div className="flex items-baseline justify-between font-mono text-[12px]">
             <span className="text-muted">Drained time</span>
@@ -40,7 +37,9 @@ export default function WeeklyGoal({ week }: { week: WeekComparison }) {
           </div>
         </div>
       )}
-      <p className="mt-5 text-[11px] text-faint">Weekly goal computed on this device until the insights service (A5) is connected.</p>
+      <p className="mt-5 text-[11px] text-faint">
+        {goal.source === 'api' ? 'From your insights: the content that most often brought your mood down.' : 'Computed on this device from the same pattern (demo data or service offline).'}
+      </p>
     </section>
   )
 }

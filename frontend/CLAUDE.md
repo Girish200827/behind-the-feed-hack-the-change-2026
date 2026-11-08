@@ -131,6 +131,28 @@ Done when: the fake session shows as a mood timeline with switches and labels th
   Samples are bucketed to ~1.5 px and dot/scrubber y comes from `lib/monotone.ts` (exact d3 monotone maths), so a
   day of 6 sessions at 1 Hz stays smooth.
 
+## Live data (Phase 3 / L4)
+- `npm run dev:api` reads Allen's local API at `http://127.0.0.1:8000` (`VITE_API_URL` to override; CSP in index.html
+  must allow it). Endpoints per backend/README.md: `GET /sessions`, `GET /sessions/{id}/timeline`, `GET /status`.
+- Adapter in `src/data/apiSource.ts`: his timeline key `emotions` → our `samples`; every event validated with the
+  contract checks. `end: null` = live session (matches his Session model).
+- `ResilientSource`: if the API can't be reached, falls back to MockSource and the title strip shows
+  "Backend offline – showing demo data" (sidebar Data pill: Live / Offline). It retries on every poll and recovers.
+- Polling (`hooks/usePolled.ts`): session list / today every 5 s; a live timeline every 2 s; state only updates when
+  a fingerprint changes.
+- Camera pill in API mode uses `GET /status` (`scrolling` → Watching, else Off; unreachable → Off). Pause is still
+  local only (no pause endpoint yet).
+- The loader also accepts a single timeline object ({session, emotions, switches, labels}), so Allen's
+  `fake_session.json` can be dropped into `src/mock/` as-is.
+
+## Insights and weekly goal (C4)
+- `getInsights()` / `getWeeklyGoal()` (`src/data/index.ts`): Allen's `GET /insights` and `GET /goal` when the
+  backend is reachable; otherwise `src/data/insights.ts` computes the same numbers locally (same definitions and goal
+  template as backend/app/insights.py), so the pages never break.
+- Average mood per platform is computed in the frontend from the timelines (his platform_mix has no valence).
+- Insights page: 2–3 plain-language cards, top-triggers bars (top one in coral), platform mix. Goals page: weekly goal
+  text from /goal (Giresh's G4 wording lands there), with the drained-time bar vs last week.
+
 ## Well-being features (frontend-only; no contracts.md changes)
 - **Daily social goal** (`src/data/dailyGoal.ts`, pure + tested): picked from yesterday's sessions. Connection
   ("Swap one scroll session for a call or text" / "Message a friend before opening <platform>"), Timing ("No scrolling

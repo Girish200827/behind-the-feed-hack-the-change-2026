@@ -1,35 +1,21 @@
-import { useEffect, useState } from 'react'
 import { getSessions, getTimeline, type Timeline } from '../data'
+import { POLL_LIVE_MS, POLL_SESSIONS_MS } from '../data/constants'
 import type { Session } from '../types/contracts'
+import { usePolled, type Load } from './usePolled'
+import { timelineSig } from './useDay'
 
-type Load<T> = { status: 'loading' } | { status: 'error'; message: string } | { status: 'ready'; data: T }
-
+/** All sessions, refreshed every 5 s so new and ended sessions show up. */
 export function useSessions(): Load<Session[]> {
-  const [state, setState] = useState<Load<Session[]>>({ status: 'loading' })
-  useEffect(() => {
-    let alive = true
-    getSessions()
-      .then((data) => alive && setState({ status: 'ready', data }))
-      .catch((e: Error) => alive && setState({ status: 'error', message: e.message }))
-    return () => {
-      alive = false
-    }
-  }, [])
-  return state
+  return usePolled('sessions', getSessions, {
+    signature: (list) => list.map((s) => `${s.id}:${s.end}`).join('|'),
+    interval: () => POLL_SESSIONS_MS
+  })
 }
 
+/** One session's timeline, refreshed every 2 s while the session is still live. */
 export function useTimeline(sessionId: string | undefined): Load<Timeline | null> {
-  const [state, setState] = useState<Load<Timeline | null>>({ status: 'loading' })
-  useEffect(() => {
-    if (!sessionId) return
-    let alive = true
-    setState({ status: 'loading' })
-    getTimeline(sessionId)
-      .then((data) => alive && setState({ status: 'ready', data }))
-      .catch((e: Error) => alive && setState({ status: 'error', message: e.message }))
-    return () => {
-      alive = false
-    }
-  }, [sessionId])
-  return state
+  return usePolled(sessionId, () => getTimeline(sessionId ?? ''), {
+    signature: (t) => (t ? timelineSig(t) : 'none'),
+    interval: (t) => (t && t.session.end === null ? POLL_LIVE_MS : null)
+  })
 }

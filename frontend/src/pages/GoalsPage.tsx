@@ -1,6 +1,7 @@
 import { todayKey } from '../data'
 import { useDailyGoal } from '../hooks/useDailyGoal'
 import { useWeek } from '../hooks/useWeek'
+import { useWeeklyGoal } from '../hooks/useInsights'
 import DailyGoalCard from '../components/goals/DailyGoalCard'
 import WeeklyGoal from '../components/goals/WeeklyGoal'
 import Notice from '../components/Notice'
@@ -14,6 +15,7 @@ export default function GoalsPage() {
   const today = todayKey()
   const { state, toggleCheckIn } = useDailyGoal(today)
   const week = useWeek(today)
+  const weeklyGoal = useWeeklyGoal()
 
   return (
     <section className="flex flex-col gap-10">
@@ -35,7 +37,7 @@ export default function GoalsPage() {
 
       <div>
         <h2 className="label mb-4">Weekly goal</h2>
-        {week ? <WeeklyGoal week={week} /> : <div className="h-[180px]" />}
+        {weeklyGoal ? <WeeklyGoal goal={weeklyGoal} week={week} /> : <div className="h-[180px]" />}
       </div>
 
       {week && week.thisWeekDrainedShare > SUPPORT_THRESHOLD && <SupportNearby />}
