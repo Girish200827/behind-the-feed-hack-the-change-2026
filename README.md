@@ -28,7 +28,7 @@ On macOS, quit and reopen the app after allowing Screen Recording. If something 
 
 ## Landing page (`landing/`)
 
-The download site: Astro, deployed on AWS Amplify (build settings in `amplify.yml` at the repo root, app root `landing`). Downloads sit behind an **Auth0** login: "Log in to download" opens Auth0's login page, and after you sign in the page shows your name and the Windows/macOS installers.
+The download site: Astro, deployed on AWS Amplify (build settings in `amplify.yml` at the repo root, app root `landing`). Downloads sit behind an **Auth0** login: clicking a download button while signed out opens a "Log in to download" modal, Continue goes to Auth0's login page, and after you sign in the installer you picked starts downloading. Signed in, the buttons download directly.
 
 - Run locally: `cd landing && cp .env.example .env` (fill in the Auth0 Domain and Client ID), then `npm install && npm run dev`.
 - Auth0 setup: a Single Page Application with the site URL (and `http://localhost:4321`) in Allowed Callback URLs, Allowed Logout URLs and Allowed Web Origins.
