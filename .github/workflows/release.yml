@@ -23,7 +23,7 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - os: macos-14
+          - os: macos-latest # Apple Silicon (arm64) runner
             engine: engine/dist/behindfeed-engine/behindfeed-engine
             installer: frontend/dist/BehindFeed-mac-arm64.dmg
           - os: windows-latest
