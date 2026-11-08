@@ -1,5 +1,5 @@
 """Where events go: the screen, events.jsonl, and later Allen's endpoint (L2)
-and Giresh's grab-and-label function (L1).
+and Girish's grab-and-label function (L1).
 
 Each line in events.jsonl is exactly one contracts.md object. contracts.md has
 no "type" key, so a reader tells formats apart by their keys (emotion_sample has
@@ -85,7 +85,7 @@ class EventSink:
 
 
 class SwitchHook:
-    """L1: call Giresh's function, e.g. "screen.label:grab_and_label", for every mood_switch.
+    """L1: call Girish's function, e.g. "screen.label:grab_and_label", for every mood_switch.
 
     The function gets the mood_switch dict and should return a context_label dict
     (or None). It runs in a background thread so the camera never waits for it.

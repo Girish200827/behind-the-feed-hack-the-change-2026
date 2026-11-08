@@ -1,5 +1,5 @@
 // Electron main process: opens the dashboard window, posts Circle messages to Discord and shows notifications.
-// No camera, no screen capture, no window detection here (those belong to Raad, Giresh and Allen).
+// No camera, no screen capture, no window detection here (those belong to Raad, Girish and Allen).
 import { app, BrowserWindow, ipcMain, nativeTheme, Notification, shell } from 'electron'
 import { execFile, spawn, type ChildProcess } from 'node:child_process'
 import { appendFileSync, closeSync, mkdirSync, openSync } from 'node:fs'

@@ -99,7 +99,7 @@ def insights() -> dict[str, Any]:
 
 
 def goal() -> dict[str, Any]:
-    """Pick one plain weekly goal from the top trigger. Template text; Giresh (G4) may reword it."""
+    """Pick one plain weekly goal from the top trigger. Template text; Girish (G4) may reword it."""
     triggers = [t for t in trigger_scores() if t["switches"] >= MIN_SWITCHES_FOR_GOAL and t["negative"] > 0]
     if triggers:
         top = triggers[0]

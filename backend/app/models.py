@@ -29,7 +29,7 @@ class EmotionSample(_Strict):
 
 
 class MoodSwitch(_Strict):
-    """Raad -> Giresh, Allen, when a new mood holds 2 s."""
+    """Raad -> Girish, Allen, when a new mood holds 2 s."""
 
     id: str
     ts: float
@@ -39,7 +39,7 @@ class MoodSwitch(_Strict):
 
 
 class ContextLabel(_Strict):
-    """Giresh -> Allen, one per switch. Never carries the image."""
+    """Girish -> Allen, one per switch. Never carries the image."""
 
     switch_id: str
     ts: float

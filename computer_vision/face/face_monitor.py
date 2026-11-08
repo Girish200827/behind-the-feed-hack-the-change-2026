@@ -411,7 +411,7 @@ def fake_probs(target: str, rng: random.Random) -> dict:
 
 
 def run_fake(args, pipe: Pipeline) -> None:
-    """Scripted moods through the real tracker, so Giresh and Allen can test without a camera."""
+    """Scripted moods through the real tracker, so Girish and Allen can test without a camera."""
     rng = random.Random(7)
     step = 1.0 / args.fps
     t = time.time()
@@ -455,7 +455,7 @@ def parse_args(argv=None):
     ap.add_argument("--api", metavar="URL", help="L2+L3: Allen's backend, e.g. http://127.0.0.1:8000: store every "
                     "event there, and run the camera only while it says you are scrolling and not paused")
     ap.add_argument("--post", metavar="URL", help="L2: also POST each event to this URL (set by --api)")
-    ap.add_argument("--on-switch", metavar="MODULE:FUNC", help="L1: call Giresh's labeller, e.g. screen.label:grab_and_label")
+    ap.add_argument("--on-switch", metavar="MODULE:FUNC", help="L1: call Girish's labeller, e.g. screen.label:grab_and_label")
     ap.add_argument("--gate-file", metavar="PATH", help="L3: camera on only while this file exists")
     ap.add_argument("--screen", action="store_true", help="L1: grab the screen at each mood switch and label it with Gemini (../screen)")
     ap.add_argument("--screen-backend", default="gemini", choices=["gemini", "fake"], help="fake = canned labels, no API key")
@@ -519,7 +519,7 @@ def main(argv=None) -> None:
 
 
 def make_screen_hook(args, sink: EventSink):
-    """L1: Giresh's ScreenLabeler from ../screen, feeding context_label events into the same sink."""
+    """L1: Girish's ScreenLabeler from ../screen, feeding context_label events into the same sink."""
     repo_root = os.path.dirname(HERE)
     if repo_root not in sys.path:
         sys.path.insert(0, repo_root)

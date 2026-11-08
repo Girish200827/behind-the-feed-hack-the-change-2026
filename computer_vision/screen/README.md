@@ -1,4 +1,4 @@
-# screen: what was on screen at each mood switch (Giresh's part)
+# screen: what was on screen at each mood switch (Girish's part)
 
 At every `mood_switch` from the face part, this grabs the window in front, in memory, and asks Gemini what the content is. It returns one `context_label` per switch, in the `contracts.md` format:
 

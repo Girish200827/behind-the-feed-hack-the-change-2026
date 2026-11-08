@@ -1,5 +1,5 @@
 // Daily social well-being goal: pure functions, no storage and no fetching (see goals.ts for that).
-// Frontend-only. The weekly goal from Allen's A5 / Giresh's G4 is separate.
+// Frontend-only. The weekly goal from Allen's A5 / Girish's G4 is separate.
 //
 // Flow: yesterday's sessions → computeDayStats → selectDailyGoal → today's goal.
 //       today's sessions + check-in → evaluateGoal → status and progress.

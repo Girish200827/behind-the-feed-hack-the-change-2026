@@ -1,4 +1,4 @@
-"""Giresh's part: screen grab in memory -> context_label (G1, G2, G3, L1).
+"""Girish's part: screen grab in memory -> context_label (G1, G2, G3, L1).
 
 Real-time design (runs next to the face monitor):
   while the camera is on: keep the last ~2.5 s of the window in front in memory

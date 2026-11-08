@@ -20,7 +20,7 @@ export interface EmotionSample {
   confidence: number
 }
 
-/** Raad → Giresh, Allen; when a new mood holds 2 s. */
+/** Raad → Girish, Allen; when a new mood holds 2 s. */
 export interface MoodSwitch {
   id: string
   ts: number
@@ -29,7 +29,7 @@ export interface MoodSwitch {
   platform: Platform
 }
 
-/** Giresh → Allen; one per switch, never the image. */
+/** Girish → Allen; one per switch, never the image. */
 export interface ContextLabel {
   switch_id: string
   ts: number

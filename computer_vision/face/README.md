@@ -36,7 +36,7 @@ The face detector model is already in `models/`. Setup downloads the emotion mod
 |---|---|
 | `python face_monitor.py --preview` | Normal run with a camera window. Keep a relaxed face for the first 8 seconds (calibration), then make faces. |
 | `python face_monitor.py --preview --reuse-baseline` | Skip calibration and reuse the last one (good for the demo). |
-| `python face_monitor.py --fake --fake-speed 5` | No camera: plays 89 seconds of scripted moods through the same logic. Giresh and Allen can test against this. |
+| `python face_monitor.py --fake --fake-speed 5` | No camera: plays 89 seconds of scripted moods through the same logic. Girish and Allen can test against this. |
 | `python -m pytest -q` | Runs the tests (18). |
 
 **Stage 2 "done when" test:** run with `--preview`, wait for "Calibrated", then smile widely and hold it. A `mood_switch ... "to": "happy"` line should appear in about 1 second. The bottom bar of the preview shows camera speed, faces analysed per second and model time.
@@ -67,7 +67,7 @@ The face detector model is already in `models/`. Setup downloads the emotion mod
 | `detector.py` | R1 | Finds the largest face with OpenCV's YuNet detector, crops it |
 | `emotion_model.py` | R2 | Face crop to probabilities over the 7 contract emotions, plus valence |
 | `mood.py` | R3 | Smoothing, calibration, 2-second hold, 10-second cooldown, builds the events |
-| `events.py` | L1, L2 | Prints, writes `events.jsonl`, posts to Allen, calls Giresh's function |
+| `events.py` | L1, L2 | Prints, writes `events.jsonl`, posts to Allen, calls Girish's function |
 | `face_monitor.py` | | The program: camera loop, fake mode, command-line flags |
 | `landmarks.py` | R2 | MediaPipe face landmarker: measures the smile and brow raise directly, fused into the emotion scores |
 | `platforms.py` | | Which platform is in front, from the window title (read locally, never sent) |
@@ -83,7 +83,7 @@ The face detector model is already in `models/`. Setup downloads the emotion mod
 https://storage.googleapis.com/mediapipe-models/face_landmarker/face_landmarker/float16/latest/face_landmarker.task
 and save it in the face folder.
 
-## With screen labels (Giresh's part)
+## With screen labels (Girish's part)
 
 `run_with_screen.bat` (or `--screen`) also grabs the window in front at each mood switch and labels it with Gemini; see `../screen/README.md`. `--screen-backend fake` tests the wiring without an API key.
 
@@ -96,7 +96,7 @@ and save it in the face folder.
 
 ## Connecting at 7 PM (older notes)
 
-- **L1 (to Giresh):** Giresh puts a function `grab_and_label(switch: dict) -> dict` in `screen/label.py` that returns a `context_label`. Run with `--on-switch screen.label:grab_and_label`. It runs in a background thread for each switch; the returned label is printed and saved too.
+- **L1 (to Girish):** Girish puts a function `grab_and_label(switch: dict) -> dict` in `screen/label.py` that returns a `context_label`. Run with `--on-switch screen.label:grab_and_label`. It runs in a background thread for each switch; the returned label is printed and saved too.
 - **L2 (to Allen):** add `--post http://127.0.0.1:8000/events` (use Allen's real address). Same JSON, new destination. If Allen wants a `"type"` key to tell formats apart, agree it with the team and set `ADD_TYPE_FIELD = True` in `events.py`.
 - **L3 (from Allen):** add `--gate-file ..\session.flag`. The camera (and its light) is on only while that file exists. Allen's detector writes the platform name (for example `instagram`) into it when a session starts and deletes it when the session ends.
 
