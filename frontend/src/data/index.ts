@@ -21,6 +21,17 @@ export const setCheckIn = (date: DayKey, value: boolean) => goals.setCheckIn(dat
 export const getWeekComparison = (date: DayKey) => goals.getWeekComparison(date)
 
 export { labelFor, type Timeline } from './join'
+// Scroll Circle (Discord webhook via the main process).
+export {
+  getCircleSettings,
+  getSampleCircleFeed,
+  getSentLog,
+  saveCircleSettings,
+  shareToCircle,
+  type CircleSample,
+  type CircleSettings,
+  type SentItem
+} from './circle'
 export type { DailyGoal, GoalProgress, GoalStatus, GoalType } from './dailyGoal'
 export type { DailyGoalView, WeekComparison } from './goals'
 export { addDays, dayEnd, dayKey, dayStart, isDayKey, todayKey, type Day, type DayKey } from './day'

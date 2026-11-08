@@ -7,7 +7,8 @@ const TITLES: Record<string, string> = {
   '/session': 'Session',
   '/privacy': 'Privacy',
   '/insights': 'Insights',
-  '/goals': 'Goals'
+  '/goals': 'Goals',
+  '/circle': 'Circle'
 }
 
 export default function Layout() {

@@ -1,6 +1,6 @@
 import { Link, useLocation } from 'react-router-dom'
 import { motion } from 'motion/react'
-import { Activity, Lightbulb, ShieldCheck, Target, type LucideIcon } from 'lucide-react'
+import { Activity, Lightbulb, ShieldCheck, Target, Users, type LucideIcon } from 'lucide-react'
 import { dataSourceName } from '../data'
 import Wordmark from './Wordmark'
 
@@ -8,7 +8,8 @@ const NAV: { to: string; label: string; icon: LucideIcon; also?: string[] }[] = 
   { to: '/today', label: 'Today', icon: Activity, also: ['/session'] },
   { to: '/privacy', label: 'Privacy', icon: ShieldCheck },
   { to: '/insights', label: 'Insights', icon: Lightbulb },
-  { to: '/goals', label: 'Goals', icon: Target }
+  { to: '/goals', label: 'Goals', icon: Target },
+  { to: '/circle', label: 'Circle', icon: Users }
 ]
 
 export default function Sidebar() {

@@ -1,7 +1,20 @@
-// Electron main process: opens the dashboard window. Nothing else.
+// Electron main process: opens the dashboard window, posts Circle messages to Discord and shows notifications.
 // No camera, no screen capture, no window detection here (those belong to Raad, Giresh and Allen).
-import { app, BrowserWindow, nativeTheme, shell } from 'electron'
+import { app, BrowserWindow, ipcMain, nativeTheme, Notification, shell } from 'electron'
 import { join } from 'node:path'
+import { sendWebhook } from './discord'
+
+// Windows only shows native notifications for apps with an AppUserModelID.
+app.setAppUserModelId('com.scrollmood.app')
+
+// Circle: the renderer can't call Discord directly (CORS), so it asks us. URL and payload are validated in sendWebhook.
+ipcMain.handle('circle:send', (_e, url: unknown, payload: unknown) => sendWebhook(String(url ?? ''), payload))
+
+// Connect-instead nudges: a gentle native notification.
+ipcMain.handle('notify', (_e, title: unknown, body: unknown) => {
+  if (!Notification.isSupported()) return
+  new Notification({ title: String(title).slice(0, 80), body: String(body).slice(0, 240), silent: false }).show()
+})
 
 // Keep in sync with --bg / --muted / --titlebar-h in src/index.css.
 const THEME = {

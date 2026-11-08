@@ -6,6 +6,7 @@ import SessionReport from './pages/SessionReport'
 import TodayPage from './pages/TodayPage'
 import PlaceholderPage from './pages/PlaceholderPage'
 import GoalsPage from './pages/GoalsPage'
+import CirclePage from './pages/CirclePage'
 
 // HashRouter so routes work when Electron loads the built index.html from disk.
 // MotionConfig "user" turns transform/layout animations off under prefers-reduced-motion.
@@ -40,6 +41,7 @@ export default function App() {
               }
             />
             <Route path="/goals" element={<GoalsPage />} />
+            <Route path="/circle" element={<CirclePage />} />
             <Route path="*" element={<Navigate to="/today" replace />} />
           </Route>
         </Routes>
