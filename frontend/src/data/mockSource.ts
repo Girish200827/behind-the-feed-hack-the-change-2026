@@ -15,8 +15,15 @@ const files = import.meta.glob('../mock/**/*.{json,jsonl}', {
 /** '../mock/edge/no-samples.json' → 'edge/no-samples' */
 const nameOf = (path: string) => path.replace('../mock/', '').replace(/\.jsonl?$/, '')
 
+// Files in src/mock/ that are not session events (read elsewhere in the data layer).
+const NOT_EVENTS = new Set(['openreferral'])
+
 const selected = Object.entries(files).filter(([path]) =>
-  MOCK_FILES === 'all' ? !nameOf(path).includes('/') : MOCK_FILES.includes(nameOf(path))
+  NOT_EVENTS.has(nameOf(path))
+    ? false
+    : MOCK_FILES === 'all'
+      ? !nameOf(path).includes('/')
+      : MOCK_FILES.includes(nameOf(path))
 )
 if (MOCK_FILES !== 'all') {
   const missing = MOCK_FILES.filter((n) => !selected.some(([p]) => nameOf(p) === n))

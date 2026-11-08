@@ -4,7 +4,7 @@ import { Sunrise, Waves } from 'lucide-react'
 import { addDays, dayEnd, dayStart, isDayKey, todayKey, type DayKey } from '../data'
 import { useDay } from '../hooks/useDay'
 import { useNow } from '../hooks/useNow'
-import { smoothSamples } from '../lib/smooth'
+import { DAY_SMOOTH_WINDOW_S, smoothSamples } from '../lib/smooth'
 import { formatDayTitle, isLive, sessionSeconds } from '../lib/format'
 import DayHeader from '../components/day/DayHeader'
 import DayStrip from '../components/day/DayStrip'
@@ -13,6 +13,8 @@ import PlatformBreakdown from '../components/day/PlatformBreakdown'
 import SessionsList from '../components/day/SessionsList'
 import MoodRibbon, { type RibbonSegment } from '../components/report/MoodRibbon'
 import EmptyState from '../components/EmptyState'
+import DailyGoalCard from '../components/goals/DailyGoalCard'
+import { useDailyGoal } from '../hooks/useDailyGoal'
 import Notice from '../components/Notice'
 
 /** The main screen: one local day across all platforms. */
@@ -23,6 +25,7 @@ export default function TodayPage() {
   const param = params.get('date')
   const date: DayKey = isDayKey(param) && param <= today ? param : today
   const day = useDay(date)
+  const goal = useDailyGoal(date)
   const [highlightId, setHighlightId] = useState<string | null>(null)
 
   const goTo = (d: DayKey) => setParams(d === today ? {} : { date: d })
@@ -44,9 +47,9 @@ export default function TodayPage() {
     return () => window.removeEventListener('keydown', onKey)
   })
 
-  // Chart-ready samples per session: low-confidence dropped, ~5 s rolling mean. Raw data stays untouched.
+  // Chart-ready samples per session: low-confidence dropped, ~18 s centred rolling mean. Raw data stays untouched.
   const items: RibbonSegment[] = useMemo(
-    () => (day.status === 'ready' ? day.data.timelines.map((t) => ({ timeline: t, samples: smoothSamples(t.samples) })) : []),
+    () => (day.status === 'ready' ? day.data.timelines.map((t) => ({ timeline: t, samples: smoothSamples(t.samples, DAY_SMOOTH_WINDOW_S) })) : []),
     [day]
   )
   const live = items.some((it) => isLive(it.timeline.session))
@@ -54,8 +57,12 @@ export default function TodayPage() {
   const totalSeconds = items.reduce((a, it) => a + sessionSeconds(it.timeline.session, now), 0)
 
   return (
-    <section className="flex flex-col gap-10">
+    <section className="flex flex-col gap-7">
       <DayHeader date={date} today={today} totalSeconds={totalSeconds} onStep={step} onToday={() => goTo(today)} />
+
+      {goal.state.status === 'ready' && (
+        <DailyGoalCard view={goal.state.data} isToday={date === today} onCheckIn={goal.toggleCheckIn} />
+      )}
 
       {day.status === 'loading' && <div className="h-[640px]" />}
       {day.status === 'error' && <Notice>This day could not be loaded. {day.message}</Notice>}
@@ -73,10 +80,8 @@ export default function TodayPage() {
       {day.status === 'ready' && items.length > 0 && (
         <>
           <DayStrip start={dayStart(date)} end={dayEnd(date)} items={items} now={now} onOpen={open} />
-          <DaySummary items={items} totalSeconds={totalSeconds} />
-
           <div>
-            <h2 className="label mb-4">Mood across the day</h2>
+            <h2 className="label mb-3">Mood across the day</h2>
             <MoodRibbon
               segments={items}
               mode="day"
@@ -85,6 +90,8 @@ export default function TodayPage() {
               onSelect={(_, sessionId) => open(sessionId)}
             />
           </div>
+
+          <DaySummary items={items} totalSeconds={totalSeconds} />
 
           <div>
             <h2 className="label mb-2">Platforms</h2>

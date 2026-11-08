@@ -12,10 +12,10 @@ import type { ContextLabel, EmotionSample, MoodSwitch } from '../../types/contra
 import { useElementWidth, useFontsReady } from '../../hooks/useElementWidth'
 import { useNow } from '../../hooks/useNow'
 import { capitalize, formatClock, formatSpan, formatValence, isLive, platformName } from '../../lib/format'
-import { layoutLane } from '../../lib/laneLayout'
+import { layoutLane, layoutSessionLanes } from '../../lib/laneLayout'
 import { monotoneSampler } from '../../lib/monotone'
 import { emotionTone, toneVar } from '../../lib/mood'
-import { PulseDot } from '../LivePill'
+import LivePill, { PulseDot } from '../LivePill'
 import PlatformIcon from '../PlatformIcon'
 import MomentChip from './MomentChip'
 import ClusterChip, { clusterChipWidth } from './ClusterChip'
@@ -24,6 +24,9 @@ import ClusterChip, { clusterChipWidth } from './ClusterChip'
 const CHART_H = 340
 const PAD_TOP = 24
 const PAD_BOTTOM = 20
+// Day view: shorter panels so the whole ribbon fits on a 1080p screen; padding keeps peaks inside the panels.
+const DAY_CHART_H = 228
+const DAY_PAD = 16
 const LEFT = 32
 const RIGHT = 16
 const LANE_GAP = 20
@@ -104,19 +107,32 @@ function Ribbon({ width, segments, mode, highlightId, onHighlight, onSelect }: P
   const fontsReady = useFontsReady()
   const live = segments.some((s) => isLive(s.timeline.session))
   const now = useNow(live)
-  const top = mode === 'day' ? SEG_HEADER_H : 0
-  const chartBottom = top + CHART_H
+  const day = mode === 'day'
+  const top = day ? SEG_HEADER_H : 0
+  const chartH = day ? DAY_CHART_H : CHART_H
+  const chartBottom = top + chartH
 
-  const y = useMemo(() => scaleLinear().domain([-1, 1]).range([chartBottom - PAD_BOTTOM, top + PAD_TOP]), [top, chartBottom])
+  // Valence is clamped to -1..1, with padding so peaks never touch the panel edges.
+  const y = useMemo(
+    () =>
+      scaleLinear()
+        .domain([-1, 1])
+        .range([chartBottom - (day ? DAY_PAD : PAD_BOTTOM), top + (day ? DAY_PAD : PAD_TOP)])
+        .clamp(true),
+    [top, chartBottom, day]
+  )
   const zeroY = y(0)
 
+  // In the day view a live session is sized by the time its readings cover (like the others), so it never shows
+  // an empty box; the single-session view runs the axis up to now.
+  const liveEnd = day ? 0 : now
   // Each segment gets a minimum width plus a share of the rest proportional to its duration.
   const segs = useMemo(() => {
     const n = segments.length
     const avail = width - LEFT - RIGHT - SEG_GAP * (n - 1)
     const ranges = segments.map(({ timeline: t }) => {
       const last = t.samples.length ? t.samples[t.samples.length - 1].ts : t.session.start
-      const end = t.session.end ?? Math.max(now, last)
+      const end = t.session.end ?? Math.max(liveEnd, last)
       return { start: t.session.start, end: Math.max(end, t.session.start + 1) }
     })
     const total = ranges.reduce((a, r) => a + (r.end - r.start), 0)
@@ -133,7 +149,7 @@ function Ribbon({ width, segments, mode, highlightId, onHighlight, onSelect }: P
       const toTs = (px: number) => start + (px - x0) / k
       return { ...sg, i, start, end, x0, x1, toX, toTs, pts: bucket(sg.samples, toX) }
     })
-  }, [segments, width, now])
+  }, [segments, width, liveEnd])
 
   const paths = useMemo(
     () =>
@@ -175,20 +191,29 @@ function Ribbon({ width, segments, mode, highlightId, onHighlight, onSelect }: P
   const chipEls = useRef(new Map<string, HTMLElement>())
   const [chipW, setChipW] = useState<Record<string, number>>({})
 
-  const groups = useMemo(
-    () =>
-      layoutLane(
-        moments.map((m) => m.sw),
-        {
-          xOf: (sw) => momentOf.get(sw.id)?.x ?? 0,
-          singleWidth: (sw) => chipW[sw.id] ?? estimateChipWidth(sw, labels.get(sw.id)),
-          clusterWidth: clusterChipWidth,
-          minLeft: LEFT - 8,
-          maxRight: width - RIGHT
-        }
-      ),
-    [moments, momentOf, chipW, labels, width, fontsReady]
-  )
+  const groups = useMemo(() => {
+    const singleWidth = (sw: MoodSwitch) => chipW[sw.id] ?? estimateChipWidth(sw, labels.get(sw.id))
+    // Day view: each session's chips sit under its own panel, starting at the panel's left edge.
+    if (day)
+      return layoutSessionLanes(
+        segs.map((s, i) => ({
+          switches: s.timeline.switches,
+          x0: s.x0,
+          maxRight: segs[i + 1] ? segs[i + 1].x0 - 12 : width - RIGHT
+        })),
+        { singleWidth, clusterWidth: clusterChipWidth, chartRight: width - RIGHT }
+      )
+    return layoutLane(
+      moments.map((m) => m.sw),
+      {
+        xOf: (sw) => momentOf.get(sw.id)?.x ?? 0,
+        singleWidth,
+        clusterWidth: clusterChipWidth,
+        minLeft: LEFT - 8,
+        maxRight: width - RIGHT
+      }
+    )
+  }, [day, segs, moments, momentOf, chipW, labels, width, fontsReady])
 
   useLayoutEffect(() => {
     const next: Record<string, number> = {}
@@ -199,9 +224,9 @@ function Ribbon({ width, segments, mode, highlightId, onHighlight, onSelect }: P
   }, [groups, fontsReady]) // re-measure only when the chips on screen change
 
   const rows = Math.max(1, ...groups.map((g) => g.row + 1))
-  const laneTop = chartBottom + LANE_GAP
+  const laneTop = chartBottom + (day ? 12 : LANE_GAP)
   const axisTop = laneTop + rows * ROW_PITCH
-  const totalH = axisTop + (mode === 'session' ? 32 : 8)
+  const totalH = axisTop + (mode === 'session' ? 32 : 0)
 
   // Hover scrubber
   const [hover, setHover] = useState<{ seg: number; x: number } | null>(null)
@@ -249,7 +274,7 @@ function Ribbon({ width, segments, mode, highlightId, onHighlight, onSelect }: P
               <g key={s.timeline.session.id}>
                 {/* In the day view, a barely-lifted band marks each session */}
                 {mode === 'day' && (
-                  <rect x={s.x0 - 4} y={top + 4} width={s.x1 - s.x0 + 8} height={CHART_H - 8} rx={10} fill="var(--surface)" />
+                  <rect x={s.x0 - 4} y={top + 2} width={s.x1 - s.x0 + 8} height={chartH - 4} rx={10} fill="var(--surface)" />
                 )}
                 <line x1={s.x0} x2={s.x1} y1={zeroY} y2={zeroY} stroke="var(--faint)" strokeDasharray="2 5" />
     
@@ -286,11 +311,22 @@ function Ribbon({ width, segments, mode, highlightId, onHighlight, onSelect }: P
                 )}
               </g>
             )),
-    [segs, paths, mode, top, zeroY, uid, reduce]
+    [segs, paths, mode, top, chartH, zeroY, uid, reduce]
   )
 
+  // Day view: clicking anywhere on a session panel opens that session.
+  const onClick = () => {
+    if (day && hover) onSelect('', segs[hover.seg].timeline.session.id)
+  }
+
   return (
-    <div className="relative select-none" style={{ height: totalH }} onPointerMove={onMove} onPointerLeave={onLeave}>
+    <div
+      className={`relative select-none ${day && hover ? 'cursor-pointer' : ''}`}
+      style={{ height: totalH }}
+      onPointerMove={onMove}
+      onPointerLeave={onLeave}
+      onClick={onClick}
+    >
       <svg width={width} height={totalH} className="absolute inset-0 overflow-visible" aria-label="Mood over time">
         <defs>
           <linearGradient id={`up${uid}`} gradientUnits="userSpaceOnUse" x1="0" x2="0" y1={y(1)} y2={zeroY}>
@@ -327,10 +363,24 @@ function Ribbon({ width, segments, mode, highlightId, onHighlight, onSelect }: P
 
         {segmentLayer}
 
+        {/* Day view: outline the panel under the pointer (it opens on click) */}
+        {day && hover && (
+          <rect
+            pointerEvents="none"
+            x={segs[hover.seg].x0 - 4}
+            y={top + 2}
+            width={segs[hover.seg].x1 - segs[hover.seg].x0 + 8}
+            height={chartH - 4}
+            rx={10}
+            fill="none"
+            stroke="var(--hairline-strong)"
+          />
+        )}
+
         {/* Scrubber */}
         {hover && (
           <g pointerEvents="none">
-            <line x1={hover.x} x2={hover.x} y1={top + PAD_TOP - 12} y2={chartBottom} stroke="var(--hairline-strong)" />
+            <line x1={hover.x} x2={hover.x} y1={day ? top + 6 : top + PAD_TOP - 12} y2={day ? chartBottom - 6 : chartBottom} stroke="var(--hairline-strong)" />
             <circle cx={hover.x} cy={curveY(hover.seg, hover.x)} r={4} fill="var(--bg)" stroke="var(--ink)" strokeWidth={1.5} />
           </g>
         )}
@@ -374,7 +424,7 @@ function Ribbon({ width, segments, mode, highlightId, onHighlight, onSelect }: P
           >
             <PlatformIcon platform={s.timeline.session.platform} size={12} />
             {s.x1 - s.x0 > 84 && <span className="font-mono text-[11px] text-muted">{formatClock(s.start)}</span>}
-            {isLive(s.timeline.session) && s.x1 - s.x0 > 84 && <PulseDot />}
+            {isLive(s.timeline.session) && (s.x1 - s.x0 > 150 ? <LivePill size="sm" /> : <PulseDot />)}
           </div>
         ))}
 
@@ -418,6 +468,7 @@ function Ribbon({ width, segments, mode, highlightId, onHighlight, onSelect }: P
           <ClusterChip
             key={g.key}
             members={g.members}
+            plus={g.plus}
             labelOf={labelOf}
             active={g.members.some((m) => m.id === highlightId)}
             highlightId={highlightId}

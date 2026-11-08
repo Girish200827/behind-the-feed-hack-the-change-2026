@@ -1,5 +1,5 @@
 // Presentation helpers for mood data. Pure functions over the data layer's Timeline; no fetching here.
-import { labelFor, type Timeline } from '../data'
+import { labelFor, type Timeline } from '../data/join'
 import type { Category, EmotionSample, Emotion, Platform, Tone } from '../types/contracts'
 
 /** Where each emotion sits on the mood scale, for its small color dot. */

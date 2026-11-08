@@ -3,13 +3,15 @@ import type { EmotionSample } from '../types/contracts'
 
 /** Samples below this confidence (looking away, bad light) are left out of the chart. */
 export const MIN_CONFIDENCE = 0.4
-/** Rolling-average window, centred on each sample. */
+/** Rolling-average window, centred on each sample: single-session report. */
 export const SMOOTH_WINDOW_S = 5
+/** Stronger window for the day view, where many sessions share the width and short wiggles are just noise. */
+export const DAY_SMOOTH_WINDOW_S = 18
 
-/** Drops low-confidence samples, then applies a centred ~5 s rolling mean to valence. Input must be sorted by ts. */
-export function smoothSamples(samples: EmotionSample[]): EmotionSample[] {
+/** Drops low-confidence samples, then applies a centred rolling mean to valence. Input must be sorted by ts. */
+export function smoothSamples(samples: EmotionSample[], windowS = SMOOTH_WINDOW_S): EmotionSample[] {
   const kept = samples.filter((s) => s.confidence >= MIN_CONFIDENCE)
-  const half = SMOOTH_WINDOW_S / 2
+  const half = windowS / 2
   const out: EmotionSample[] = []
   let lo = 0
   let hi = 0
