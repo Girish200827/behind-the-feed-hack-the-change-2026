@@ -1,5 +1,5 @@
 // The one entry point for data. Components import from here and nowhere else.
-import { ApiSource, getJson, getScrollingStatus } from './apiSource'
+import { ApiSource, getJson, getScrollingStatus, setBackendPaused } from './apiSource'
 import { API_PATHS, DATA_SOURCE } from './constants'
 import {
   averageValenceByPlatform,
@@ -67,9 +67,11 @@ export async function getWeeklyGoal(): Promise<WeeklyGoalInfo> {
 }
 export type { Insights, PlatformMix, Trigger, WeeklyGoalInfo } from './insights'
 
-// Camera status and pause/resume (in memory until the pause endpoint is in contracts.md).
-const camera = new CameraControl(source, resilient ? getScrollingStatus : undefined)
+// Camera status and pause/resume: through the backend in API mode (it really stops the camera), in memory in demo mode.
+const camera = new CameraControl(source, resilient ? { status: getScrollingStatus, setPaused: setBackendPaused } : undefined)
 export const getStatus = () => camera.getStatus()
+/** True when Pause really stops the camera (API mode). */
+export const pauseStopsCamera = () => camera.controlsCamera()
 export const pause = () => camera.pause()
 export const resume = () => camera.resume()
 export const onCameraStatusChange = (fn: (s: CameraStatus) => void) => camera.onChange(fn)

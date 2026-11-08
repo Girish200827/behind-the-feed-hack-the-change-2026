@@ -196,10 +196,10 @@ Done when: the fake session shows as a mood timeline with switches and labels th
   chips laid out per session under each panel (`layoutSessionLanes`), clicking a panel opens the session.
 
 ## TODO
-- Pause endpoint must be agreed with Allen and added to contracts.md before wiring (Phase 3). Until then
-  `pause()` / `resume()` / `getStatus()` in `src/data/camera.ts` only hold state in memory (the camera is not
-  actually paused).
-- Online-labelling line on Privacy / consent (`src/content/privacy.ts`, `ONLINE_LABELLING`) must be confirmed with Giresh.
+- Done (integration): `POST /pause` and `POST /resume` exist; `GET /status` now also returns `paused` and `camera`.
+  In API mode `src/data/camera.ts` uses them, so Pause really stops the camera. Demo mode keeps it in memory.
+- Done: the online-labelling line is confirmed (Gemini; free tier may be used by Google to improve its products).
+- Platform `other` (Reddit, Threads...) was added for labels; `PlatformIcon` shows a plain ring for it.
 - `session.end` is `number | null` in our types (null = still in progress, needed for Phase 3 live refresh).
   Confirm with Allen and get it written into contracts.md.
 - ApiSource paths in `src/data/constants.ts` are placeholders until confirmed with Allen (A4).

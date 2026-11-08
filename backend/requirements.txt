@@ -1,6 +1,6 @@
 fastapi>=0.110
 uvicorn[standard]>=0.27
 pydantic>=2.5
-pywinctl>=0.3
+pywinctl>=0.3; sys_platform != "darwin"   # macOS reads the browser tab with osascript instead
 httpx>=0.26
 eval_type_backport>=0.2  # lets Pydantic/FastAPI read 'X | None' on Python 3.9

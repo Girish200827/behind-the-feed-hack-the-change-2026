@@ -1,4 +1,5 @@
 import { Pause, Play } from 'lucide-react'
+import { pauseStopsCamera } from '../../data'
 import { STATUS_LABEL, useCameraStatus } from '../../hooks/useCameraStatus'
 import { PulseDot } from '../LivePill'
 
@@ -21,7 +22,11 @@ export default function PauseCard() {
           <span className="text-[28px] font-semibold tracking-[-0.02em] text-ink">{status ? STATUS_LABEL[status] : '…'}</span>
         </div>
         <p className="mt-2 max-w-md text-[13px] text-muted">{status ? EXPLAIN[status] : ''}</p>
-        <p className="mt-3 text-[11px] text-faint">Pause works inside this app for now; it will also stop the camera once connected to the backend.</p>
+        <p className="mt-3 text-[11px] text-faint">
+          {pauseStopsCamera()
+            ? 'Pausing turns the camera off within a second. Nothing is recorded until you resume.'
+            : 'Demo mode: pause only changes what this app shows.'}
+        </p>
       </div>
       <button
         type="button"

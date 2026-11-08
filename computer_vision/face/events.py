@@ -14,6 +14,7 @@ import os
 import queue
 import sys
 import threading
+import urllib.error
 import urllib.request
 from typing import Callable, Optional
 
@@ -32,6 +33,8 @@ class EventSink:
         self._file = open(path, "a", encoding="utf-8") if path else None
         self._q: "queue.Queue[Optional[str]]" = queue.Queue(maxsize=1000)
         self._post_errors = 0
+        self.posted = 0
+        self.rejected = 0
         self._worker = None
         if post_url:
             self._worker = threading.Thread(target=self._post_loop, daemon=True)
@@ -62,6 +65,12 @@ class EventSink:
             try:
                 urllib.request.urlopen(req, timeout=3).read()
                 self._post_errors = 0
+                self.posted += 1
+            except urllib.error.HTTPError as err:   # the backend answered but refused the event
+                self.rejected += 1
+                if self.rejected in (1, 10, 100):
+                    body = err.read().decode("utf-8", "replace")[:300]
+                    _err(f"Backend refused an event ({err.code}): {body}\n  event: {line[:200]}")
             except Exception as err:  # noqa: BLE001 - never stop the camera loop over a network error
                 self._post_errors += 1
                 if self._post_errors in (1, 10, 100):

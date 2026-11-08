@@ -10,6 +10,8 @@ This is a local FastAPI and SQLite service that runs on the laptop. It does thre
 
 ## Run
 
+Windows: `run.bat` (backend only), or `..\start_app.bat` for the whole app. Tests: `python -m pytest -q tests`.
+
 ```bash
 cd backend
 python3 -m venv .venv && source .venv/bin/activate
@@ -38,7 +40,9 @@ python3 scripts/fake_session.py --post     # also sends it to the running API
 
 | Method | Path | Who | What |
 |---|---|---|---|
-| GET | `/status` | Raad (L3) | `{"scrolling": bool, "session_id", "platform"}`. The camera runs only while `scrolling` is true. |
+| GET | `/status` | Raad (L3) | `{"scrolling", "session_id", "platform", "paused", "camera"}`. The camera runs only while `camera` is true (scrolling and not paused). |
+| POST | `/pause` | Cheema (C2) | The dashboard's Pause button. The camera turns off within a second; the session keeps counting time. |
+| POST | `/resume` | Cheema (C2) | The Resume button. |
 | POST | `/events` | Raad, Giresh (L2) | Takes any `emotion_sample`, `mood_switch` or `context_label` exactly as written in contracts.md. Returns 422 for anything else. |
 | GET | `/sessions` | Cheema (L4) | All sessions, newest first. |
 | GET | `/sessions/{id}/timeline` | Cheema (L4) | `{session, emotions, switches, labels}`, ordered by time. |

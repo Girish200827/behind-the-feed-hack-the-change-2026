@@ -22,7 +22,8 @@ const PLATFORM_NAMES: Record<Platform, string> = {
   tiktok: 'TikTok',
   youtube: 'YouTube',
   x: 'X',
-  facebook: 'Facebook'
+  facebook: 'Facebook',
+  other: 'Other site'
 }
 
 export const platformName = (p: Platform) => PLATFORM_NAMES[p] ?? p

@@ -30,6 +30,7 @@ The subject goes into `topic` (for example `"<actor>: heartbreak film edit"`), s
 ## Privacy
 
 - Only the **window in front** is captured, not the whole desktop.
+- **macOS:** the window list comes from Quartz (`pyobjc-framework-Quartz`). Every window of the camera program is blacked out, found by its process id; without Quartz nothing is grabbed. Terminal needs Screen Recording permission.
 - The **camera preview is never sent**: if it is in front the grab is skipped; if it overlaps the window it is blacked out.
 - Screenshots are JPEG-encoded **in memory**, sent, and dropped. The short buffer only holds the last ~2.5 s, only while the camera is on, and is cleared when it turns off. Nothing is written to disk.
 - The window title is never sent, and Gemini is never told how the user reacted. It may name public figures, films, shows and brands, but never private people or ordinary users' accounts.

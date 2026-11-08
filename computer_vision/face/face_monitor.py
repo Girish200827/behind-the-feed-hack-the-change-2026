@@ -83,6 +83,69 @@ class Gate:
                 self._state = (False, self.default)
         return self._state
 
+    session_id = None
+
+    def reason(self) -> str:
+        return "no social media open"
+
+    def stop(self) -> None:
+        pass
+
+
+class BackendGate:
+    """L3 with Allen's backend: reads GET /status twice a second, in a background thread.
+
+    The camera runs only while the backend says "camera": true, meaning a social platform is in front and the
+    dashboard has not paused it. Platform and session come from the backend, so every event lands in the
+    right session. If the backend cannot be reached, the camera stays off.
+    """
+
+    def __init__(self, status_url: str, every_s: float = 0.5, fetch=None):
+        from platforms import PlatformWatcher
+        self.url, self.every_s = status_url, every_s
+        self.fetch = fetch or self._fetch
+        self.watcher = PlatformWatcher()
+        self._lock = threading.Lock()
+        self._active, self._platform, self.session_id = False, "other", None
+        self._reason = "waiting for the backend"
+        self._stop = threading.Event()
+        self._thread = threading.Thread(target=self._loop, daemon=True)
+        self._thread.start()
+
+    def _fetch(self) -> dict:
+        import urllib.request
+        with urllib.request.urlopen(self.url, timeout=1.0) as r:
+            return json.loads(r.read().decode("utf-8"))
+
+    def poll_once(self) -> None:
+        try:
+            s = self.fetch()
+            scrolling, paused = bool(s.get("scrolling")), bool(s.get("paused"))
+            active = bool(s.get("camera", scrolling and not paused))
+            reason = "paused from the dashboard" if paused else "no social media open"
+            platform = s.get("platform") if s.get("platform") in PLATFORMS else self.watcher.get()
+            session = s.get("session_id")
+        except Exception:  # noqa: BLE001 - backend down or restarting
+            active, reason, platform, session = False, "backend not reachable", self.watcher.get(), None
+        with self._lock:
+            self._active, self._reason, self._platform, self.session_id = active, reason, platform, session
+
+    def _loop(self) -> None:
+        while not self._stop.is_set():
+            self.poll_once()
+            self._stop.wait(self.every_s)
+
+    def check(self) -> Tuple[bool, str]:
+        with self._lock:
+            return self._active, self._platform
+
+    def reason(self) -> str:
+        with self._lock:
+            return self._reason
+
+    def stop(self) -> None:
+        self._stop.set()
+
 
 # ---------------------------------------------------------------- camera mode
 def open_camera(index: int):
@@ -251,7 +314,10 @@ def run_camera(args, pipe: Pipeline) -> None:
 
     analyzer = Analyzer(pipe, detector, model, args.fps, meter=meter, smile_gain=args.smile_gain)
     analyzer.start()
-    gate = Gate(args.gate_file, args.platform)
+    gate = BackendGate(args.api.rstrip("/") + "/status") if args.api else Gate(args.gate_file, args.platform)
+    if args.api:
+        log(f"Camera follows the backend at {args.api}: on only while you scroll and it is not paused.")
+    last_session = None
     tracker = pipe.tracker
     cap, platform, fails = None, args.platform, 0
     cam_rate, last_log = Rate(), time.time()
@@ -268,17 +334,22 @@ def run_camera(args, pipe: Pipeline) -> None:
                         cv2.destroyAllWindows()
                     if hasattr(pipe.hook, "set_active"):
                         pipe.hook.set_active(False)   # stop buffering the screen too
-                    log("Camera off: no social media open.")
+                    log(f"Camera off: {gate.reason()}.")
                 time.sleep(0.25)
                 continue
             if cap is None:
                 cap = open_camera(args.camera)
                 if hasattr(pipe.hook, "set_active"):
                     pipe.hook.set_active(True)
-                platform = now_platform
+                platform, last_session = now_platform, gate.session_id
                 with analyzer.lock:
                     tracker.new_session(platform)
-                log(f"Camera on ({platform}).")
+                log(f"Camera on ({platform}" + (f", session {last_session})." if last_session else ")."))
+            elif gate.session_id != last_session:
+                platform, last_session = now_platform, gate.session_id   # the backend started a new session
+                with analyzer.lock:
+                    tracker.new_session(platform)
+                log(f"New session {last_session} ({platform}).")
             elif now_platform != platform:
                 platform = now_platform          # switched app or tab: keep the mood, change the label
                 with analyzer.lock:
@@ -310,6 +381,7 @@ def run_camera(args, pipe: Pipeline) -> None:
     except KeyboardInterrupt:
         pass
     finally:
+        gate.stop()
         analyzer.stop()
         analyzer.join(timeout=2)
         if meter is not None:
@@ -377,7 +449,9 @@ def parse_args(argv=None):
     ap.add_argument("--out", default="events.jsonl", help="file to append events to")
     ap.add_argument("--no-file", action="store_true", help="print only, do not write events.jsonl")
     ap.add_argument("--quiet", action="store_true", help="do not print events")
-    ap.add_argument("--post", metavar="URL", help="L2: also POST each event to Allen's endpoint")
+    ap.add_argument("--api", metavar="URL", help="L2+L3: Allen's backend, e.g. http://127.0.0.1:8000: store every "
+                    "event there, and run the camera only while it says you are scrolling and not paused")
+    ap.add_argument("--post", metavar="URL", help="L2: also POST each event to this URL (set by --api)")
     ap.add_argument("--on-switch", metavar="MODULE:FUNC", help="L1: call Giresh's labeller, e.g. screen.label:grab_and_label")
     ap.add_argument("--gate-file", metavar="PATH", help="L3: camera on only while this file exists")
     ap.add_argument("--screen", action="store_true", help="L1: grab the screen at each mood switch and label it with Gemini (../screen)")
@@ -389,7 +463,27 @@ def parse_args(argv=None):
     return ap.parse_args(argv)
 
 
+def _ignore_further_interrupts() -> None:
+    import signal
+    for name in ("SIGINT", "SIGBREAK"):
+        if hasattr(signal, name):
+            try:
+                signal.signal(getattr(signal, name), signal.SIG_IGN)
+            except (ValueError, OSError):   # not the main thread
+                pass
+
+
+def _graceful_stop_on_windows() -> None:
+    """The launcher stops us with Ctrl+Break on Windows; treat it like Ctrl+C so the last events are still sent."""
+    import signal
+    if hasattr(signal, "SIGBREAK"):
+        def _raise(*_):
+            raise KeyboardInterrupt
+        signal.signal(signal.SIGBREAK, _raise)
+
+
 def main(argv=None) -> None:
+    _graceful_stop_on_windows()
     args = parse_args(argv)
     settings = MoodSettings(hold_s=args.hold, fast_hold_s=min(args.fast_hold, args.hold), smooth_s=args.smooth,
                             cooldown_s=args.cooldown, calibrate_s=args.calibrate, happy_boost=args.happy_boost)
@@ -401,6 +495,8 @@ def main(argv=None) -> None:
         log("Loaded saved resting-face baseline.")
     start_platform = args.platform if args.platform != "auto" else ("instagram" if args.fake else "other")
     tracker = MoodTracker(start_platform, settings, baseline=baseline, log=log)
+    if args.api and not args.post:
+        args.post = args.api.rstrip("/") + "/events"
     sink = EventSink(None if args.no_file else args.out, post_url=args.post, echo=not args.quiet)
     if args.screen:
         hook = make_screen_hook(args, sink)
@@ -410,6 +506,7 @@ def main(argv=None) -> None:
     try:
         (run_fake if args.fake else run_camera)(args, pipe)
     finally:
+        _ignore_further_interrupts()   # a second Ctrl+C must not cut off the last events and labels
         if hook is not None and hasattr(hook, "close"):
             hook.close()      # waits a few seconds for labels still in progress
         else:
@@ -435,4 +532,7 @@ def make_screen_hook(args, sink: EventSink):
 
 
 if __name__ == "__main__":
-    main()
+    try:
+        main()
+    except KeyboardInterrupt:   # stopped (Ctrl+C, or the launcher closing) while still starting up
+        log("Stopped before the camera started.")

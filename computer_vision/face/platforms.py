@@ -29,8 +29,15 @@ _PATTERNS = [
 ]
 _REGEX = [(name, re.compile(p, re.I)) for name, p in _PATTERNS]
 
-# Our own windows: never change the platform because of them.
-_OWN = re.compile(r"face preview|face_monitor|label\.py|command prompt|cmd\.exe|powershell|windows terminal", re.I)
+# Our own windows: never change the platform because of them, and never screenshot them.
+_OWN = re.compile(r"behindfeed|face preview|face_monitor|launch\.py|label\.py|command prompt|cmd\.exe|powershell|"
+                  r"windows terminal"
+                  r"|- (?:terminal|iterm2|electron)$", re.I)   # macOS: the screen grab names windows "<name> - <app>"
+
+
+def is_own_window(title: Optional[str]) -> bool:
+    """The dashboard, the camera preview or a console window of this app."""
+    return bool(title and _OWN.search(title))
 
 
 def detect_platform(title: Optional[str]) -> Optional[str]:

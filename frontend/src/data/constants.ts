@@ -8,8 +8,12 @@ export const API_PATHS = {
   sessions: '/sessions',
   /** GET: { session, emotions, switches, labels } ordered by time. */
   timeline: (sessionId: string) => `/sessions/${encodeURIComponent(sessionId)}/timeline`,
-  /** GET: { scrolling, session_id, platform, ... }. Used for the camera status pill. */
+  /** GET: { scrolling, session_id, platform, paused, camera, ... }. Used for the camera status pill. */
   status: '/status',
+  /** POST: the Pause button. The camera loop turns the camera off within a second. */
+  pause: '/pause',
+  /** POST: the Resume button. */
+  resume: '/resume',
   /** GET (A5): trigger scores, session moods, platform mix, longest session. */
   insights: '/insights',
   /** GET (A5): one weekly goal from the top trigger. */

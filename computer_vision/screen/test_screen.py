@@ -172,6 +172,93 @@ def test_black_out_hides_the_camera_preview_inside_the_grab():
     assert img[49, 150].tolist() == [255, 255, 255]
 
 
+def test_black_out_scales_on_a_retina_mac():
+    img = np.full((200, 400, 3), 255, np.uint8)        # the same screen area, but 2 pixels per point
+    capture.black_out(img, (100, 50, 300, 150), (250, 100, 400, 300))
+    assert img[99, 299].tolist() == [255, 255, 255]
+    assert img[100, 300].tolist() == [0, 0, 0] and img[199, 399].tolist() == [0, 0, 0]
+
+
+# ---------- macOS window list (a stand-in for Quartz) ----------
+class FakeQuartz:
+    kCGWindowListOptionOnScreenOnly, kCGWindowListExcludeDesktopElements, kCGNullWindowID = 1, 16, 0
+
+    def __init__(self, windows):
+        self.windows = windows
+
+    def CGWindowListCopyWindowInfo(self, opts, rel):
+        return self.windows
+
+
+def _win(app, name, pid, x, y, w, h, layer=0):
+    return {"kCGWindowOwnerName": app, "kCGWindowName": name, "kCGWindowOwnerPID": pid, "kCGWindowLayer": layer,
+            "kCGWindowBounds": {"X": x, "Y": y, "Width": w, "Height": h}}
+
+
+class FakeMss:
+    """mss on a Retina Mac: monitors in points, pictures in pixels (twice as many)."""
+    monitors = [{"left": 0, "top": 0, "width": 1000, "height": 800}] * 2
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, *a):
+        return False
+
+    def grab(self, box):
+        return np.full((box["height"] * 2, box["width"] * 2, 4), 255, np.uint8)
+
+
+def _mac(monkeypatch, windows):
+    import types
+    monkeypatch.setattr(sys, "platform", "darwin")
+    monkeypatch.setitem(sys.modules, "Quartz", FakeQuartz(windows))
+    monkeypatch.setitem(sys.modules, "mss", types.SimpleNamespace(mss=FakeMss))
+
+
+def test_mac_finds_the_front_window_and_our_preview_by_process_id(monkeypatch):
+    _mac(monkeypatch, [_win("Window Server", "Menubar", 1, 0, 0, 1000, 25, layer=25),
+                       _win("Google Chrome", "Ryan Gosling edit - YouTube", 111, 0, 0, 400, 300),
+                       _win("Python", "", os.getpid(), 300, 200, 200, 200)])   # no name without permission
+    assert capture.foreground_window() == ("Ryan Gosling edit - YouTube - Google Chrome", (0, 0, 400, 300))
+    assert capture.own_windows() == [(300, 200, 500, 400)]
+
+
+def test_mac_grab_blacks_out_the_preview_at_retina_scale(monkeypatch):
+    import cv2
+    _mac(monkeypatch, [_win("Google Chrome", "Reel - Instagram", 111, 0, 0, 400, 300),
+                       _win("Python", "", os.getpid(), 300, 200, 200, 200)])
+    shot = capture.grab()
+    img = cv2.imdecode(np.frombuffer(shot.jpeg, np.uint8), cv2.IMREAD_COLOR)
+    assert (shot.width, shot.height, shot.source, shot.platform) == (800, 600, "window", "instagram")
+    assert img[100, 100].min() > 230 and img[550, 750].max() < 25   # page kept, preview corner black
+
+
+def test_mac_preview_or_terminal_in_front_is_never_sent(monkeypatch):
+    _mac(monkeypatch, [_win("Python", "", os.getpid(), 0, 0, 640, 480)])
+    try:
+        capture.grab()
+        assert False, "the preview must not be grabbed"
+    except capture.SkipGrab as why:
+        assert "preview" in str(why)
+    _mac(monkeypatch, [_win("Terminal", "Behind the Feed - Python launch.py - 80x24", 222, 0, 0, 640, 480)])
+    try:
+        capture.grab()
+        assert False, "our own terminal must not be grabbed"
+    except capture.SkipGrab as why:
+        assert "own window" in str(why)
+
+
+def test_mac_without_quartz_grabs_nothing(monkeypatch):
+    _mac(monkeypatch, [])
+    monkeypatch.setitem(sys.modules, "Quartz", None)   # import Quartz now fails
+    try:
+        capture.grab()
+        assert False, "without Quartz the preview could not be kept out"
+    except capture.SkipGrab as why:
+        assert "Quartz" in str(why)
+
+
 def test_encode_shrinks_to_jpeg_in_memory():
     jpeg, w, h = capture.encode(np.zeros((1440, 2560, 3), np.uint8))
     assert (w, h) == (1920, 1080) and jpeg[:2] == b"\xff\xd8"

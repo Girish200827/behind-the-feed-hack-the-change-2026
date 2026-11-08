@@ -1,7 +1,14 @@
-// Camera status and pause/resume. IN MEMORY FOR NOW: the pause flag lives only in this app session.
-// TODO(Phase 3): the pause endpoint must be agreed with Allen and added to contracts.md before wiring it here.
-// Until then this never talks to the backend; it only changes what the app shows.
+// Camera status and pause/resume.
+// API mode: Pause / Resume call the backend (POST /pause, /resume) and the status comes from GET /status, so the
+// camera loop really turns the camera off. Demo mode: the pause flag only lives in this app session.
+import type { BackendCameraStatus } from './apiSource'
 import type { DataSource } from './source'
+
+/** The backend's camera controls (API mode). */
+export interface BackendCamera {
+  status: () => Promise<BackendCameraStatus | null>
+  setPaused: (paused: boolean) => Promise<boolean>
+}
 
 /** Watching: a supported app is active and the camera is on. Paused: you paused it. Off: no supported app is active. */
 export type CameraStatus = 'watching' | 'paused' | 'off'
@@ -14,18 +21,24 @@ export class CameraControl {
 
   constructor(
     private source: DataSource,
-    /** API mode: Allen's GET /status ({ scrolling }). Returns null when the backend can't be reached. */
-    private scrolling?: () => Promise<{ scrolling: boolean } | null>
+    /** API mode: Allen's GET /status, POST /pause and POST /resume. */
+    private backend?: BackendCamera
   ) {}
 
+  /** True when Pause really stops the camera (API mode); false in demo mode. */
+  controlsCamera() {
+    return this.backend !== undefined
+  }
+
   async getStatus(): Promise<CameraStatus> {
-    if (this.paused) return 'paused'
-    // Backend detector: a social platform is in front, so the camera may run.
-    if (this.scrolling) {
-      // API mode: the backend decides. If it can't be reached, the camera isn't running either.
-      const fromBackend = await this.scrolling()
-      return fromBackend?.scrolling ? 'watching' : 'off'
+    if (this.backend) {
+      // API mode: the backend decides (it also remembers a pause made earlier or from another window).
+      const s = await this.backend.status()
+      if (!s) return this.paused ? 'paused' : 'off' // unreachable: the camera isn't running either
+      this.paused = s.paused
+      return s.paused ? 'paused' : s.camera ? 'watching' : 'off'
     }
+    if (this.paused) return 'paused'
     // Otherwise a live session (end = null) means Instagram, TikTok, YouTube, X or Facebook is the active window.
     const sessions = await this.source.getSessions().catch(() => [])
     return sessions.some((s) => s.end === null) ? 'watching' : 'off'
@@ -33,11 +46,13 @@ export class CameraControl {
 
   async pause(): Promise<CameraStatus> {
     this.paused = true
+    if (this.backend) await this.backend.setPaused(true)
     return this.emit()
   }
 
   async resume(): Promise<CameraStatus> {
     this.paused = false
+    if (this.backend) await this.backend.setPaused(false)
     return this.emit()
   }
 

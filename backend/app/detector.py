@@ -34,12 +34,16 @@ PLATFORM_PATTERNS = [
 
 
 def match_platform(title: str | None) -> str | None:
+    """The platform named in a window title. If several are named ("Instagram tips - YouTube - Chrome"),
+    the one nearest the end wins, because that is where browsers put the site name."""
     if not title:
         return None
+    best, best_end = None, -1
     for name, pat in PLATFORM_PATTERNS:
-        if pat.search(title):
-            return name
-    return None
+        for m in pat.finditer(title):
+            if m.end() > best_end:
+                best, best_end = name, m.end()
+    return best
 
 
 class State:
@@ -53,16 +57,27 @@ class State:
         self.last_seen = 0.0
         self.detector_running = False
         self.last_title: str | None = None
+        self.paused = False  # set from the dashboard's Pause button (POST /pause); the camera must stay off
 
     def snapshot(self) -> dict[str, Any]:
         with self.lock:
+            scrolling = self.session_id is not None
             return {
-                "scrolling": self.session_id is not None,
+                "scrolling": scrolling,
                 "session_id": self.session_id,
                 "platform": self.platform,
                 "manual": self.manual,
                 "detector_running": self.detector_running,
+                "paused": self.paused,
+                # what the camera loop obeys: on only while scrolling and not paused
+                "camera": scrolling and not self.paused,
             }
+
+    def set_paused(self, paused: bool) -> dict[str, Any]:
+        with self.lock:
+            self.paused = paused
+            log.info("camera %s from the dashboard", "paused" if paused else "resumed")
+        return self.snapshot()
 
     def start(self, platform: str, manual: bool = False, start: float | None = None) -> dict[str, Any]:
         with self.lock:
@@ -143,9 +158,25 @@ def _active_title_macos() -> str:
     return f"{name} | {res.stdout.strip()}"
 
 
+def _active_title_windows() -> str:
+    """Title of the window in front, straight from the Windows API (no extra library needed)."""
+    import ctypes
+
+    user32 = ctypes.windll.user32
+    hwnd = user32.GetForegroundWindow()
+    if not hwnd:
+        return ""
+    n = user32.GetWindowTextLengthW(hwnd)
+    buf = ctypes.create_unicode_buffer(n + 1)
+    user32.GetWindowTextW(hwnd, buf, n + 1)
+    return buf.value
+
+
 def _get_title_fn() -> Any:
     if sys.platform == "darwin":
         return _active_title_macos
+    if sys.platform == "win32":
+        return _active_title_windows
     try:
         import pywinctl
     except Exception as exc:  # pragma: no cover - depends on the OS

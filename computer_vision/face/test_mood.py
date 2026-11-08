@@ -324,6 +324,51 @@ def test_platform_watcher_keeps_last_social_platform_for_other_windows():
     assert [w.get() for _ in range(4)] == ["youtube", "youtube", "youtube", "facebook"]
 
 
+
+def test_backend_gate_follows_status_pause_and_outages():
+    from face_monitor import BackendGate
+    replies = iter([
+        {"scrolling": True, "paused": False, "camera": True, "platform": "youtube", "session_id": "s_001"},
+        {"scrolling": True, "paused": True, "camera": False, "platform": "youtube", "session_id": "s_001"},
+        ConnectionError("backend down"),
+        {"scrolling": False, "paused": False, "camera": False, "platform": None, "session_id": None},
+        {"scrolling": True, "platform": "facebook", "session_id": "s_002"},   # older backend: no "camera" key
+    ])
+
+    def fetch():
+        r = next(replies)
+        if isinstance(r, Exception):
+            raise r
+        return r
+
+    g = BackendGate("http://x/status", every_s=3600, fetch=fetch)   # first poll happens in its thread
+    import time as _t
+    _t.sleep(0.1)
+    assert g.check() == (True, "youtube") and g.session_id == "s_001"
+    g.poll_once()
+    assert g.check()[0] is False and g.reason() == "paused from the dashboard"
+    g.poll_once()
+    assert g.check()[0] is False and g.reason() == "backend not reachable"
+    g.poll_once()
+    assert g.check()[0] is False and g.reason() == "no social media open"
+    g.poll_once()
+    assert g.check() == (True, "facebook") and g.session_id == "s_002"
+    g.stop()
+
+
+def test_backend_option_sets_the_event_url():
+    import face_monitor as fm
+    args = fm.parse_args(["--api", "http://127.0.0.1:8000/", "--fake"])
+    assert args.api == "http://127.0.0.1:8000/" and args.backend == "hsemotion"
+
+
+
+def test_own_windows_are_recognised():
+    from platforms import is_own_window
+    assert is_own_window("BehindFeed") and is_own_window("Face preview (nothing is saved) - press q to quit")
+    assert not is_own_window("Reels - Instagram - Google Chrome") and not is_own_window(None)
+
+
 if __name__ == "__main__":
     tests = [v for k, v in dict(globals()).items() if k.startswith("test_")]
     for fn in tests:

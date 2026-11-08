@@ -78,5 +78,5 @@ Stack: Electron, React, TypeScript (electron-vite), Tailwind CSS, d3-shape, moti
 ## Status
 
 - **Data:** `npm run dev` uses demo data; `npm run dev:api` reads the backend live (start it first, see `backend/README.md`). If the backend is down, the app shows demo data with a "Backend offline" banner.
-- **Pause:** only works inside the app until the pause endpoint is agreed with the backend.
+- **Pause:** in API mode it calls the backend (`POST /pause`, `/resume`) and the camera really turns off within a second; in demo mode it only changes what the app shows.
 - **Support listings:** labelled as samples; check them before relying on them.

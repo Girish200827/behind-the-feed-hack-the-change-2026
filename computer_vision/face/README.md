@@ -87,7 +87,14 @@ and save it in the face folder.
 
 `run_with_screen.bat` (or `--screen`) also grabs the window in front at each mood switch and labels it with Gemini; see `../screen/README.md`. `--screen-backend fake` tests the wiring without an API key.
 
-## Connecting at 7 PM
+## Connected to the backend (the full app)
+
+`python face_monitor.py --api http://127.0.0.1:8000 --screen --preview` (this is what `start_app.bat` runs):
+
+- **L3:** reads `GET /status` twice a second in the background. The camera (and the screen buffer) runs only while `camera` is true: a social platform is in front and the dashboard has not paused it. If the backend can't be reached, the camera stays off. Platform and session come from the backend.
+- **L2:** every `emotion_sample`, `mood_switch` and `context_label` is POSTed to `/events` (and still written to `events.jsonl`). Refused events are printed with the backend's reason.
+
+## Connecting at 7 PM (older notes)
 
 - **L1 (to Giresh):** Giresh puts a function `grab_and_label(switch: dict) -> dict` in `screen/label.py` that returns a `context_label`. Run with `--on-switch screen.label:grab_and_label`. It runs in a background thread for each switch; the returned label is printed and saved too.
 - **L2 (to Allen):** add `--post http://127.0.0.1:8000/events` (use Allen's real address). Same JSON, new destination. If Allen wants a `"type"` key to tell formats apart, agree it with the team and set `ADD_TYPE_FIELD = True` in `events.py`.

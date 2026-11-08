@@ -2,7 +2,8 @@
 // Field names must match contracts.md exactly. Times are Unix seconds.
 
 export const EMOTIONS = ['happy', 'sad', 'angry', 'fear', 'surprise', 'disgust', 'neutral'] as const
-export const PLATFORMS = ['instagram', 'tiktok', 'youtube', 'x', 'facebook'] as const
+// 'other' = another social site (Reddit, Threads, ...): used on labels when the screen shows one.
+export const PLATFORMS = ['instagram', 'tiktok', 'youtube', 'x', 'facebook', 'other'] as const
 export const CATEGORIES = ['news', 'politics', 'comedy', 'friends', 'fitness', 'food', 'drama', 'ads', 'other'] as const
 export const TONES = ['positive', 'neutral', 'negative'] as const
 

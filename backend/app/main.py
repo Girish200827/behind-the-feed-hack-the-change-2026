@@ -50,8 +50,21 @@ def root():
 
 @app.get("/status", tags=["detector"])
 def status():
-    """`scrolling: true` means a social platform is in front: camera may run. Otherwise it must be off."""
+    """`scrolling: true` means a social platform is in front. `camera: true` (scrolling and not paused) means the
+    camera may run; otherwise it must be off."""
     return detector.state.snapshot()
+
+
+@app.post("/pause", tags=["detector"])
+def pause():
+    """Dashboard Pause button: the camera turns off within a second, even while scrolling. Sessions keep counting time."""
+    return detector.state.set_paused(True)
+
+
+@app.post("/resume", tags=["detector"])
+def resume():
+    """Dashboard Resume button: the camera may run again while a social platform is in front."""
+    return detector.state.set_paused(False)
 
 
 # ---------- A2 / L2: event intake ----------

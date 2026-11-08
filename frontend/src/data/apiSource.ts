@@ -85,12 +85,38 @@ export const ApiSource: DataSource = {
   }
 }
 
-/** GET /status: is a social platform in front right now? null if the backend can't be reached. */
-export async function getScrollingStatus(): Promise<{ scrolling: boolean } | null> {
+/** What GET /status tells the camera pill. `camera` = scrolling and not paused (the camera loop obeys it). */
+export interface BackendCameraStatus {
+  scrolling: boolean
+  paused: boolean
+  camera: boolean
+}
+
+/** GET /status: is a social platform in front, and is the camera paused? null if the backend can't be reached. */
+export async function getScrollingStatus(): Promise<BackendCameraStatus | null> {
   try {
-    const s = await getJson<{ scrolling?: unknown }>(API_PATHS.status)
-    return { scrolling: s.scrolling === true }
+    const s = await getJson<{ scrolling?: unknown; paused?: unknown; camera?: unknown }>(API_PATHS.status)
+    const scrolling = s.scrolling === true
+    const paused = s.paused === true
+    return { scrolling, paused, camera: typeof s.camera === 'boolean' ? s.camera : scrolling && !paused }
   } catch {
     return null
+  }
+}
+
+/** POST /pause or /resume. Returns false if the backend can't be reached. */
+export async function setBackendPaused(paused: boolean): Promise<boolean> {
+  const controller = new AbortController()
+  const timer = setTimeout(() => controller.abort(), API_TIMEOUT_MS)
+  try {
+    const res = await fetch(`${API_BASE_URL}${paused ? API_PATHS.pause : API_PATHS.resume}`, {
+      method: 'POST',
+      signal: controller.signal
+    })
+    return res.ok
+  } catch {
+    return false
+  } finally {
+    clearTimeout(timer)
   }
 }

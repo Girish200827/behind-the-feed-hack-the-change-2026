@@ -28,8 +28,8 @@ export const PRIVACY_FACTS = {
  * text and set ONLINE_LABELLING.confirmed to true.
  */
 export const ONLINE_LABELLING = {
-  confirmed: false,
-  text: 'If the screen labeller uses an online vision model, the screenshot is sent to that service to be labelled, then deleted.'
+  confirmed: true,
+  text: "When your mood shifts, a screenshot of the app you're scrolling is sent to Google's Gemini service to name the content, then deleted on this computer. Your camera image is never sent. On Gemini's free tier, Google may use what is sent to improve its products."
 }
 
 export const NOT_A_DIAGNOSIS = 'These are mood signals, not a diagnosis.'

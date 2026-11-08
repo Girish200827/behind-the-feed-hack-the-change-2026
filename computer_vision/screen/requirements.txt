@@ -1,2 +1,3 @@
 mss            # screen capture, in memory
 google-genai   # Gemini API
+pyobjc-framework-Quartz; sys_platform == "darwin"   # macOS: find the front window, keep the camera preview out
