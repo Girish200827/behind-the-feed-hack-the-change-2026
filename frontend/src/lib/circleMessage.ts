@@ -4,7 +4,7 @@
 // screenshots or raw samples. The inputs below are the only things these functions can see.
 import type { DiscordPayload } from '../types/bridge'
 
-export const CIRCLE_BOT_NAME = 'Scroll Mood'
+export const CIRCLE_BOT_NAME = 'BehindFeed'
 
 export type GoalOutcome = 'met' | 'in-progress' | 'missed'
 
@@ -41,7 +41,7 @@ function changeLine(change: number | null): string | null {
 export function buildProgressMessage(input: ProgressInput): DiscordPayload {
   const name = cleanName(input.displayName)
   const lines = [
-    `**${name}** shared a Scroll Mood check-in`,
+    `**${name}** shared a BehindFeed check-in`,
     `Today's goal: ${input.goalTitle.replace(/\s+/g, ' ').trim().slice(0, 120)} (${outcomeText(input.outcome)})`,
     `Streak: ${input.streak} ${input.streak === 1 ? 'day' : 'days'} in a row`,
     changeLine(input.drainedChange),

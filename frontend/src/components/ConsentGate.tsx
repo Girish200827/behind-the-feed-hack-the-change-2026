@@ -26,7 +26,7 @@ export default function ConsentGate({ children }: { children: ReactNode }) {
           <header>
             <h1 className="text-[36px] font-semibold leading-tight tracking-[-0.03em]">Before you start</h1>
             <p className="mt-3 text-[14px] leading-relaxed text-muted">
-              Scroll Mood notices how scrolling makes you feel, so you can choose what lifts you. Here is exactly what it records. You can pause the camera any time.
+              BehindFeed notices how scrolling makes you feel, so you can choose what lifts you. Here is exactly what it records. You can pause the camera any time.
             </p>
           </header>
 

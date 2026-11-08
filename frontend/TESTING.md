@@ -22,10 +22,10 @@ Run the app with `npm run dev`. If it crashes with `reading 'whenReady'`, unset 
 ### 1. Real Discord message
 
 1. In a Discord server you own: **Server Settings → Integrations → Webhooks → New Webhook → Copy Webhook URL**.
-2. In Scroll Mood, open **Circle**, enter a display name and paste the URL, then **Save**. The "Demo mode" banner disappears.
+2. In BehindFeed, open **Circle**, enter a display name and paste the URL, then **Save**. The "Demo mode" banner disappears.
 3. Check the preview, then click **Share my progress**.
    - [ ] "Shared with your circle" appears.
-   - [ ] The Discord channel shows the message from "Scroll Mood", identical to the preview (name in bold, goal, streak, drained-time change, encouraging line).
+   - [ ] The Discord channel shows the message from "BehindFeed", identical to the preview (name in bold, goal, streak, drained-time change, encouraging line).
    - [ ] Nothing else is in the message: no emotions, topics or numbers from your sessions.
 4. Pick a challenge and click **Post invite**. [ ] The invite appears in Discord.
 5. Error paths:
@@ -43,7 +43,7 @@ The webhook URL is stored only in this computer's app storage (localStorage). It
    - [ ] An in-app card appears at the bottom right with one suggestion ("Message a friend?", "Step outside for 5 minutes?" or "Call someone you miss?").
    - [ ] A Windows notification "Time for a little break?" appears (bottom right / Action Center).
    - [ ] Clicking again rotates to the next suggestion.
-3. If no Windows notification shows: check **Windows Settings → System → Notifications** (notifications on, Focus / Do not disturb off) and that "Electron" / "Scroll Mood" is allowed.
+3. If no Windows notification shows: check **Windows Settings → System → Notifications** (notifications on, Focus / Do not disturb off) and that "Electron" / "BehindFeed" is allowed.
 4. Turn nudges off and click Simulate → [ ] the button is disabled and nothing appears.
 
 ### 3. Live data from the backend (L4)
@@ -68,4 +68,4 @@ The webhook URL is stored only in this computer's app storage (localStorage). It
 
 ### Demo reset
 
-The demo streak (4 days) and check-ins are stored locally. To reset them, open DevTools (Ctrl+Shift+I) → Application → Local Storage → delete keys starting with `scrollmood.`, then reload.
+The demo streak (4 days) and check-ins are stored locally. To reset them, open DevTools (Ctrl+Shift+I) → Application → Local Storage → delete keys starting with `behindfeed.`, then reload.

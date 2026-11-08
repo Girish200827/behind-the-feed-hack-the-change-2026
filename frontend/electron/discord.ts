@@ -1,4 +1,4 @@
-// Posts a Scroll Mood message to a Discord webhook. Runs in the Electron main process (no CORS there).
+// Posts a BehindFeed message to a Discord webhook. Runs in the Electron main process (no CORS there).
 // Plain Node: no Electron imports, so tests can call it against a local HTTP server.
 import type { DiscordPayload, SendResult } from '../src/types/bridge'
 import { isDiscordWebhookUrl } from '../src/lib/webhookUrl'

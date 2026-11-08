@@ -124,7 +124,7 @@ export default function CirclePage() {
                 {sent.slice(0, 5).map((m) => (
                   <li key={m.at}>
                     <MessagePreview
-                      payload={{ content: m.content, username: 'Scroll Mood' }}
+                      payload={{ content: m.content, username: 'BehindFeed' }}
                       meta={new Date(m.at).toLocaleString([], { weekday: 'short', hour: 'numeric', minute: '2-digit' })}
                     />
                   </li>

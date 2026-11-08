@@ -5,7 +5,7 @@ import { join } from 'node:path'
 import { sendWebhook } from './discord'
 
 // Windows only shows native notifications for apps with an AppUserModelID.
-app.setAppUserModelId('com.scrollmood.app')
+app.setAppUserModelId('com.behindfeed.app')
 
 // Circle: the renderer can't call Discord directly (CORS), so it asks us. URL and payload are validated in sendWebhook.
 ipcMain.handle('circle:send', (_e, url: unknown, payload: unknown) => sendWebhook(String(url ?? ''), payload))
@@ -32,7 +32,7 @@ function createWindow(): void {
     height: 880,
     minWidth: 1100,
     minHeight: 720,
-    title: 'Scroll Mood',
+    title: 'BehindFeed',
     backgroundColor: theme.bg,
     show: false,
     titleBarStyle: 'hidden',

@@ -1,6 +1,6 @@
-# Scroll Mood: Frontend
+# BehindFeed: Frontend
 
-The desktop dashboard for **Scroll Mood**. It shows how scrolling Instagram, TikTok, YouTube, X and Facebook shifted your mood today, which content lifts or drains you, and nudges you toward people instead of feeds.
+The desktop dashboard for **BehindFeed**. It shows how scrolling Instagram, TikTok, YouTube, X and Facebook shifted your mood today, which content lifts or drains you, and nudges you toward people instead of feeds.
 
 Built for Hack the Change 2026 (Calgary) on the prompt *"How can we leverage technology to promote health, social connection, and well-being in our communities?"*
 

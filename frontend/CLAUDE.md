@@ -1,10 +1,10 @@
-# Scroll Mood — Frontend (Cheema)
+# BehindFeed — Frontend (Cheema)
 
 Hack the Change 2026 (Calgary, 24 hours). 4-person team. This folder is the frontend only.
 My job from the team build map: **"Show people what scrolling did to their mood, and let them pause the camera."**
 
 ## Project
-"Scroll Mood": a desktop app that turns the camera on only while you scroll social media, notices when your
+"BehindFeed" (formerly "Scroll Mood"): a desktop app that turns the camera on only while you scroll social media, notices when your
 expression shifts, labels what was on screen at that moment, and shows which content lifts or drains you.
 It's for doomscrollers who want healthier habits.
 
@@ -161,7 +161,7 @@ Done when: the fake session shows as a mood timeline with switches and labels th
   Shown as a compact card on Today and in full on Goals, above the weekly goal (A5/G4; computed locally until connected).
 - **Scroll Circle** (`/circle`): Discord webhook + display name in localStorage (never in the repo). Messages come from
   `lib/circleMessage.ts` and contain only name, goal, outcome, streak, drained-time change, encouragement. Sending runs
-  in the main process (`electron/discord.ts`) via the preload bridge `window.scrollMood` (`src/types/bridge.ts`).
+  in the main process (`electron/discord.ts`) via the preload bridge `window.behindfeed` (`src/types/bridge.ts`).
   No webhook → demo mode with labelled sample messages.
 - **Connect-instead nudges**: `lib/nudges.ts` finds 5+ min below neutral (smoothed); `NudgeProvider` shows a toast and a
   native notification (main sets the AppUserModelID), watches the live session every 30 s. Toggle + "Simulate a

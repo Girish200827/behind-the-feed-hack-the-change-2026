@@ -16,7 +16,7 @@ export default function PrivacyPage() {
     <section className="flex flex-col gap-10">
       <header>
         <h1 className="text-[40px] font-semibold leading-none tracking-[-0.03em]">Privacy</h1>
-        <p className="mt-4 max-w-2xl text-[14px] text-muted">What Scroll Mood watches, what it keeps, and the gentle nudges it can give you.</p>
+        <p className="mt-4 max-w-2xl text-[14px] text-muted">What BehindFeed watches, what it keeps, and the gentle nudges it can give you.</p>
       </header>
 
       <PauseCard />
@@ -33,7 +33,7 @@ export default function PrivacyPage() {
             <div className="label">Connect-instead nudges</div>
             <h2 className="mt-2 text-[20px] font-medium tracking-[-0.01em] text-ink">A gentle nudge when scrolling starts to drain you</h2>
             <p className="mt-2 max-w-xl text-[13px] leading-relaxed text-muted">
-              If your mood signal stays below neutral for 5 minutes or more, Scroll Mood suggests something with people or fresh air instead: {NUDGE_SUGGESTIONS.join(', ').toLowerCase()}. One nudge per stretch, shown in the app and as a notification.
+              If your mood signal stays below neutral for 5 minutes or more, BehindFeed suggests something with people or fresh air instead: {NUDGE_SUGGESTIONS.join(', ').toLowerCase()}. One nudge per stretch, shown in the app and as a notification.
             </p>
           </div>
           <Switch
