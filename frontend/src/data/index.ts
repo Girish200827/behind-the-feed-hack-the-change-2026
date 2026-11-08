@@ -21,6 +21,9 @@ export const setCheckIn = (date: DayKey, value: boolean) => goals.setCheckIn(dat
 export const getWeekComparison = (date: DayKey) => goals.getWeekComparison(date)
 
 export { labelFor, type Timeline } from './join'
+// Connect-instead nudges: preferences and native notifications.
+export { markStretchSeen, notifyNative, nudgesEnabled, setNudgesEnabled, takeSuggestionIndex } from './nudgeSettings'
+
 // Scroll Circle (Discord webhook via the main process).
 export {
   getCircleSettings,
