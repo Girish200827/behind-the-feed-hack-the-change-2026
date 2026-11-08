@@ -921,3 +921,22 @@ p {
 .footer-links a:hover {
   color: var(--text);
 }
+
+/* Auth0 download gate */
+.auth-note {
+  margin-top: 0.75rem;
+}
+.link-button {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--accent-blue);
+  font: inherit;
+  cursor: pointer;
+}
+.link-button:hover {
+  text-decoration: underline;
+}
+[hidden] {
+  display: none !important;
+}
