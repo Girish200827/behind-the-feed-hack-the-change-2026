@@ -1,0 +1,21 @@
+# AWS Amplify build for the landing page (monorepo: the site lives in landing/).
+# In Amplify set the app root to "landing" (env var AMPLIFY_MONOREPO_APP_ROOT=landing) and add
+# PUBLIC_AUTH0_DOMAIN and PUBLIC_AUTH0_CLIENT_ID as environment variables.
+version: 1
+applications:
+  - appRoot: landing
+    frontend:
+      phases:
+        preBuild:
+          commands:
+            - npm ci
+        build:
+          commands:
+            - npm run build
+      artifacts:
+        baseDirectory: dist
+        files:
+          - '**/*'
+      cache:
+        paths:
+          - node_modules/**/*

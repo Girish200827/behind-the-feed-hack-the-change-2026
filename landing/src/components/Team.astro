@@ -1,0 +1,34 @@
+---
+const team = [
+  { name: "Raad", role: "Computer Vision, face" },
+  { name: "Giresh", role: "Computer Vision, screen" },
+  { name: "Allen", role: "Backend" },
+  { name: "Ahmad Cheema", role: "Frontend" },
+];
+---
+
+<section class="section">
+  <div class="container">
+    <div class="section-head" data-reveal>
+      <p class="eyebrow">Team</p>
+      <h2>Four people, one 24-hour build</h2>
+    </div>
+
+    <div class="card-grid card-grid-4" data-reveal-stagger>
+      {
+        team.map((member) => (
+          <div class="card team-card">
+            <h3>{member.name}</h3>
+            <p>{member.role}</p>
+          </div>
+        ))
+      }
+    </div>
+  </div>
+</section>
+
+<style>
+  .team-card {
+    text-align: center;
+  }
+</style>

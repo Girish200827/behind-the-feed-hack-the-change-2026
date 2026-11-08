@@ -26,6 +26,14 @@ On macOS, quit and reopen the app after allowing Screen Recording. If something 
 
 **Building the installers:** pushing a tag like `v0.1.0` runs `.github/workflows/release.yml`, which builds both installers and attaches them to the release. Locally: build the engine with `pyinstaller engine/behindfeed-engine.spec --distpath engine/dist --workpath engine/build`, then run `npm run dist` in `frontend/`.
 
+## Landing page (`landing/`)
+
+The download site: Astro, deployed on AWS Amplify (build settings in `amplify.yml` at the repo root, app root `landing`). Downloads sit behind an **Auth0** login: clicking a download button while signed out opens a "Log in to download" modal, Continue goes to Auth0's login page, and after you sign in the installer you picked starts downloading. Signed in, the buttons download directly.
+
+- Run locally: `cd landing && cp .env.example .env` (fill in the Auth0 Domain and Client ID), then `npm install && npm run dev`.
+- Auth0 setup: a Single Page Application with the site URL (and `http://localhost:4321`) in Allowed Callback URLs, Allowed Logout URLs and Allowed Web Origins.
+- Amplify needs the same two values as environment variables: `PUBLIC_AUTH0_DOMAIN`, `PUBLIC_AUTH0_CLIENT_ID`.
+
 ## Run it from source (Windows)
 
 1. **Once:** double-click `setup_app.bat`. It installs the Python libraries (into `%USERPROFILE%\venvs\face`), the models and the dashboard (`npm install`; needs [Node.js](https://nodejs.org) 20+ and Python 3.11–3.13), and asks for a free [Gemini key](https://aistudio.google.com/apikey) for screen labels.

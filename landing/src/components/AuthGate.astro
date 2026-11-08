@@ -1,0 +1,223 @@
+---
+// Auth0 login before download. Every link marked `data-download` (hero buttons, nav Download) works
+// as usual once you're signed in. Signed out, clicking one opens this modal; "Continue" goes to the
+// Auth0 login page, and when you come back the download you picked starts by itself.
+---
+
+<dialog class="auth-modal" data-auth-modal aria-labelledby="auth-modal-title">
+  <form method="dialog" class="auth-modal-close-form">
+    <button class="auth-modal-close" aria-label="Close">
+      <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8"
+        ><path d="M6 6l12 12M18 6L6 18"></path></svg
+      >
+    </button>
+  </form>
+  <img src="/logo.svg" alt="" class="auth-modal-logo" />
+  <h2 id="auth-modal-title">Log in to download</h2>
+  <p class="auth-modal-text">
+    Sign in or create a free account with Auth0. Your download for{" "}
+    <strong data-auth-target>your computer</strong> starts right after.
+  </p>
+  <div class="auth-modal-actions">
+    <button type="button" class="btn btn-primary" data-auth-continue>Continue with Auth0</button>
+    <form method="dialog"><button class="btn">Cancel</button></form>
+  </div>
+  <p class="auth-modal-fine">We only use your account to know who downloaded the app.</p>
+</dialog>
+
+<p class="auth-signed-in" data-auth-signed-in hidden>
+  Signed in as <strong data-auth-name></strong> ·
+  <button type="button" class="auth-link" data-auth-logout>Log out</button>
+</p>
+
+<script>
+  import { createAuth0Client, type Auth0Client } from "@auth0/auth0-spa-js";
+
+  const domain = import.meta.env.PUBLIC_AUTH0_DOMAIN;
+  const clientId = import.meta.env.PUBLIC_AUTH0_CLIENT_ID;
+  const modal = document.querySelector<HTMLDialogElement>("[data-auth-modal]")!;
+  const targetLabel = modal.querySelector("[data-auth-target]")!;
+  let pending: string | null = null; // the installer to start after login
+
+  const osLabel = (href: string) =>
+    href.endsWith(".dmg") ? "macOS" : href.endsWith(".exe") ? "Windows" : "your computer";
+
+  const startDownload = (href: string) => {
+    window.location.href = href;
+  };
+
+  async function init() {
+    if (!domain || !clientId) {
+      console.warn("Auth0 is not configured (PUBLIC_AUTH0_DOMAIN / PUBLIC_AUTH0_CLIENT_ID): downloads are not gated.");
+      return;
+    }
+
+    let auth0: Auth0Client;
+    let signedIn = false;
+    try {
+      auth0 = await createAuth0Client({
+        domain,
+        clientId,
+        authorizationParams: { redirect_uri: window.location.origin },
+        cacheLocation: "localstorage", // stay signed in across reloads
+        useRefreshTokens: true,
+      });
+
+      // Back from the Auth0 login page: finish login, then start the download that was clicked.
+      const query = new URLSearchParams(window.location.search);
+      if (query.has("code") && query.has("state")) {
+        const { appState } = await auth0.handleRedirectCallback<{ download?: string }>();
+        window.history.replaceState({}, document.title, window.location.pathname);
+        if (appState?.download) startDownload(appState.download);
+      }
+      signedIn = await auth0.isAuthenticated();
+    } catch (err) {
+      console.error("Auth0 failed; downloads are not gated.", err);
+      return;
+    }
+
+    if (signedIn) {
+      const user = await auth0.getUser();
+      const bar = document.querySelector<HTMLElement>("[data-auth-signed-in]")!;
+      bar.querySelector("[data-auth-name]")!.textContent = user?.name || user?.email || "you";
+      bar.hidden = false;
+      bar.querySelector("[data-auth-logout]")!.addEventListener("click", () =>
+        auth0.logout({ logoutParams: { returnTo: window.location.origin } })
+      );
+      return; // download links work normally
+    }
+
+    // Signed out: a download link opens the modal instead of downloading.
+    document.addEventListener("click", (e) => {
+      const link = (e.target as Element).closest<HTMLAnchorElement>("a[data-download]");
+      if (!link) return;
+      e.preventDefault();
+      pending = link.href;
+      targetLabel.textContent = osLabel(pending);
+      modal.showModal();
+    });
+
+    modal.querySelector("[data-auth-continue]")!.addEventListener("click", () =>
+      auth0.loginWithRedirect({ appState: { download: pending ?? undefined } })
+    );
+    // Click on the backdrop closes the modal.
+    modal.addEventListener("click", (e) => {
+      if (e.target === modal) modal.close();
+    });
+  }
+
+  init();
+</script>
+
+<style>
+  .auth-modal {
+    width: min(420px, calc(100vw - 2rem));
+    padding: 2rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--surface);
+    color: var(--text);
+    box-shadow: var(--shadow-lg);
+    text-align: center;
+  }
+  .auth-modal::backdrop {
+    background: rgba(9, 9, 11, 0.32);
+    backdrop-filter: blur(2px);
+  }
+  .auth-modal[open] {
+    animation: auth-in 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  @keyframes auth-in {
+    from {
+      opacity: 0;
+      transform: translateY(12px);
+    }
+  }
+  .auth-modal-close-form {
+    position: absolute;
+    top: 0.75rem;
+    right: 0.75rem;
+    margin: 0;
+  }
+  .auth-modal-close {
+    display: flex;
+    padding: 0.4rem;
+    border: 0;
+    border-radius: var(--radius-sm);
+    background: none;
+    color: var(--muted);
+    cursor: pointer;
+  }
+  .auth-modal-close:hover {
+    background: var(--surface-muted);
+    color: var(--text);
+  }
+  .auth-modal-logo {
+    display: block;
+    height: 32px;
+    margin: 0 auto 1rem;
+  }
+  .auth-modal h2 {
+    margin: 0;
+    font-size: 1.35rem;
+    font-weight: 620;
+    letter-spacing: -0.03em;
+  }
+  .auth-modal-text {
+    margin: 0.6rem 0 1.5rem;
+    color: var(--muted);
+    font-size: 0.92rem;
+    line-height: 1.6;
+  }
+  .auth-modal-text strong {
+    color: var(--text);
+    font-weight: 600;
+  }
+  .auth-modal-actions {
+    display: flex;
+    justify-content: center;
+    gap: 0.5rem;
+  }
+  .auth-modal-actions form {
+    margin: 0;
+  }
+  .auth-modal-fine {
+    margin: 1.25rem 0 0;
+    color: var(--muted);
+    font-size: 0.75rem;
+  }
+  .auth-signed-in {
+    position: fixed;
+    right: 1.25rem;
+    bottom: 1.25rem;
+    z-index: 50;
+    margin: 0;
+    padding: 0.5rem 0.9rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-pill);
+    background: var(--surface-muted);
+    box-shadow: var(--shadow-md);
+    color: var(--muted);
+    font-size: 0.8rem;
+  }
+  .auth-signed-in strong {
+    color: var(--text);
+    font-weight: 600;
+  }
+  .auth-link {
+    padding: 0;
+    border: 0;
+    background: none;
+    color: var(--accent-blue);
+    font: inherit;
+    cursor: pointer;
+  }
+  .auth-link:hover {
+    text-decoration: underline;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .auth-modal[open] {
+      animation: none;
+    }
+  }
+</style>

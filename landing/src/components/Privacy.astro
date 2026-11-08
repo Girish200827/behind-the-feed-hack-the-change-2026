@@ -1,0 +1,48 @@
+---
+const cards = [
+  {
+    title: "Face frames never saved",
+    body: "Camera images are analyzed on your device and discarded — the app stores emotion readings, timestamps, mood switches, and content labels instead.",
+  },
+  {
+    title: "Screenshots labelled then deleted",
+    body: "Screen captures are sent to Google Gemini for labeling, then discarded by the app. Google's own handling depends on its service and account terms.",
+  },
+  {
+    title: "Camera only during social media",
+    body: "The camera runs while a supported platform is active and tracking isn't paused — off the rest of the time.",
+  },
+  {
+    title: "Pause anytime",
+    body: "One click pauses tracking — in connected mode it turns the camera off; demo mode just changes what's displayed.",
+  },
+];
+---
+
+<section class="section">
+  <div class="container">
+    <div class="glow-band" data-reveal>
+      <div class="section-head">
+        <p class="eyebrow">Privacy</p>
+        <h2>Built to watch less, not more</h2>
+      </div>
+
+      <div class="card-grid card-grid-4" data-reveal-stagger>
+        {
+          cards.map((card) => (
+            <div class="glass-card">
+              <h3>{card.title}</h3>
+              <p>{card.body}</p>
+            </div>
+          ))
+        }
+      </div>
+
+      <p class="note text-center mt-3">These are mood signals, not a medical diagnosis.</p>
+      <p class="note text-center mt-1">
+        On the Gemini free tier, Google may use submitted data to improve its products — see
+        Google's terms for details.
+      </p>
+    </div>
+  </div>
+</section>

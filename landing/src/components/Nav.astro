@@ -1,0 +1,28 @@
+---
+import { site, links } from "../config";
+---
+
+<header class="nav" data-float-nav>
+  <div class="nav-inner">
+    <a class="nav-logo" href="#top">
+      <img src="/logo.svg" alt={site.name} class="nav-logo-img" />
+    </a>
+    <nav class="nav-menu" aria-label="Primary">
+      <div class="nav-links nav-menu-links">
+        <a href="#problem">Problem</a>
+        <a href="#how-it-works">How it works</a>
+        <a href="#stack">Stack</a>
+      </div>
+      <a
+        class="btn btn-primary btn-sm"
+        data-os-download
+        data-download
+        data-win-href={links.downloadWindows}
+        data-mac-href={links.downloadMac}
+        href={links.downloadWindows}
+      >
+        Download
+      </a>
+    </nav>
+  </div>
+</header>

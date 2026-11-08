@@ -1,0 +1,127 @@
+---
+import { links } from "../config";
+
+const icons = {
+  home: `<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 11l9-7 9 7"/><path d="M5 10v9a1 1 0 0 0 1 1h4v-6h4v6h4a1 1 0 0 0 1-1v-9"/></svg>`,
+  eye: `<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7Z"/><circle cx="12" cy="12" r="3"/></svg>`,
+  chart: `<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 19V5M4 19h16M8 19v-6M12 19v-9M16 19v-4"/></svg>`,
+  gear: `<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M2 12h3M19 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1"/></svg>`,
+  camera: `<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="7" width="15" height="12" rx="2"/><path d="M17 10l5-3v10l-5-3"/></svg>`,
+  face: `<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M9 10h.01M15 10h.01M8.5 15c1 1.2 2.2 1.8 3.5 1.8s2.5-.6 3.5-1.8"/></svg>`,
+  screen: `<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="4" width="20" height="13" rx="2"/><path d="M8 21h8M12 17v4"/></svg>`,
+  pause: `<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="5" width="4" height="14" rx="1"/></svg>`,
+};
+
+---
+
+<section class="section hero" id="top">
+  <div class="container hero-inner" data-reveal-stagger>
+    <p class="eyebrow">Hack the Change 2026</p>
+    <h1 class="hero-headline">
+      Know what your scroll is doing to your <span class="text-gradient">mood</span>
+    </h1>
+    <p class="lede hero-sub">
+      A desktop app that notices how short-form content changes your mood, and shows you which
+      content lifts you and which drains you.
+    </p>
+
+    <div class="btn-row hero-downloads">
+      <a class="btn btn-primary" data-os="win" data-download href={links.downloadWindows}>Download for Windows</a>
+      <a class="btn" data-os="mac" data-download href={links.downloadMac}>Download for macOS (Apple Silicon)</a>
+    </div>
+
+    <p class="note hero-privacy">
+      Camera frames are analyzed on your device and not saved. Screen captures are sent to Google
+      Gemini for labeling and are not saved by the app.
+    </p>
+
+    <div class="app-mockup hero-mockup" aria-hidden="true">
+      <div class="app-mockup-sidebar">
+        <span class="dot-icon" set:html={icons.home} />
+        <span class="dot-icon" set:html={icons.eye} />
+        <span class="dot-icon" set:html={icons.chart} />
+        <span class="dot-icon" set:html={icons.gear} />
+      </div>
+      <div class="app-mockup-main">
+        <div class="app-mockup-head">
+          <span class="app-mockup-avatar"></span>
+          <div>
+            <p class="app-mockup-name">Session active</p>
+            <p class="app-mockup-sub">Instagram detected</p>
+          </div>
+        </div>
+        <div class="app-mockup-grid">
+          <div class="app-mockup-tile">
+            <span class="app-mockup-tile-icon" style="background:var(--accent-blue-soft);color:var(--accent-blue);" set:html={icons.camera} />
+            <h4>Camera</h4>
+            <p>On-device, active only while scrolling</p>
+          </div>
+          <div class="app-mockup-tile">
+            <span class="app-mockup-tile-icon" style="background:var(--surface-muted);color:var(--text);" set:html={icons.face} />
+            <h4>Mood</h4>
+            <p>Switch detected 2 min ago</p>
+          </div>
+          <div class="app-mockup-tile">
+            <span class="app-mockup-tile-icon" style="background:var(--accent-blue-soft);color:var(--accent-blue);" set:html={icons.screen} />
+            <h4>Content label</h4>
+            <p>Comedy · upbeat</p>
+          </div>
+          <div class="app-mockup-tile">
+            <span class="app-mockup-tile-icon" style="background:var(--surface-muted);color:var(--text);" set:html={icons.pause} />
+            <h4>Pause</h4>
+            <p>Stop tracking anytime</p>
+          </div>
+        </div>
+        <div class="app-mockup-footer">
+          <span>Tracking mood in the background</span>
+          <span class="status-dot"></span>
+        </div>
+      </div>
+    </div>
+    <p class="note hero-mockup-caption">Concept preview — not an actual screenshot.</p>
+  </div>
+</section>
+
+<style>
+  .hero {
+    padding-top: var(--space-5);
+  }
+
+  .hero-inner {
+    max-width: 760px;
+    text-align: center;
+  }
+
+  .hero-headline {
+    margin-top: 1rem;
+  }
+
+  .hero-sub {
+    margin: 1.75rem auto 0;
+    max-width: 560px;
+  }
+
+  .hero-downloads {
+    justify-content: center;
+    margin-top: 1.75rem;
+  }
+
+  .hero-privacy {
+    margin-top: 1.75rem;
+  }
+
+  .hero-mockup {
+    margin-top: 3.5rem;
+  }
+
+  .hero-mockup-caption {
+    margin-top: 0.85rem;
+    text-align: center;
+  }
+
+  @media (max-width: 720px) {
+    .hero-mockup {
+      margin-top: 2.5rem;
+    }
+  }
+</style>
