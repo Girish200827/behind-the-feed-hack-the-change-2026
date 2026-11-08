@@ -1,0 +1,95 @@
+---
+const steps = [
+  {
+    number: "01",
+    title: "Detects the app",
+    body: "Detects when Instagram, TikTok, YouTube, X, or Facebook is the active window, then starts a session and turns on the camera.",
+    icon: "eye",
+  },
+  {
+    number: "02",
+    title: "Reads your mood",
+    body: "Analyzes your facial expression on your device and looks for sustained mood changes.",
+    icon: "face",
+  },
+  {
+    number: "03",
+    title: "Labels the content",
+    body: "Keeps a short screen buffer in memory and, at each mood switch, sends a few frames to Google Gemini to label the content's category, tone, and topic — then discards them.",
+    icon: "screen",
+  },
+  {
+    number: "04",
+    title: "Shows the report",
+    body: "Shows you a session report with a mood timeline and labeled content moments. A separate insights feature suggests a weekly goal once there's enough data.",
+    icon: "report",
+  },
+];
+
+const icons: Record<string, string> = {
+  eye: `<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7Z"/><circle cx="12" cy="12" r="3"/></svg>`,
+  face: `<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M9 10h.01M15 10h.01M8.5 15c1 1.2 2.2 1.8 3.5 1.8s2.5-.6 3.5-1.8"/></svg>`,
+  screen: `<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="4" width="20" height="13" rx="2"/><path d="M8 21h8M12 17v4"/></svg>`,
+  report: `<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 19V5M4 19h16M8 19v-6M12 19v-9M16 19v-4"/></svg>`,
+};
+
+const highlightIndex = 1;
+---
+
+<section class="section" id="how-it-works">
+  <div class="container">
+    <div class="section-head" data-reveal>
+      <p class="eyebrow">How it works</p>
+      <h2>See your scroll sessions clearly</h2>
+    </div>
+
+    <div class="split-section">
+      <div class="feature-list-v2" data-reveal-stagger>
+        {
+          steps.map((step, i) => (
+            <div class={`feature-list-v2-item${i === highlightIndex ? " is-highlighted" : ""}`}>
+              <span class="row-icon" set:html={icons[step.icon]} />
+              <div>
+                <h3>
+                  {step.number} · {step.title}
+                </h3>
+                <p>{step.body}</p>
+              </div>
+            </div>
+          ))
+        }
+      </div>
+
+      <div class="mockup-panel" data-reveal aria-hidden="true">
+        <p class="chip-group-label">Live detection (sample)</p>
+        <div class="mockup-panel-list">
+          <div class="mockup-panel-row">
+            <span class="mockup-panel-avatar" style="background:var(--text);"></span>
+            <div class="meta">
+              <p class="name">Instagram</p>
+              <p class="sub">Mood dipped · Reels</p>
+            </div>
+            <span class="time">0:42</span>
+          </div>
+          <div class="mockup-panel-row">
+            <span class="mockup-panel-avatar" style="background:var(--accent-gradient);"></span>
+            <div class="meta">
+              <p class="name">YouTube</p>
+              <p class="sub">Mood lifted · Tutorial</p>
+            </div>
+            <span class="time">3:10</span>
+          </div>
+          <div class="mockup-panel-row">
+            <span class="mockup-panel-avatar" style="background:var(--text);"></span>
+            <div class="meta">
+              <p class="name">TikTok</p>
+              <p class="sub">Mood dipped · Comedy</p>
+            </div>
+            <span class="time">6:55</span>
+          </div>
+        </div>
+        <span class="floating-badge" set:html={icons.face} />
+      </div>
+    </div>
+  </div>
+</section>
