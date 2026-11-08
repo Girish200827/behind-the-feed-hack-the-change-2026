@@ -2,6 +2,7 @@
 # installers to a GitHub Release.
 #   - Push a tag like v0.1.0      -> builds both and publishes them on the release for that tag
 #   - Actions > Release > Run     -> builds both and keeps them as workflow artifacts (no release)
+#   - Push to allen/release       -> same test build, artifacts only
 # Needs the repo secret GEMINI_API_KEY (Settings > Secrets and variables > Actions). It is embedded in
 # the app so screen labels work out of the box; anyone with the app can extract it, so use a key with a
 # quota/spending cap and delete it after the hackathon.
@@ -10,6 +11,7 @@ name: Release
 on:
   push:
     tags: ["v*"]
+    branches: [allen/release] # test builds before merging (no release; artifacts only)
   workflow_dispatch:
 
 permissions:
