@@ -1,6 +1,8 @@
 <div align="center">
 
-<img src="docs/images/logo.svg" alt="BehindFeed" width="320" />
+<img src="docs/images/mark.svg" alt="" width="88" />
+
+# BehindFeed
 
 ### Know what your scroll is doing to your mood
 
