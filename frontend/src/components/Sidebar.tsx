@@ -3,6 +3,7 @@ import { motion } from 'motion/react'
 import { Activity, Lightbulb, ShieldCheck, Target, Users, type LucideIcon } from 'lucide-react'
 import { dataSourceName } from '../data'
 import Wordmark from './Wordmark'
+import CameraPill from './CameraPill'
 
 const NAV: { to: string; label: string; icon: LucideIcon; also?: string[] }[] = [
   { to: '/today', label: 'Today', icon: Activity, also: ['/session'] },
@@ -61,8 +62,8 @@ export default function Sidebar() {
       </nav>
 
       <div className="mt-auto flex flex-col gap-3 border-t border-hairline px-5 py-5">
+        <CameraPill />
         <StatusRow label="Data" value={dataSourceName === 'mock' ? 'Demo' : 'Live'} dot={dataSourceName === 'mock' ? 'var(--accent)' : 'var(--positive)'} />
-        <StatusRow label="Camera" value="Off" dot="var(--faint)" />
       </div>
     </aside>
   )

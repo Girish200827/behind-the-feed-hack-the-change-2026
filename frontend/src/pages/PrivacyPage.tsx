@@ -1,11 +1,13 @@
 import { useState } from 'react'
-import { ShieldCheck, Sparkles } from 'lucide-react'
-import { nudgesEnabled, setNudgesEnabled } from '../data'
+import { Sparkles } from 'lucide-react'
+import { nudgesEnabled, resetConsent, setNudgesEnabled } from '../data'
 import { useNudge } from '../components/nudge/NudgeProvider'
 import { NUDGE_SUGGESTIONS } from '../lib/nudges'
-import EmptyState from '../components/EmptyState'
+import PauseCard from '../components/privacy/PauseCard'
+import PrivacyFacts from '../components/privacy/PrivacyFacts'
+import { NOT_A_DIAGNOSIS } from '../content/privacy'
 
-/** Privacy & controls. The nudge setting lives here; camera details and pause arrive with Phase 2. */
+/** Privacy & controls (C2): camera pause, what is and isn't recorded, nudges, and a consent reset for demos. */
 export default function PrivacyPage() {
   const [enabled, setEnabled] = useState(nudgesEnabled)
   const { nudge } = useNudge()
@@ -16,6 +18,14 @@ export default function PrivacyPage() {
         <h1 className="text-[40px] font-semibold leading-none tracking-[-0.03em]">Privacy</h1>
         <p className="mt-4 max-w-2xl text-[14px] text-muted">What Scroll Mood watches, what it keeps, and the gentle nudges it can give you.</p>
       </header>
+
+      <PauseCard />
+
+      <div>
+        <h2 className="label mb-4">What is and isn't recorded</h2>
+        <PrivacyFacts />
+        <p className="mt-5 text-[13px] text-ink-2">{NOT_A_DIAGNOSIS} They come from facial expression and are meant as a gentle prompt to reflect.</p>
+      </div>
 
       <section className="rounded-[var(--radius-lg)] border border-hairline bg-surface px-8 py-7">
         <div className="flex items-start justify-between gap-8">
@@ -48,7 +58,19 @@ export default function PrivacyPage() {
         </div>
       </section>
 
-      <EmptyState icon={ShieldCheck} title="Camera and pause controls" text="What the camera watches, what is kept, what is never saved, and a pause button will appear here." />
+      <div className="flex items-center gap-3 text-[12px] text-muted">
+        <button
+          type="button"
+          onClick={() => {
+            resetConsent()
+            location.reload()
+          }}
+          className="underline decoration-hairline-strong underline-offset-4 transition-colors hover:text-ink hover:decoration-ink"
+        >
+          Reset consent (for demos)
+        </button>
+        <span className="text-faint">Shows the first-launch screen again.</span>
+      </div>
     </section>
   )
 }

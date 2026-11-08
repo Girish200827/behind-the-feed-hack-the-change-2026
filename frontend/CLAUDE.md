@@ -165,7 +165,10 @@ Done when: the fake session shows as a mood timeline with switches and labels th
   chips laid out per session under each panel (`layoutSessionLanes`), clicking a panel opens the session.
 
 ## TODO
-- Pause endpoint must be agreed with Allen and added to contracts.md before wiring (Phase 3).
+- Pause endpoint must be agreed with Allen and added to contracts.md before wiring (Phase 3). Until then
+  `pause()` / `resume()` / `getStatus()` in `src/data/camera.ts` only hold state in memory (the camera is not
+  actually paused).
+- Online-labelling line on Privacy / consent (`src/content/privacy.ts`, `ONLINE_LABELLING`) must be confirmed with Giresh.
 - `session.end` is `number | null` in our types (null = still in progress, needed for Phase 3 live refresh).
   Confirm with Allen and get it written into contracts.md.
 - ApiSource paths in `src/data/constants.ts` are placeholders until confirmed with Allen (A4).

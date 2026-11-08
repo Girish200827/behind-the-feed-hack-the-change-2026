@@ -9,12 +9,14 @@ import GoalsPage from './pages/GoalsPage'
 import CirclePage from './pages/CirclePage'
 import PrivacyPage from './pages/PrivacyPage'
 import NudgeProvider from './components/nudge/NudgeProvider'
+import ConsentGate from './components/ConsentGate'
 
 // HashRouter so routes work when Electron loads the built index.html from disk.
 // MotionConfig "user" turns transform/layout animations off under prefers-reduced-motion.
 export default function App() {
   return (
     <MotionConfig reducedMotion="user">
+      <ConsentGate>
       <HashRouter>
         <NudgeProvider>
         <Routes>
@@ -41,6 +43,7 @@ export default function App() {
         </Routes>
         </NudgeProvider>
       </HashRouter>
+      </ConsentGate>
     </MotionConfig>
   )
 }

@@ -25,5 +25,6 @@ export const KEYS = {
   goalHistory: (source: string) => `scrollmood.goalHistory.v1.${source}`,
   circle: 'scrollmood.circle.v1',
   circleSent: 'scrollmood.circleSent.v1',
-  nudges: 'scrollmood.nudges.v1'
+  nudges: 'scrollmood.nudges.v1',
+  consent: 'scrollmood.consent.v1'
 } as const

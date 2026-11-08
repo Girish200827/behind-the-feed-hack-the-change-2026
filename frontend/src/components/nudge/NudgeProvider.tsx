@@ -4,6 +4,7 @@ import { Check, Sparkles, X } from 'lucide-react'
 import {
   getDailyGoal,
   getSessions,
+  getStatus,
   getTimeline,
   markStretchSeen,
   notifyNative,
@@ -50,7 +51,8 @@ export default function NudgeProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     let alive = true
     const check = async () => {
-      if (!nudgesEnabled()) return
+      // No nudges while nudges are off or the camera is paused.
+      if (!nudgesEnabled() || (await getStatus()) === 'paused') return
       const live = (await getSessions()).find((s) => s.end === null)
       if (!live) return
       const t = await getTimeline(live.id)
