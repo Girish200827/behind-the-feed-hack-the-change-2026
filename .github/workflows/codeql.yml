@@ -1,0 +1,48 @@
+# CodeQL code scanning: finds security problems in the Python (backend, computer vision, engine),
+# the TypeScript/JavaScript (dashboard, landing page) and the GitHub workflows.
+# Results: Security > Code scanning. Free for public repositories.
+name: CodeQL
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  schedule:
+    - cron: "23 6 * * 1" # Mondays 06:23 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  analyze:
+    name: Analyze (${{ matrix.language }})
+    runs-on: ubuntu-latest
+    permissions:
+      security-events: write # upload results
+      actions: read
+      contents: read
+    strategy:
+      fail-fast: false
+      matrix:
+        language: [python, javascript-typescript, actions]
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: github/codeql-action/init@v3
+        with:
+          languages: ${{ matrix.language }}
+          build-mode: none # interpreted languages: no build needed
+          queries: security-extended
+          config: |
+            paths-ignore:
+              - "**/node_modules"
+              - "**/dist"
+              - "**/out"
+              - "engine/build"
+              - "frontend/src/mock"
+
+      - uses: github/codeql-action/analyze@v3
+        with:
+          category: "/language:${{ matrix.language }}"
