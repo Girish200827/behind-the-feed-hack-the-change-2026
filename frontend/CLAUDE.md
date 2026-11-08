@@ -131,8 +131,25 @@ Done when: the fake session shows as a mood timeline with switches and labels th
   Samples are bucketed to ~1.5 px and dot/scrubber y comes from `lib/monotone.ts` (exact d3 monotone maths), so a
   day of 6 sessions at 1 Hz stays smooth.
 
+## Well-being features (frontend-only; no contracts.md changes)
+- **Daily social goal** (`src/data/dailyGoal.ts`, pure + tested): picked from yesterday's sessions. Connection
+  ("Swap one scroll session for a call or text" / "Message a friend before opening <platform>"), Timing ("No scrolling
+  after 11 PM") or Limit ("Keep draining content under 15 min today"). Progress is automatic except connection goals
+  (one-tap check-in). Check-ins and per-day results live in localStorage (`goals.ts`); mock mode seeds a 4-day streak.
+  Shown as a compact card on Today and in full on Goals, above the weekly goal (A5/G4; computed locally until connected).
+- **Scroll Circle** (`/circle`): Discord webhook + display name in localStorage (never in the repo). Messages come from
+  `lib/circleMessage.ts` and contain only name, goal, outcome, streak, drained-time change, encouragement. Sending runs
+  in the main process (`electron/discord.ts`) via the preload bridge `window.scrollMood` (`src/types/bridge.ts`).
+  No webhook → demo mode with labelled sample messages.
+- **Connect-instead nudges**: `lib/nudges.ts` finds 5+ min below neutral (smoothed); `NudgeProvider` shows a toast and a
+  native notification (main sets the AppUserModelID), watches the live session every 30 s. Toggle + "Simulate a
+  draining stretch" on Privacy.
+- **Support nearby**: `src/mock/openreferral.json` (HSDS 3.0, sample listings of real Calgary/Alberta services; verify
+  before demo) via `getSupportResources()`; shown on Goals when the week is > 30% drained.
+- Tests: `npm test` (vitest). Manual checks (real Discord, Windows notification): `TESTING.md`.
+
 ## Mock data
-- `src/mock/realistic.json`: a week (7 days x 3-6 sessions) across all five platforms at 1 Hz, with patterns:
+- `src/mock/realistic.json`: two weeks (14 days x 3-6 sessions) across all five platforms at 1 Hz, with patterns:
   X news/politics drains, YouTube comedy/food lifts, Instagram friends lift / comparison dips, Facebook family lifts /
   politics drains, late-night TikTok slowly drains. `live.json`: a session in progress (`end: null`).
 - `src/mock/extra/events.json`: the original hand-written 10-min session. `src/mock/edge/no-samples.json`: edge case.
@@ -164,6 +181,7 @@ Done when: the fake session shows as a mood timeline with switches and labels th
 - `npm run dev` — open the app window (mock data by default)
 - `npm run dev:api` — same, reading from Allen's API
 - `npm run build` — typecheck + production build
+- `npm test` — unit tests (vitest)
 
 Gotcha: if the app crashes with `Cannot read properties of undefined (reading 'whenReady')`, the shell has
 `ELECTRON_RUN_AS_NODE=1` set (VS Code exports it to processes it spawns). Unset it first

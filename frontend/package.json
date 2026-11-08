@@ -13,7 +13,9 @@
     "dev:realistic": "cross-env VITE_MOCK_FILE=realistic electron-vite dev",
     "dev:live": "cross-env VITE_MOCK_FILE=live electron-vite dev",
     "dev:empty": "cross-env VITE_MOCK_FILE=none electron-vite dev",
-    "dev:no-samples": "cross-env VITE_MOCK_FILE=edge/no-samples electron-vite dev"
+    "dev:no-samples": "cross-env VITE_MOCK_FILE=edge/no-samples electron-vite dev",
+    "test": "vitest run",
+    "test:watch": "vitest"
   },
   "devDependencies": {
     "@tailwindcss/vite": "^4.3.5",
@@ -28,7 +30,8 @@
     "electron-vite": "^6.0.0",
     "tailwindcss": "^4.3.5",
     "typescript": "^7.0.2",
-    "vite": "^8.3.6"
+    "vite": "^8.3.6",
+    "vitest": "^5.1.0"
   },
   "dependencies": {
     "chart.js": "^4.6.1",
