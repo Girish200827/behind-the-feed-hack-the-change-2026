@@ -54,9 +54,7 @@ function Fact({
       }`}
     >
       <span
-        className={`mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-hairline bg-surface-2 ${
-          tone === 'never' ? 'text-positive-ink' : 'text-ink-2'
-        }`}
+        className={`icon-chip mt-0.5 ${tone === 'never' ? 'chip-accent' : ''}`}
       >
         <Icon size={15} strokeWidth={1.75} />
       </span>

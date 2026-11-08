@@ -7,7 +7,8 @@ from typing import Literal, Union
 from pydantic import BaseModel, ConfigDict, Field
 
 Emotion = Literal["happy", "sad", "angry", "fear", "surprise", "disgust", "neutral"]
-Platform = Literal["instagram", "tiktok", "youtube", "x", "facebook", "other"]  # other: Reddit, Threads, ... (labels only)
+# other: Reddit, Threads, ... (labels only)
+Platform = Literal["instagram", "tiktok", "youtube", "x", "facebook", "other"]
 Category = Literal["news", "politics", "comedy", "friends", "fitness", "food", "drama", "ads", "other"]
 Tone = Literal["positive", "neutral", "negative"]
 

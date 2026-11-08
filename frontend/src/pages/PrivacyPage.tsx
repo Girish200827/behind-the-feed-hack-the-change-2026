@@ -27,7 +27,7 @@ export default function PrivacyPage() {
         <p className="mt-5 text-[13px] text-ink-2">{NOT_A_DIAGNOSIS} They come from facial expression and are meant as a gentle prompt to reflect.</p>
       </div>
 
-      <section className="rounded-[var(--radius-lg)] border border-hairline bg-surface px-8 py-7">
+      <section className="card px-8 py-7">
         <div className="flex items-start justify-between gap-8">
           <div>
             <div className="label">Connect-instead nudges</div>

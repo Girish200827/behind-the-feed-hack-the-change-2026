@@ -11,7 +11,7 @@ export default function SupportNearby() {
   if (!items.length) return null
 
   return (
-    <section className="rounded-[var(--radius-lg)] border border-hairline bg-surface px-8 py-7">
+    <section className="card px-8 py-7">
       <div className="flex items-center gap-3">
         <span className="label">Support nearby</span>
         {items.some((i) => i.sample) && (

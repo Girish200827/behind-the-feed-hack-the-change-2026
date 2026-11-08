@@ -58,7 +58,7 @@ export default function ConsentGate({ children }: { children: ReactNode }) {
             <button
               type="submit"
               disabled={!checked}
-              className="h-11 w-fit rounded-[var(--radius-md)] bg-accent px-6 text-[14px] font-medium text-bg transition-[opacity,transform] duration-150 hover:opacity-90 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-40"
+              className="btn btn-primary h-11 w-fit px-6 text-[14px] active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-40"
             >
               Continue
             </button>

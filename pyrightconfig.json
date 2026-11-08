@@ -1,9 +1,33 @@
 {
-  "venvPath": "backend",
+  "include": [
+    "backend",
+    "engine"
+  ],
+  "exclude": [
+    "**/node_modules",
+    "**/__pycache__",
+    "**/.*",
+    "engine/dist",
+    "engine/build",
+    "frontend"
+  ],
+  "venvPath": ".",
   "venv": ".venv",
   "typeCheckingMode": "standard",
   "reportUnusedCallResult": "none",
   "executionEnvironments": [
-    { "root": "backend" }
+    {
+      "root": "backend",
+      "pythonVersion": "3.9"
+    },
+    {
+      "root": "engine",
+      "extraPaths": [
+        "backend",
+        "computer_vision/face",
+        "computer_vision/screen",
+        "computer_vision"
+      ]
+    }
   ]
 }

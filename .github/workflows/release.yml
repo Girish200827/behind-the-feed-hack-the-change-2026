@@ -1,0 +1,114 @@
+# Builds the BehindFeed desktop app for macOS (Apple Silicon) and Windows, and attaches the
+# installers to a GitHub Release.
+#   - Push a tag like v0.1.0      -> builds both and publishes them on the release for that tag
+#   - Actions > Release > Run     -> builds both and keeps them as workflow artifacts (no release)
+#   - Push to allen/release       -> same test build, artifacts only
+# Needs the repo secret GEMINI_API_KEY (Settings > Secrets and variables > Actions). It is embedded in
+# the app so screen labels work out of the box; anyone with the app can extract it, so use a key with a
+# quota/spending cap and delete it after the hackathon.
+name: Release
+
+on:
+  push:
+    tags: ["v*"]
+    branches: [allen/release] # test builds before merging (no release; artifacts only)
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: macos-latest # Apple Silicon (arm64) runner
+            engine: engine/dist/behindfeed-engine/behindfeed-engine
+            installer: frontend/dist/BehindFeed-mac-arm64.dmg
+          - os: windows-latest
+            engine: engine/dist/behindfeed-engine/behindfeed-engine.exe
+            installer: frontend/dist/BehindFeed-Setup-win-x64.exe
+    runs-on: ${{ matrix.os }}
+    defaults:
+      run:
+        shell: bash
+    env:
+      PYTHONUTF8: "1"
+      CSC_IDENTITY_AUTO_DISCOVERY: "false" # no paid certificate: macOS gets an ad-hoc signature
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: |
+            backend/requirements.txt
+            computer_vision/face/requirements.txt
+            computer_vision/screen/requirements.txt
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Python libraries (same steps as setup_app.command)
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r backend/requirements.txt -r computer_vision/face/requirements.txt \
+            -r computer_vision/screen/requirements.txt pyinstaller
+          # --no-deps keeps MediaPipe from installing a second, clashing copy of OpenCV
+          python -m pip install --no-deps mediapipe
+          python -m pip install "absl-py>=2.3,<3" "flatbuffers>=25.9,<26" matplotlib
+
+      - name: Emotion model
+        working-directory: computer_vision/face
+        run: python -c "from emotion_model import model_path; print(model_path('enet_b0_8_va_mtl'))"
+
+      - name: Gemini key from the repo secret
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        run: |
+          if [ -n "$GEMINI_API_KEY" ]; then
+            printf '%s' "$GEMINI_API_KEY" > computer_vision/screen/gemini_key.txt
+            echo "Key written (it is bundled into the engine)."
+          else
+            echo "::warning::GEMINI_API_KEY secret is not set: the app will run without screen labels."
+          fi
+
+      - name: Build the engine (PyInstaller)
+        run: pyinstaller engine/behindfeed-engine.spec --noconfirm --distpath engine/dist --workpath engine/build
+
+      - name: Remove the key file from the workspace
+        if: always()
+        run: rm -f computer_vision/screen/gemini_key.txt
+
+      - name: Smoke test the engine
+        run: |
+          "${{ matrix.engine }}" selftest
+          "${{ matrix.engine }}" --home "$RUNNER_TEMP/bf" --no-face &
+          for i in $(seq 1 60); do curl -sf http://127.0.0.1:8000/status && break; sleep 1; done
+          curl -sf http://127.0.0.1:8000/status
+          kill %1 2>/dev/null || true
+          if [ "$RUNNER_OS" = "Windows" ]; then taskkill //IM behindfeed-engine.exe //F || true; fi
+
+      - name: Build the app (electron-builder)
+        working-directory: frontend
+        run: |
+          npm ci --no-audit --no-fund
+          npm run dist
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: BehindFeed-${{ matrix.os }}
+          path: ${{ matrix.installer }}
+          if-no-files-found: error
+
+      - name: Attach to the GitHub Release
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: ${{ matrix.installer }}
+          fail_on_unmatched_files: true

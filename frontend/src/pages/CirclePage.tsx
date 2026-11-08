@@ -142,7 +142,7 @@ export default function CirclePage() {
 
 function Card({ title, children }: { title: string; children: ReactNode }) {
   return (
-    <section className="flex flex-col gap-4 rounded-[var(--radius-lg)] border border-hairline bg-surface px-6 py-6">
+    <section className="flex flex-col gap-4 card px-6 py-6">
       <h2 className="label">{title}</h2>
       {children}
     </section>
@@ -176,7 +176,7 @@ function SendButton({ payload, demo, label, onSent }: { payload: DiscordPayload;
           setResult(r)
           if (r.ok) onSent()
         }}
-        className="flex h-9 items-center gap-2 rounded-[var(--radius-md)] bg-accent px-4 text-[13px] font-medium text-bg transition-[opacity,transform] duration-150 hover:opacity-90 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-40"
+        className="btn btn-primary h-9 px-4 text-[13px] active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-40"
       >
         <Send size={14} />
         {busy ? 'Sending…' : label}

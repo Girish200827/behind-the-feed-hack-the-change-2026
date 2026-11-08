@@ -61,9 +61,9 @@ export default function InsightCards({ insights }: { insights: Insights }) {
   if (!cards.length) return null
   return (
     <div className={`grid gap-3 ${cards.length === 3 ? 'grid-cols-3' : cards.length === 2 ? 'grid-cols-2' : 'grid-cols-1'}`}>
-      {cards.map((c) => (
-        <section key={c.title} className="flex flex-col gap-3 rounded-[var(--radius-lg)] border border-hairline bg-surface px-6 py-5">
-          <span className="flex h-8 w-8 items-center justify-center rounded-full border border-hairline bg-surface-2" style={{ color: TONE_COLOR[c.tone] }}>
+      {cards.map((c, i) => (
+        <section key={c.title} className="flex flex-col gap-3 card px-6 py-5">
+          <span className={`icon-chip ${i === 0 ? 'chip-accent' : ''}`} style={i === 0 ? undefined : { color: TONE_COLOR[c.tone] }}>
             <c.icon size={15} strokeWidth={1.75} />
           </span>
           <h3 className="text-[16px] font-medium leading-snug tracking-[-0.01em] text-ink">{c.title}</h3>
