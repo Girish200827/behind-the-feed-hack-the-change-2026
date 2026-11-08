@@ -9,6 +9,7 @@ const icons = {
   camera: `<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="7" width="15" height="12" rx="2"/><path d="M17 10l5-3v10l-5-3"/></svg>`,
   face: `<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M9 10h.01M15 10h.01M8.5 15c1 1.2 2.2 1.8 3.5 1.8s2.5-.6 3.5-1.8"/></svg>`,
   screen: `<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="4" width="20" height="13" rx="2"/><path d="M8 21h8M12 17v4"/></svg>`,
+  shield: `<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3l8 3v6c0 4.5-3.4 8.3-8 9-4.6-.7-8-4.5-8-9V6l8-3Z"/><path d="M12 8v5M12 16h.01"/></svg>`,
   pause: `<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="5" width="4" height="14" rx="1"/></svg>`,
 };
 
@@ -28,6 +29,16 @@ const icons = {
     <div class="btn-row hero-downloads">
       <a class="btn btn-primary" data-os="win" data-download href={links.downloadWindows}>Download for Windows</a>
       <a class="btn" data-os="mac" data-download href={links.downloadMac}>Download for macOS (Apple Silicon)</a>
+    </div>
+
+    <div class="hero-install-note">
+      <span class="hero-install-icon" set:html={icons.shield} />
+      <p>
+        <strong>A real desktop app, just not code-signed yet.</strong> This hackathon build isn't signed
+        with a paid Apple/Microsoft certificate, so your computer shows a security warning the first time.
+        <span class="hero-install-steps"><b>macOS:</b> System Settings → Privacy &amp; Security → <b>Open Anyway</b></span>
+        <span class="hero-install-steps"><b>Windows:</b> on the SmartScreen warning, <b>More info → Run anyway</b></span>
+      </p>
     </div>
 
     <p class="note hero-privacy">
@@ -104,6 +115,49 @@ const icons = {
   .hero-downloads {
     justify-content: center;
     margin-top: 1.75rem;
+  }
+
+  .hero-install-note {
+    display: flex;
+    gap: 0.75rem;
+    align-items: flex-start;
+    max-width: 620px;
+    margin: 1.5rem auto 0;
+    padding: 0.85rem 1rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    background: var(--surface-muted);
+    text-align: left;
+    font-size: 0.85rem;
+    line-height: 1.55;
+    color: var(--muted);
+  }
+
+  .hero-install-note p {
+    margin: 0;
+  }
+
+  .hero-install-note strong,
+  .hero-install-note b {
+    color: var(--text);
+    font-weight: 600;
+  }
+
+  .hero-install-steps {
+    display: block;
+    margin-top: 0.2rem;
+  }
+
+  .hero-install-icon {
+    display: inline-flex;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: var(--radius-sm);
+    background: var(--accent-blue-soft);
+    color: var(--accent-blue);
   }
 
   .hero-privacy {

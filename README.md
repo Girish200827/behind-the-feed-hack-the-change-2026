@@ -13,7 +13,7 @@ A desktop app that notices how short-form content changes your mood, and shows y
 [![Platforms](https://img.shields.io/badge/platforms-macOS%20(Apple%20Silicon)%20%7C%20Windows%2010%2F11-4672ee)](#download)
 [![License: MIT](https://img.shields.io/badge/license-MIT-4672ee)](LICENSE)
 
-**[Download](#download)** · **[How it works](#how-it-works)** · **[Privacy](#privacy)** · **[Run from source](#run-from-source)** · **[Team](#team)**
+**[Download](#download)** · **[Devpost](https://devpost.com/software/behindfeed)** · **[How it works](#how-it-works)** · **[Privacy](#privacy)** · **[Run from source](#run-from-source)** · **[Team](#team)**
 
 Built for **Hack the Change 2026** (Calgary)
 
