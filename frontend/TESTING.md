@@ -21,6 +21,8 @@ Run the app with `npm run dev`. If it crashes with `reading 'whenReady'`, unset 
 
 ### 1. Real Discord message
 
+Scroll Circle is hidden by default. Set `VITE_ENABLE_CIRCLE=true` in `frontend/.env` and restart the app first.
+
 1. In a Discord server you own: **Server Settings → Integrations → Webhooks → New Webhook → Copy Webhook URL**.
 2. In BehindFeed, open **Circle**, enter a display name and paste the URL, then **Save**. The "Demo mode" banner disappears.
 3. Check the preview, then click **Share my progress**.

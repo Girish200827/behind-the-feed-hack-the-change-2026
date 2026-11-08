@@ -6,6 +6,7 @@ import TodayPage from './pages/TodayPage'
 import InsightsPage from './pages/InsightsPage'
 import GoalsPage from './pages/GoalsPage'
 import CirclePage from './pages/CirclePage'
+import { FEATURES } from './config/features'
 import PrivacyPage from './pages/PrivacyPage'
 import NudgeProvider from './components/nudge/NudgeProvider'
 import ConsentGate from './components/ConsentGate'
@@ -27,7 +28,8 @@ export default function App() {
             <Route path="/privacy" element={<PrivacyPage />} />
             <Route path="/insights" element={<InsightsPage />} />
             <Route path="/goals" element={<GoalsPage />} />
-            <Route path="/circle" element={<CirclePage />} />
+            {/* Scroll Circle is behind VITE_ENABLE_CIRCLE (src/config/features.ts); when off, /circle goes to Today. */}
+            <Route path="/circle" element={FEATURES.circle ? <CirclePage /> : <Navigate to="/today" replace />} />
             <Route path="*" element={<Navigate to="/today" replace />} />
           </Route>
         </Routes>

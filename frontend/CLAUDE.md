@@ -153,6 +153,15 @@ Done when: the fake session shows as a mood timeline with switches and labels th
 - Insights page: 2–3 plain-language cards, top-triggers bars (top one in coral), platform mix. Goals page: weekly goal
   text from /goal (Giresh's G4 wording lands there), with the drained-time bar vs last week.
 
+## Feature flags
+- Flags live in one file: `src/config/features.ts` (read from `frontend/.env` or the shell when the app starts).
+- **`VITE_ENABLE_CIRCLE`** (default `false`): Scroll Circle (Discord sharing) is **hidden**. When false: no Circle item in
+  the sidebar, `/circle` redirects to Today, the Circle card is removed from the Privacy page and the consent screen,
+  `shareToCircle()` refuses to send, and the Circle tests (circleMessage, discord) are skipped. All Circle code is kept.
+- **To turn Circle back on:** set `VITE_ENABLE_CIRCLE=true` in `frontend/.env` (or run
+  `cross-env VITE_ENABLE_CIRCLE=true npm run dev`), then restart the app. Run `VITE_ENABLE_CIRCLE=true npm test` to include
+  its tests.
+
 ## Well-being features (frontend-only; no contracts.md changes)
 - **Daily social goal** (`src/data/dailyGoal.ts`, pure + tested): picked from yesterday's sessions. Connection
   ("Swap one scroll session for a call or text" / "Message a friend before opening <platform>"), Timing ("No scrolling
