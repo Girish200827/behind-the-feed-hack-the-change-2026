@@ -1,4 +1,6 @@
 ---
+import { links } from "../config";
+
 const icons = {
   home: `<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 11l9-7 9 7"/><path d="M5 10v9a1 1 0 0 0 1 1h4v-6h4v6h4a1 1 0 0 0 1-1v-9"/></svg>`,
   eye: `<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7Z"/><circle cx="12" cy="12" r="3"/></svg>`,
@@ -23,8 +25,14 @@ const icons = {
       content lifts you and which drains you.
     </p>
 
+    <div class="btn-row hero-downloads">
+      <a class="btn btn-primary" data-os="win" href={links.downloadWindows}>Download for Windows</a>
+      <a class="btn" data-os="mac" href={links.downloadMac}>Download for macOS (Apple Silicon)</a>
+    </div>
+
     <p class="note hero-privacy">
-      Camera frames and screenshots are processed in memory and never saved.
+      Camera frames are analyzed on your device and not saved. Screen captures are sent to Google
+      Gemini for labeling and are not saved by the app.
     </p>
 
     <div class="app-mockup hero-mockup" aria-hidden="true">
@@ -46,7 +54,7 @@ const icons = {
           <div class="app-mockup-tile">
             <span class="app-mockup-tile-icon" style="background:var(--accent-blue-soft);color:var(--accent-blue);" set:html={icons.camera} />
             <h4>Camera</h4>
-            <p>Local, on only while scrolling</p>
+            <p>On-device, active only while scrolling</p>
           </div>
           <div class="app-mockup-tile">
             <span class="app-mockup-tile-icon" style="background:var(--surface-muted);color:var(--text);" set:html={icons.face} />
@@ -70,6 +78,7 @@ const icons = {
         </div>
       </div>
     </div>
+    <p class="note hero-mockup-caption">Concept preview — not an actual screenshot.</p>
   </div>
 </section>
 
@@ -92,12 +101,22 @@ const icons = {
     max-width: 560px;
   }
 
+  .hero-downloads {
+    justify-content: center;
+    margin-top: 1.75rem;
+  }
+
   .hero-privacy {
     margin-top: 1.75rem;
   }
 
   .hero-mockup {
     margin-top: 3.5rem;
+  }
+
+  .hero-mockup-caption {
+    margin-top: 0.85rem;
+    text-align: center;
   }
 
   @media (max-width: 720px) {

@@ -1,8 +1,10 @@
 // Edit these before shipping — all external/download links live here.
 export const links = {
-  downloadWindows: "#", // TODO: Windows .exe/.zip release URL
-  downloadMac: "#", // TODO: macOS .dmg/.zip release URL
-  github: "#", // TODO: GitHub repo URL
+  downloadWindows:
+    "https://github.com/Girish200827/behind-the-feed-hack-the-change-2026/releases/latest/download/BehindFeed-Setup-win-x64.exe", // 266 MB
+  downloadMac:
+    "https://github.com/Girish200827/behind-the-feed-hack-the-change-2026/releases/latest/download/BehindFeed-mac-arm64.dmg", // 317 MB, Apple Silicon only
+  github: "https://github.com/Girish200827/behind-the-feed-hack-the-change-2026",
   devpost: "#", // TODO: Devpost submission URL
 };
 

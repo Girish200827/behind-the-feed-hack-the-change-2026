@@ -1,18 +1,134 @@
 <section class="section diagram-section">
   <div class="container">
     <div class="section-head" data-reveal>
-      <p class="eyebrow">Architecture</p>
-      <h2>How the pieces fit together</h2>
+      <p class="eyebrow">Under the hood</p>
+      <h2>What actually happens, step by step</h2>
     </div>
 
-    <!-- Swap this block for an <img src="/diagram.svg" ...> or inline SVG once ready -->
-    <div class="diagram-placeholder" data-reveal>Architecture diagram — coming soon</div>
+    <div class="flow-wrap" data-reveal>
+      <svg viewBox="0 0 1500 220" class="flow-diagram" role="img" aria-label="Flow: a supported app is detected, or pause anytime interrupts it, into the camera reading facial expression locally, into mood changes detected, into a screen sample labeled by Gemini, into mood and content labels stored locally, into the session report.">
+        <defs>
+          <marker id="flow-arrowhead" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+            <path d="M0,0 L10,5 L0,10 Z" class="flow-arrowhead" />
+          </marker>
+          <marker id="flow-arrowhead-muted" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+            <path d="M0,0 L10,5 L0,10 Z" class="flow-arrowhead-muted" />
+          </marker>
+        </defs>
+
+        <path d="M210,47.5 C245,47.5 245,95 280,95" class="flow-arrow" marker-end="url(#flow-arrowhead)" />
+        <path d="M210,172.5 C245,172.5 245,125 280,125" class="flow-arrow flow-arrow-dashed" marker-end="url(#flow-arrowhead-muted)" />
+        <path d="M510,110 L560,110" class="flow-arrow" marker-end="url(#flow-arrowhead)" />
+        <path d="M760,110 L810,110" class="flow-arrow" marker-end="url(#flow-arrowhead)" />
+        <path d="M1040,110 L1090,110" class="flow-arrow" marker-end="url(#flow-arrowhead)" />
+        <path d="M1330,110 L1380,110" class="flow-arrow" marker-end="url(#flow-arrowhead)" />
+
+        <rect x="10" y="15" width="200" height="65" rx="10" class="flow-rect" />
+        <foreignObject x="10" y="15" width="200" height="65">
+          <div xmlns="http://www.w3.org/1999/xhtml" class="flow-label">Supported app detected</div>
+        </foreignObject>
+
+        <rect x="10" y="140" width="200" height="65" rx="10" class="flow-rect flow-rect-muted" />
+        <foreignObject x="10" y="140" width="200" height="65">
+          <div xmlns="http://www.w3.org/1999/xhtml" class="flow-label flow-label-muted">Pause anytime</div>
+        </foreignObject>
+
+        <rect x="280" y="75" width="230" height="70" rx="10" class="flow-rect" />
+        <foreignObject x="280" y="75" width="230" height="70">
+          <div xmlns="http://www.w3.org/1999/xhtml" class="flow-label">Camera reads facial expression locally</div>
+        </foreignObject>
+
+        <rect x="560" y="80" width="200" height="60" rx="10" class="flow-rect" />
+        <foreignObject x="560" y="80" width="200" height="60">
+          <div xmlns="http://www.w3.org/1999/xhtml" class="flow-label">Mood changes detected</div>
+        </foreignObject>
+
+        <rect x="810" y="75" width="230" height="70" rx="10" class="flow-rect" />
+        <foreignObject x="810" y="75" width="230" height="70">
+          <div xmlns="http://www.w3.org/1999/xhtml" class="flow-label">Screen sample labeled by Gemini</div>
+        </foreignObject>
+
+        <rect x="1090" y="65" width="240" height="90" rx="10" class="flow-rect flow-rect-accent" />
+        <foreignObject x="1090" y="65" width="240" height="90">
+          <div xmlns="http://www.w3.org/1999/xhtml" class="flow-label">Mood + content labels stored locally</div>
+        </foreignObject>
+
+        <rect x="1380" y="85" width="110" height="50" rx="10" class="flow-rect" />
+        <foreignObject x="1380" y="85" width="110" height="50">
+          <div xmlns="http://www.w3.org/1999/xhtml" class="flow-label">Session report</div>
+        </foreignObject>
+      </svg>
+    </div>
+    <p class="note text-center mt-2">A simplified look at the flow, not a full system architecture.</p>
   </div>
 </section>
 
 <style>
-  .diagram-section .diagram-placeholder {
-    max-width: 800px;
+  .flow-wrap {
+    max-width: 1100px;
     margin: 0 auto;
+    overflow-x: auto;
+    padding: 0.5rem;
+  }
+
+  .flow-diagram {
+    width: 100%;
+    min-width: 760px;
+    height: auto;
+    display: block;
+  }
+
+  .flow-rect {
+    fill: var(--surface);
+    stroke: var(--border-strong);
+    stroke-width: 1.5;
+  }
+
+  .flow-rect-muted {
+    stroke-dasharray: 5 4;
+  }
+
+  .flow-rect-accent {
+    fill: var(--accent-blue-soft);
+    stroke: var(--accent-blue);
+  }
+
+  .flow-label {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    box-sizing: border-box;
+    padding: 0 0.65rem;
+    font-family: var(--font-body);
+    font-size: 0.85rem;
+    font-weight: 600;
+    line-height: 1.3;
+    color: var(--text);
+  }
+
+  .flow-label-muted {
+    color: var(--muted);
+  }
+
+  .flow-arrow {
+    fill: none;
+    stroke: var(--text);
+    stroke-width: 1.75;
+  }
+
+  .flow-arrow-dashed {
+    stroke: var(--muted);
+    stroke-dasharray: 5 4;
+  }
+
+  .flow-arrowhead {
+    fill: var(--text);
+  }
+
+  .flow-arrowhead-muted {
+    fill: var(--muted);
   }
 </style>

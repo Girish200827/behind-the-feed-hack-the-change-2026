@@ -1,9 +1,9 @@
 ---
 const groups = [
-  { label: "Vision (face)", chips: ["Python", "OpenCV", "MediaPipe", "DeepFace", "HSEmotion"] },
-  { label: "Vision (screen)", chips: ["mss", "Pillow", "Gemini", "Tesseract OCR"] },
-  { label: "Backend", chips: ["FastAPI", "SQLite", "pywinctl"] },
-  { label: "Frontend / desktop", chips: ["pywebview", "Electron", "Chart.js"] },
+  { label: "Vision (face)", chips: ["Python", "OpenCV", "HSEmotion", "MediaPipe (landmarks)", "DeepFace (fallback)"] },
+  { label: "Vision (screen)", chips: ["mss", "Google Gemini"] },
+  { label: "Backend", chips: ["FastAPI", "sqlite3", "pywinctl"] },
+  { label: "Frontend / desktop", chips: ["Electron", "React", "Chart.js"] },
 ];
 ---
 
@@ -27,13 +27,6 @@ const groups = [
           </div>
         ))
       }
-
-      <div class="chip-group">
-        <p class="chip-group-label">Hackathon resources</p>
-        <div class="chip-row">
-          <span class="chip chip-muted">APIs &amp; datasets — TBD</span>
-        </div>
-      </div>
     </div>
   </div>
 </section>

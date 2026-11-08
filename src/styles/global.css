@@ -189,11 +189,11 @@ p {
   color: var(--text);
   text-decoration: none;
   cursor: pointer;
-  transition: border-color 0.15s ease, box-shadow 0.15s ease, opacity 0.15s ease;
+  transition: background 0.15s ease, box-shadow 0.15s ease, opacity 0.15s ease;
 }
 
 .btn:hover {
-  border-color: var(--text);
+  background: var(--surface-muted);
 }
 
 .btn-primary {
@@ -203,6 +203,7 @@ p {
 }
 
 .btn-primary:hover {
+  background: var(--accent-gradient);
   opacity: 0.92;
   box-shadow: 0 4px 16px rgba(70, 114, 238, 0.28);
 }

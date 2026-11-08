@@ -3,25 +3,25 @@ const steps = [
   {
     number: "01",
     title: "Detects the app",
-    body: "Detects when you open Instagram, TikTok, YouTube, X or Facebook, and only then turns the camera on.",
+    body: "Detects when Instagram, TikTok, YouTube, X, or Facebook is the active window, then starts a session and turns on the camera.",
     icon: "eye",
   },
   {
     number: "02",
     title: "Reads your mood",
-    body: "Reads your facial expression locally and spots when your mood switches.",
+    body: "Analyzes your facial expression on your device and looks for sustained mood changes.",
     icon: "face",
   },
   {
     number: "03",
     title: "Labels the content",
-    body: "At each switch, grabs the screen briefly to label what you were watching (category, tone, topic), then discards it.",
+    body: "Keeps a short screen buffer in memory and, at each mood switch, sends a few frames to Google Gemini to label the content's category, tone, and topic — then discards them.",
     icon: "screen",
   },
   {
     number: "04",
     title: "Shows the report",
-    body: "Shows you a session report: a mood timeline plus the content that moved it, and one personal goal.",
+    body: "Shows you a session report with a mood timeline and labeled content moments. A separate insights feature suggests a weekly goal once there's enough data.",
     icon: "report",
   },
 ];

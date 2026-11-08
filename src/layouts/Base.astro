@@ -58,6 +58,18 @@ const { title = `${site.name} — ${site.tagline}`, description = site.descripti
           });
         }
 
+        // Highlight the download button that matches the visitor's OS.
+        var isMac = /Mac|iPhone|iPad|iPod/.test(navigator.platform || navigator.userAgent);
+        if (isMac) {
+          var macBtn = document.querySelector('[data-os="mac"]');
+          var winBtn = document.querySelector('[data-os="win"]');
+          if (macBtn) macBtn.classList.add("btn-primary");
+          if (winBtn) winBtn.classList.remove("btn-primary");
+
+          var navDownload = document.querySelector("[data-os-download]");
+          if (navDownload) navDownload.setAttribute("href", navDownload.getAttribute("data-mac-href"));
+        }
+
         var floatNav = document.querySelector("[data-float-nav]");
         if (floatNav && !reduceMotion) {
           var hideThreshold = 180;
