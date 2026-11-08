@@ -57,7 +57,10 @@ def status():
 
 @app.post("/pause", tags=["detector"])
 def pause():
-    """Dashboard Pause button: the camera turns off within a second, even while scrolling. Sessions keep counting time."""
+    """Dashboard Pause button: the camera turns off within a second, even while scrolling.
+
+    Sessions keep counting time.
+    """
     return detector.state.set_paused(True)
 
 

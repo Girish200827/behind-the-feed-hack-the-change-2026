@@ -50,6 +50,7 @@ def test_events_land_in_the_session_by_time():
     db.insert_emotion({"ts": 2001.0, "emotion": "sad", "valence": -0.5, "confidence": 0.8}, db.session_for_ts(2001.0))
     db.end_session(s["id"], 2010.0)
     t = db.timeline(s["id"])
+    assert t is not None
     assert len(t["emotions"]) == 1
 
 
@@ -64,4 +65,5 @@ def test_http_endpoints_if_fastapi_is_installed():
         assert c.post("/resume").json()["paused"] is False
         r = c.post("/events", json={"ts": 5.0, "emotion": "happy", "valence": 0.7, "confidence": 0.9})
         assert r.status_code == 200
-        assert c.post("/events", json={"ts": 5.0, "emotion": "joy", "valence": 0.7, "confidence": 0.9}).status_code == 422
+        bad = {"ts": 5.0, "emotion": "joy", "valence": 0.7, "confidence": 0.9}
+        assert c.post("/events", json=bad).status_code == 422

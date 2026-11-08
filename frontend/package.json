@@ -15,7 +15,32 @@
     "dev:empty": "cross-env VITE_MOCK_FILE=none electron-vite dev",
     "dev:no-samples": "cross-env VITE_MOCK_FILE=edge/no-samples electron-vite dev",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "dist": "npm run typecheck && cross-env VITE_DATA_SOURCE=api electron-vite build && electron-builder --publish never"
+  },
+  "build": {
+    "appId": "com.behindfeed.app",
+    "productName": "BehindFeed",
+    "directories": { "output": "dist" },
+    "files": ["out/**/*", "package.json"],
+    "extraResources": [{ "from": "../engine/dist/behindfeed-engine", "to": "engine" }],
+    "mac": {
+      "target": [{ "target": "dmg", "arch": ["arm64"] }],
+      "artifactName": "BehindFeed-mac-arm64.${ext}",
+      "category": "public.app-category.healthcare-fitness",
+      "identity": "-",
+      "hardenedRuntime": false,
+      "extendInfo": {
+        "NSCameraUsageDescription": "BehindFeed reads your facial expression while you scroll social media. Frames stay in memory and are never saved.",
+        "NSAppleEventsUsageDescription": "BehindFeed asks your browser which site is open, so the camera only runs while you scroll social media.",
+        "NSScreenCaptureUsageDescription": "BehindFeed labels what was on screen when your mood shifts. Screenshots are never saved."
+      }
+    },
+    "win": {
+      "target": [{ "target": "nsis", "arch": ["x64"] }],
+      "artifactName": "BehindFeed-Setup-win-x64.${ext}"
+    },
+    "nsis": { "oneClick": true, "perMachine": false }
   },
   "devDependencies": {
     "@tailwindcss/vite": "^4.3.5",
@@ -27,6 +52,7 @@
     "@vitejs/plugin-react": "^6.2.1",
     "cross-env": "^10.1.0",
     "electron": "^45.2.3",
+    "electron-builder": "^26.18.0",
     "electron-vite": "^6.0.0",
     "tailwindcss": "^4.3.5",
     "typescript": "^7.0.2",

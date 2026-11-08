@@ -4,7 +4,29 @@ Deploy computer vision system to analyze facial expressions while the user scrol
 
 A desktop app for doomscrollers. While you scroll Instagram, TikTok, YouTube, X or Facebook, the camera reads your facial expression. When your mood shifts, it notes what was on screen at that moment. The dashboard then shows, live, which content lifts or drains you, and suggests one goal.
 
-## Run it (Windows)
+## Download (no setup)
+
+Get the installer from the [latest release](https://github.com/Girish200827/behind-the-feed-hack-the-change-2026/releases/latest):
+
+- **macOS (Apple Silicon):** [BehindFeed-mac-arm64.dmg](https://github.com/Girish200827/behind-the-feed-hack-the-change-2026/releases/latest/download/BehindFeed-mac-arm64.dmg)
+- **Windows 10/11:** [BehindFeed-Setup-win-x64.exe](https://github.com/Girish200827/behind-the-feed-hack-the-change-2026/releases/latest/download/BehindFeed-Setup-win-x64.exe)
+
+Everything is inside: the dashboard, the backend and the camera models. No Python or Node.js needed. Data stays on your computer (macOS: `~/Library/Application Support/BehindFeed`, Windows: `%APPDATA%\BehindFeed`).
+
+**First start.** The app isn't code-signed (hackathon build), so the system warns once:
+- **macOS:** open the .dmg, drag BehindFeed to Applications, then right-click it → **Open** → **Open**. If macOS says the app "is damaged", run `xattr -cr /Applications/BehindFeed.app` in Terminal and open it again.
+- **Windows:** SmartScreen says "Windows protected your PC": click **More info** → **Run anyway**.
+
+Then allow what it asks for:
+- **Camera:** reads your expression only while a social media site is in front.
+- **Screen Recording** (macOS): labels what was on screen at a mood switch.
+- **Control Safari/Chrome** (macOS): to see which site is open.
+
+On macOS, quit and reopen the app after allowing Screen Recording. If something doesn't work, the app's log is `engine.log` in the data folder above.
+
+**Building the installers:** pushing a tag like `v0.1.0` runs `.github/workflows/release.yml`, which builds both installers and attaches them to the release. Locally: build the engine with `pyinstaller engine/behindfeed-engine.spec --distpath engine/dist --workpath engine/build`, then run `npm run dist` in `frontend/`.
+
+## Run it from source (Windows)
 
 1. **Once:** double-click `setup_app.bat`. It installs the Python libraries (into `%USERPROFILE%\venvs\face`), the models and the dashboard (`npm install`; needs [Node.js](https://nodejs.org) 20+ and Python 3.11–3.13), and asks for a free [Gemini key](https://aistudio.google.com/apikey) for screen labels.
 2. **Every time:** double-click `start_app.bat`. One window starts the backend, the camera and the dashboard, and shows their output.
@@ -13,7 +35,7 @@ A desktop app for doomscrollers. While you scroll Instagram, TikTok, YouTube, X 
 
 `start_demo.bat` runs the same app without a webcam (scripted moods and canned labels), for a demo on any laptop.
 
-## Run it (macOS)
+## Run it from source (macOS)
 
 Same steps with the `.command` files: double-click `setup_app.command` once, then `start_app.command` (or `start_demo.command` without a webcam). If Finder says it cannot open them, run `chmod +x *.command` in Terminal in this folder once, or start them with `bash setup_app.command`. Needs Python 3.10–3.13 (python.org or `brew install python@3.12`) and Node.js (nodejs.org or `brew install node`).
 

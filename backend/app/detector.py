@@ -178,7 +178,7 @@ def _get_title_fn() -> Any:
     if sys.platform == "win32":
         return _active_title_windows
     try:
-        import pywinctl
+        import pywinctl  # pyright: ignore[reportMissingImports]  # Linux only
     except Exception as exc:  # pragma: no cover - depends on the OS
         log.warning("pywinctl unavailable (%s); use POST /sessions to start sessions by hand", exc)
         return None
@@ -210,16 +210,18 @@ def _loop(stop: threading.Event) -> None:
         return
     state.detector_running = True
     warned_empty = False
+    empty_streak = 0  # a single empty read is normal (e.g. while an app is launching)
     while not stop.is_set():
         try:
             title = get_title()
         except Exception as exc:  # never let the detector take the API down
             log.debug("active window read failed: %s", exc)
             title = None
-        if not title and not warned_empty:
+        empty_streak = 0 if title else empty_streak + 1
+        if empty_streak >= 10 and not warned_empty:
             log.warning(
-                "active window title is empty. On Windows/Linux check pywinctl; on macOS check "
-                "System Settings > Privacy & Security > Automation for your terminal."
+                "active window title has been empty for 10 s. On Windows/Linux check pywinctl; on macOS check "
+                "System Settings > Privacy & Security > Automation for this app or terminal."
             )
             warned_empty = True
         try:

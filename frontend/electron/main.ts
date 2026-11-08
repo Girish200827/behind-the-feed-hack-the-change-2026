@@ -1,8 +1,76 @@
 // Electron main process: opens the dashboard window, posts Circle messages to Discord and shows notifications.
 // No camera, no screen capture, no window detection here (those belong to Raad, Giresh and Allen).
 import { app, BrowserWindow, ipcMain, nativeTheme, Notification, shell } from 'electron'
+import { execFile, spawn, type ChildProcess } from 'node:child_process'
+import { appendFileSync, closeSync, mkdirSync, openSync } from 'node:fs'
 import { join } from 'node:path'
 import { sendWebhook } from './discord'
+
+// ---- Engine: the installed app carries the Python half (backend + camera + screen) as one program,
+// resources/engine/behindfeed-engine. In development launch.py starts those parts instead, so this only
+// runs when packaged. Data goes to the user-data folder (macOS: ~/Library/Application Support/BehindFeed).
+const API_URL = 'http://127.0.0.1:8000'
+const ENGINE_WAIT_MS = 20_000
+let engine: ChildProcess | null = null
+
+// The installed app keeps its data in ".../BehindFeed", not under the npm package name.
+if (app.isPackaged) app.setPath('userData', join(app.getPath('appData'), 'BehindFeed'))
+
+const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms))
+
+async function backendUp(): Promise<boolean> {
+  try {
+    return (await fetch(`${API_URL}/status`, { signal: AbortSignal.timeout(800) })).ok
+  } catch {
+    return false
+  }
+}
+
+async function startEngine(): Promise<void> {
+  if (!app.isPackaged || process.env['BEHINDFEED_NO_ENGINE']) return
+  if (await backendUp()) return // a backend is already running (e.g. launch.py): use it
+  const home = app.getPath('userData')
+  mkdirSync(home, { recursive: true })
+  const exe = join(process.resourcesPath, 'engine', process.platform === 'win32' ? 'behindfeed-engine.exe' : 'behindfeed-engine')
+  const logPath = join(home, 'engine.log')
+  appendFileSync(logPath, `\n=== ${new Date().toISOString()} starting ${exe}\n`)
+  // Output goes straight into the log file (not through a pipe to us), so the engine and its camera
+  // process can still write while they shut down after this app has already exited.
+  const out = openSync(logPath, 'a')
+  engine = spawn(exe, ['--home', home, '--parent-pid', String(process.pid)], {
+    cwd: home,
+    env: { ...process.env, BEHINDFEED_HOME: home },
+    windowsHide: true,
+    detached: process.platform !== 'win32', // own process group on macOS, so quitting reaches the camera process too
+    stdio: ['ignore', out, out]
+  })
+  closeSync(out)
+  engine.on('error', (e) => appendFileSync(logPath, `engine failed to start: ${e.message}\n`))
+  engine.on('exit', () => {
+    engine = null
+  })
+  // The first start after installing can be slow while the OS checks the files; the dashboard shows demo
+  // data with an "offline" banner until the backend answers, then switches over by itself.
+  const end = Date.now() + ENGINE_WAIT_MS
+  while (Date.now() < end && engine && !(await backendUp())) await sleep(400)
+}
+
+function stopEngine(): void {
+  const p = engine
+  if (!p || p.exitCode !== null || p.pid === undefined) return
+  if (process.platform === 'win32') {
+    execFile('taskkill', ['/PID', String(p.pid), '/T', '/F'])
+    return
+  }
+  // Ctrl+C to the whole group: the camera process sends its last events, the engine stops the backend.
+  try {
+    process.kill(-p.pid, 'SIGINT')
+  } catch {
+    p.kill('SIGTERM')
+  }
+}
+
+app.on('before-quit', stopEngine)
 
 // Windows only shows native notifications for apps with an AppUserModelID.
 app.setAppUserModelId('com.behindfeed.app')
@@ -70,7 +138,8 @@ function createWindow(): void {
   }
 }
 
-app.whenReady().then(() => {
+app.whenReady().then(async () => {
+  await startEngine()
   createWindow()
   app.on('activate', () => {
     if (BrowserWindow.getAllWindows().length === 0) createWindow()

@@ -23,6 +23,9 @@ from events import EventSink, SwitchHook
 from mood import EMOTIONS, PLATFORMS, MoodSettings, MoodTracker, normalise
 
 HERE = os.path.dirname(os.path.abspath(__file__))
+# Writable folder for baseline.json and events.jsonl. The installed app sets BEHINDFEED_HOME,
+# because its own folder is read-only; when run from source it stays this folder.
+DATA_DIR = os.environ.get("BEHINDFEED_HOME", HERE)
 
 
 def log(msg: str) -> None:
@@ -201,7 +204,7 @@ class Analyzer(threading.Thread):
         self.error: Optional[BaseException] = None
         self._slot = threading.Condition()
         self._frame, self._t, self._seq, self._done = None, 0.0, 0, 0
-        self._stop = False
+        self._stopping = False
 
     def submit(self, frame, t: float) -> None:
         with self._slot:
@@ -211,7 +214,7 @@ class Analyzer(threading.Thread):
 
     def stop(self) -> None:
         with self._slot:
-            self._stop = True
+            self._stopping = True
             self._slot.notify()
 
     def run(self) -> None:
@@ -223,9 +226,9 @@ class Analyzer(threading.Thread):
                 if wait > 0:
                     time.sleep(wait)
                 with self._slot:
-                    while self._seq == self._done and not self._stop:
+                    while self._seq == self._done and not self._stopping:
                         self._slot.wait(0.5)
-                    if self._stop:
+                    if self._stopping:
                         return
                     frame, t, self._done = self._frame, self._t, self._seq
                 last = time.time()
@@ -446,7 +449,7 @@ def parse_args(argv=None):
     ap.add_argument("--fast-hold", type=float, default=0.4, help="seconds a strong new mood must hold")
     ap.add_argument("--smooth", type=float, default=0.25, help="smoothing time constant in seconds")
     ap.add_argument("--cooldown", type=float, default=2.0, help="minimum seconds between switches")
-    ap.add_argument("--out", default="events.jsonl", help="file to append events to")
+    ap.add_argument("--out", default=os.path.join(DATA_DIR, "events.jsonl"), help="file to append events to")
     ap.add_argument("--no-file", action="store_true", help="print only, do not write events.jsonl")
     ap.add_argument("--quiet", action="store_true", help="do not print events")
     ap.add_argument("--api", metavar="URL", help="L2+L3: Allen's backend, e.g. http://127.0.0.1:8000: store every "
@@ -487,7 +490,7 @@ def main(argv=None) -> None:
     args = parse_args(argv)
     settings = MoodSettings(hold_s=args.hold, fast_hold_s=min(args.fast_hold, args.hold), smooth_s=args.smooth,
                             cooldown_s=args.cooldown, calibrate_s=args.calibrate, happy_boost=args.happy_boost)
-    baseline_path = os.path.join(HERE, "baseline.json")
+    baseline_path = os.path.join(DATA_DIR, "baseline.json")
     baseline = None
     if args.reuse_baseline and os.path.exists(baseline_path) and not args.fake:
         with open(baseline_path, encoding="utf-8") as f:
