@@ -18,7 +18,7 @@ const { title = `${site.name} — ${site.tagline}`, description = site.descripti
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>{title}</title>
     <meta name="description" content={description} />
-    <meta name="theme-color" content="#fafbff" />
+    <meta name="theme-color" content="#ffffff" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 
     <meta property="og:type" content="website" />
@@ -36,7 +36,7 @@ const { title = `${site.name} — ${site.tagline}`, description = site.descripti
       (function () {
         var reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-        var revealEls = document.querySelectorAll("[data-reveal]");
+        var revealEls = document.querySelectorAll("[data-reveal], [data-reveal-stagger]");
         if (reduceMotion || !("IntersectionObserver" in window)) {
           revealEls.forEach(function (el) {
             el.classList.add("is-visible");
@@ -58,15 +58,13 @@ const { title = `${site.name} — ${site.tagline}`, description = site.descripti
           });
         }
 
-        var floatIcons = document.querySelector("[data-float-icons]");
         var floatNav = document.querySelector("[data-float-nav]");
-        if ((floatIcons || floatNav) && !reduceMotion) {
+        if (floatNav && !reduceMotion) {
           var hideThreshold = 180;
           var ticking = false;
           var updateOnScroll = function () {
             var hidden = window.scrollY > hideThreshold;
-            if (floatIcons) floatIcons.classList.toggle("is-hidden", hidden);
-            if (floatNav) floatNav.classList.toggle("is-hidden", hidden);
+            floatNav.classList.toggle("is-hidden", hidden);
             ticking = false;
           };
           window.addEventListener(

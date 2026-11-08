@@ -30,19 +30,11 @@ const icons: Record<string, string> = {
       <h2>Doomscrolling quietly shapes how we feel. Most of us never see it happen.</h2>
     </div>
 
-    <div class="feature-row" data-reveal>
+    <div class="feature-row" data-reveal-stagger>
       {
-        items.map((item, i) => (
+        items.map((item) => (
           <div class="feature-item">
-            <span
-              class="icon-chip"
-              style={
-                i % 2 === 0
-                  ? "background:var(--accent-blue-soft);color:var(--accent-blue);"
-                  : "background:var(--accent-orange-soft);color:var(--accent-orange);"
-              }
-              set:html={icons[item.icon]}
-            />
+            <span class="icon-chip" style="background:var(--surface-muted);color:var(--text);" set:html={icons[item.icon]} />
             <div>
               <h3>{item.title}</h3>
               <p>{item.body}</p>
@@ -51,5 +43,365 @@ const icons: Record<string, string> = {
         ))
       }
     </div>
+
+    <div class="stat-head" data-reveal>
+      <p class="eyebrow">Backed by research</p>
+    </div>
+
+    <div class="stat-row" data-reveal-stagger>
+      <div class="stat-item">
+        <span class="chip">Global</span>
+        <p class="stat-number">141 min</p>
+        <p class="stat-body">
+          Average time people spend on social media every day, worldwide — almost all of it
+          scrolling without any sense of how it's affecting them.
+        </p>
+        <a class="stat-source" href="https://www.statista.com/statistics/433871/daily-social-media-usage-worldwide/" target="_blank" rel="noopener noreferrer">
+          Statista / DataReportal, 2025
+        </a>
+      </div>
+
+      <div class="stat-item">
+        <span class="chip">Global</span>
+        <p class="stat-number">70+&nbsp;studies</p>
+        <p class="stat-body">
+          A meta-analysis of over 70 studies found heavy short-form video use is linked to higher
+          stress, anxiety, and loneliness, and lower well-being — correlational, but consistent.
+        </p>
+        <a class="stat-source" href="https://www.apa.org/news/press/releases" target="_blank" rel="noopener noreferrer">
+          Psychological Bulletin meta-analysis
+        </a>
+      </div>
+
+      <div class="stat-item">
+        <span class="chip chip-accent">Canada</span>
+        <p class="stat-number">+15%</p>
+        <p class="stat-body">
+          Higher odds of moderate-to-severe depression for every extra hour of daily social media
+          use among Canadian teens, in a University of Alberta co-led study — strongest for girls.
+        </p>
+        <a class="stat-source" href="https://www.ualberta.ca/en/folio/2026/09/more-time-on-social-media-means-more-anxiety-depression-for-teens.html" target="_blank" rel="noopener noreferrer">
+          University of Alberta / COMPASS study, 2026
+        </a>
+      </div>
+
+      <div class="stat-item stat-item-chart">
+        <span class="chip chip-accent">Canada</span>
+        <p class="stat-number">37% vs 14%</p>
+        <p class="stat-body">
+          Of Canadian youth exceeded screen-time guidelines in both 2019 and 2023 — only 14% stuck
+          to them the whole time, and that group reported better mental health and life
+          satisfaction.
+        </p>
+
+        <div class="donut-block">
+          <div class="donut-chart-wrap" data-donut-chart>
+            <svg viewBox="0 0 160 160" class="donut-chart" aria-hidden="true">
+              <circle class="donut-seg is-active" data-key="exceeded" cx="80" cy="80" r="60" fill="none" stroke-width="20" stroke-dasharray="139.5 237.5" stroke-dashoffset="0"></circle>
+              <circle class="donut-seg" data-key="followed" cx="80" cy="80" r="60" fill="none" stroke-width="20" stroke-dasharray="52.8 324.2" stroke-dashoffset="-139.5"></circle>
+              <circle class="donut-seg" data-key="rest" cx="80" cy="80" r="60" fill="none" stroke-width="20" stroke-dasharray="184.7 192.3" stroke-dashoffset="-192.3"></circle>
+            </svg>
+            <div class="donut-center">
+              <p class="donut-center-value" data-donut-value>37%</p>
+              <p class="donut-center-label" data-donut-label>Exceeded guidelines, both years</p>
+            </div>
+          </div>
+
+          <ul class="donut-legend">
+            <li class="donut-legend-item is-active" data-key="exceeded" tabindex="0">
+              <span class="donut-dot donut-dot-exceeded"></span>
+              <span>Exceeded guidelines</span>
+              <strong>37%</strong>
+            </li>
+            <li class="donut-legend-item" data-key="followed" tabindex="0">
+              <span class="donut-dot donut-dot-followed"></span>
+              <span>Followed guidelines</span>
+              <strong>14%</strong>
+            </li>
+            <li class="donut-legend-item" data-key="rest" tabindex="0">
+              <span class="donut-dot donut-dot-rest"></span>
+              <span>Everyone else</span>
+              <strong>49%</strong>
+            </li>
+          </ul>
+        </div>
+
+        <a class="stat-source" href="https://www150.statcan.gc.ca/n1/pub/75-006-x/2026001/article/00003-eng.htm" target="_blank" rel="noopener noreferrer">
+          Statistics Canada, longitudinal study, 2026
+        </a>
+      </div>
+    </div>
+    <p class="note stat-note" data-reveal>
+      That's the gap BehindFeed closes: turning an invisible, hours-long drift into something you
+      can actually see, session by session.
+    </p>
   </div>
 </section>
+
+<script is:inline>
+  (function () {
+    var donutData = {
+      exceeded: { value: "37%", label: "Exceeded guidelines, both years" },
+      followed: { value: "14%", label: "Followed guidelines, both years" },
+      rest: { value: "49%", label: "Everyone else (mixed across years)" },
+    };
+    var chart = document.querySelector("[data-donut-chart]");
+    if (!chart) return;
+
+    var segs = chart.querySelectorAll(".donut-seg");
+    var valueEl = chart.querySelector("[data-donut-value]");
+    var labelEl = chart.querySelector("[data-donut-label]");
+    var legendItems = document.querySelectorAll(".donut-legend-item");
+
+    function setActive(key) {
+      segs.forEach(function (seg) {
+        var active = seg.getAttribute("data-key") === key;
+        seg.classList.toggle("is-active", active);
+        seg.classList.toggle("is-dim", !active);
+      });
+      legendItems.forEach(function (item) {
+        item.classList.toggle("is-active", item.getAttribute("data-key") === key);
+      });
+      var entry = donutData[key];
+      if (entry && valueEl && labelEl) {
+        valueEl.textContent = entry.value;
+        labelEl.textContent = entry.label;
+      }
+    }
+
+    legendItems.forEach(function (item) {
+      item.addEventListener("mouseenter", function () {
+        setActive(item.getAttribute("data-key"));
+      });
+      item.addEventListener("focus", function () {
+        setActive(item.getAttribute("data-key"));
+      });
+      item.addEventListener("click", function () {
+        setActive(item.getAttribute("data-key"));
+      });
+    });
+
+    segs.forEach(function (seg) {
+      seg.addEventListener("mouseenter", function () {
+        setActive(seg.getAttribute("data-key"));
+      });
+    });
+  })();
+</script>
+
+<style>
+  .stat-head {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: var(--space-4);
+  }
+
+  .stat-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1px;
+    margin-top: var(--space-3);
+    background: var(--border);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+  }
+
+  .stat-item {
+    background: var(--surface);
+    padding: 1.5rem;
+  }
+
+  .stat-item-chart {
+    grid-column: 1 / -1;
+  }
+
+  .chip {
+    display: inline-block;
+    margin-bottom: 0.75rem;
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    padding: 0.25em 0.7em;
+  }
+
+  .stat-number {
+    font-family: var(--font-heading);
+    font-weight: 650;
+    font-size: 1.9rem;
+    letter-spacing: -0.02em;
+    color: var(--text);
+    margin-bottom: 0.5rem;
+  }
+
+  .stat-item:has(.chip-accent) .stat-number {
+    color: var(--accent-blue);
+  }
+
+  .stat-body {
+    color: var(--muted);
+    font-size: 0.92rem;
+    margin-bottom: 0.75rem;
+  }
+
+  /* ---------- interactive donut chart (37% / 14% / rest) ---------- */
+  .donut-block {
+    display: flex;
+    align-items: center;
+    gap: 1.75rem;
+    margin: 1.1rem 0;
+  }
+
+  .donut-chart-wrap {
+    position: relative;
+    width: 140px;
+    height: 140px;
+    flex-shrink: 0;
+  }
+
+  .donut-chart {
+    width: 100%;
+    height: 100%;
+    transform: rotate(-90deg);
+  }
+
+  .donut-seg {
+    transition: stroke-width 0.2s ease, opacity 0.2s ease;
+    cursor: pointer;
+  }
+
+  .donut-seg[data-key="exceeded"] {
+    stroke: var(--accent-blue);
+  }
+
+  .donut-seg[data-key="followed"] {
+    stroke: var(--text);
+  }
+
+  .donut-seg[data-key="rest"] {
+    stroke: var(--border-strong);
+  }
+
+  .donut-seg.is-active {
+    stroke-width: 24;
+  }
+
+  .donut-seg.is-dim {
+    opacity: 0.5;
+  }
+
+  .donut-center {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    pointer-events: none;
+    padding: 0 1.25rem;
+  }
+
+  .donut-center-value {
+    font-family: var(--font-heading);
+    font-weight: 700;
+    font-size: 1.4rem;
+    letter-spacing: -0.02em;
+    margin-bottom: 0.15rem;
+  }
+
+  .donut-center-label {
+    font-size: 0.68rem;
+    color: var(--muted);
+    line-height: 1.25;
+  }
+
+  .donut-legend {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    flex: 1;
+    min-width: 200px;
+  }
+
+  .donut-legend-item {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    font-size: 0.85rem;
+    color: var(--muted);
+    cursor: pointer;
+    padding: 0.4rem 0.5rem;
+    border-radius: var(--radius-sm);
+    transition: background 0.15s ease, color 0.15s ease;
+  }
+
+  .donut-legend-item:hover,
+  .donut-legend-item:focus-visible,
+  .donut-legend-item.is-active {
+    background: var(--surface-muted);
+    color: var(--text);
+    outline: none;
+  }
+
+  .donut-legend-item strong {
+    margin-left: auto;
+    font-weight: 600;
+    color: var(--text);
+  }
+
+  .donut-dot {
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .donut-dot-exceeded {
+    background: var(--accent-blue);
+  }
+
+  .donut-dot-followed {
+    background: var(--text);
+  }
+
+  .donut-dot-rest {
+    background: var(--border-strong);
+  }
+
+  @media (max-width: 560px) {
+    .donut-block {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+  }
+
+  .stat-source {
+    font-size: 0.78rem;
+    color: var(--muted);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+
+  .stat-note {
+    text-align: center;
+    margin-top: var(--space-3);
+  }
+
+  @media (max-width: 860px) {
+    .stat-row {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (max-width: 640px) {
+    .stat-row {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
