@@ -25,21 +25,9 @@ const icons = {
       content lifts you and which drains you.
     </p>
 
-    <div class="hero-downloads" id="download">
-      <!-- Auth0 gate: signed out -> "Log in to download"; signed in -> the two installers.
-           The file links are only put on the page after login (see the script below). -->
-      <div class="btn-row" data-auth="out">
-        <button type="button" class="btn btn-primary" data-login>Log in to download</button>
-      </div>
-      <p class="note auth-note" data-auth="out">Free account, sign in with Auth0. Windows 10/11 and macOS (Apple Silicon).</p>
-
-      <div class="btn-row" data-auth="in" hidden>
-        <a class="btn btn-primary" data-os="win" data-file-href={links.downloadWindows}>Download for Windows</a>
-        <a class="btn" data-os="mac" data-file-href={links.downloadMac}>Download for macOS (Apple Silicon)</a>
-      </div>
-      <p class="note auth-note" data-auth="in" hidden>
-        Signed in as <strong data-user-name></strong> · <button type="button" class="link-button" data-logout>Log out</button>
-      </p>
+    <div class="btn-row hero-downloads">
+      <a class="btn btn-primary" data-os="win" data-download href={links.downloadWindows}>Download for Windows</a>
+      <a class="btn" data-os="mac" data-download href={links.downloadMac}>Download for macOS (Apple Silicon)</a>
     </div>
 
     <p class="note hero-privacy">
@@ -114,12 +102,8 @@ const icons = {
   }
 
   .hero-downloads {
-    margin-top: 1.75rem;
-    scroll-margin-top: 30vh;
-  }
-
-  .hero-downloads .btn-row {
     justify-content: center;
+    margin-top: 1.75rem;
   }
 
   .hero-privacy {
@@ -141,69 +125,3 @@ const icons = {
     }
   }
 </style>
-
-<script>
-  import { createAuth0Client } from "@auth0/auth0-spa-js";
-
-  const domain = import.meta.env.PUBLIC_AUTH0_DOMAIN;
-  const clientId = import.meta.env.PUBLIC_AUTH0_CLIENT_ID;
-
-  const show = (signedIn: boolean) => {
-    document.querySelectorAll<HTMLElement>("[data-auth]").forEach((el) => {
-      el.hidden = el.dataset.auth !== (signedIn ? "in" : "out");
-    });
-    // The installer links only exist on the page once you're signed in.
-    document.querySelectorAll<HTMLAnchorElement>("[data-file-href]").forEach((a) => {
-      if (signedIn) a.href = a.dataset.fileHref ?? "#";
-      else a.removeAttribute("href");
-    });
-  };
-
-  async function init() {
-    if (!domain || !clientId) {
-      // Not configured (e.g. a local build without .env): don't block the download.
-      console.warn("Auth0 is not configured (PUBLIC_AUTH0_DOMAIN / PUBLIC_AUTH0_CLIENT_ID); showing downloads.");
-      show(true);
-      document.querySelectorAll<HTMLElement>("[data-auth='in'].auth-note").forEach((el) => (el.hidden = true));
-      return;
-    }
-    const auth0 = await createAuth0Client({
-      domain,
-      clientId,
-      authorizationParams: { redirect_uri: window.location.origin },
-      cacheLocation: "localstorage", // stay signed in across reloads
-      useRefreshTokens: true,
-    });
-
-    // Coming back from the Auth0 login page.
-    const query = new URLSearchParams(window.location.search);
-    if (query.has("code") && query.has("state")) {
-      try {
-        await auth0.handleRedirectCallback();
-      } catch (err) {
-        console.error("Auth0 login failed", err);
-      }
-      window.history.replaceState({}, document.title, window.location.pathname + "#download");
-      document.getElementById("download")?.scrollIntoView({ block: "center" });
-    }
-
-    const signedIn = await auth0.isAuthenticated();
-    if (signedIn) {
-      const user = await auth0.getUser();
-      const name = user?.name || user?.email || "you";
-      document.querySelectorAll("[data-user-name]").forEach((el) => (el.textContent = name));
-    }
-    show(signedIn);
-
-    document.querySelectorAll("[data-login]").forEach((b) =>
-      b.addEventListener("click", () => auth0.loginWithRedirect())
-    );
-    document.querySelectorAll("[data-logout]").forEach((b) =>
-      b.addEventListener("click", () =>
-        auth0.logout({ logoutParams: { returnTo: window.location.origin } })
-      )
-    );
-  }
-
-  init();
-</script>
