@@ -4,6 +4,10 @@ import { useWeek } from '../hooks/useWeek'
 import DailyGoalCard from '../components/goals/DailyGoalCard'
 import WeeklyGoal from '../components/goals/WeeklyGoal'
 import Notice from '../components/Notice'
+import SupportNearby from '../components/goals/SupportNearby'
+
+/** Show support listings when this week's drained share is above this. */
+const SUPPORT_THRESHOLD = 0.3
 
 /** Goals: today's social well-being goal (frontend-only), then the weekly goal. */
 export default function GoalsPage() {
@@ -33,6 +37,8 @@ export default function GoalsPage() {
         <h2 className="label mb-4">Weekly goal</h2>
         {week ? <WeeklyGoal week={week} /> : <div className="h-[180px]" />}
       </div>
+
+      {week && week.thisWeekDrainedShare > SUPPORT_THRESHOLD && <SupportNearby />}
     </section>
   )
 }

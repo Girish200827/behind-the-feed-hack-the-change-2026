@@ -1,0 +1,74 @@
+{
+  "_note": "SAMPLE LISTINGS in Open Referral HSDS 3.0 format (paginated services response). Real public services in Calgary/Alberta, but check details before relying on them. Not loaded as session events.",
+  "total_items": 5,
+  "total_pages": 1,
+  "page_number": 1,
+  "size": 5,
+  "first_page": true,
+  "last_page": true,
+  "empty": false,
+  "contents": [
+    {
+      "id": "6f0d3c4e-1a2b-4c5d-8e9f-000000000001",
+      "name": "24-hour Crisis Line",
+      "description": "Free, confidential support by phone, text or chat when you are struggling or just need to talk.",
+      "url": "https://www.distresscentre.com",
+      "status": "active",
+      "organization": { "id": "org-distress-centre-calgary", "name": "Distress Centre Calgary", "website": "https://www.distresscentre.com" },
+      "phones": [{ "id": "ph-1", "number": "403-266-4357", "type": "voice", "description": "403-266-HELP, 24/7" }],
+      "schedules": [{ "id": "sc-1", "description": "Open 24 hours, every day" }],
+      "service_areas": [{ "id": "sa-1", "name": "Calgary and area" }],
+      "service_at_locations": [
+        { "id": "sal-1", "location": { "id": "loc-1", "name": "Calgary", "addresses": [{ "city": "Calgary", "state_province": "AB", "country": "CA" }] } }
+      ]
+    },
+    {
+      "id": "6f0d3c4e-1a2b-4c5d-8e9f-000000000002",
+      "name": "211 Alberta",
+      "description": "Helps you find community, social, health and government services near you, from peer groups to counselling.",
+      "url": "https://ab.211.ca",
+      "status": "active",
+      "organization": { "id": "org-211-alberta", "name": "211 Alberta", "website": "https://ab.211.ca" },
+      "phones": [{ "id": "ph-2", "number": "211", "type": "voice", "description": "Dial 2-1-1, 24/7" }],
+      "schedules": [{ "id": "sc-2", "description": "Open 24 hours, every day" }],
+      "service_areas": [{ "id": "sa-2", "name": "Alberta" }],
+      "service_at_locations": []
+    },
+    {
+      "id": "6f0d3c4e-1a2b-4c5d-8e9f-000000000003",
+      "name": "Mental Health Helpline",
+      "description": "Confidential support and referrals for mental health concerns, for you or someone you care about.",
+      "url": "https://www.albertahealthservices.ca",
+      "status": "active",
+      "organization": { "id": "org-ahs", "name": "Alberta Health Services", "website": "https://www.albertahealthservices.ca" },
+      "phones": [{ "id": "ph-3", "number": "1-877-303-2642", "type": "voice", "description": "Toll-free, 24/7" }],
+      "schedules": [{ "id": "sc-3", "description": "Open 24 hours, every day" }],
+      "service_areas": [{ "id": "sa-3", "name": "Alberta" }],
+      "service_at_locations": []
+    },
+    {
+      "id": "6f0d3c4e-1a2b-4c5d-8e9f-000000000004",
+      "name": "9-8-8 Suicide Crisis Helpline",
+      "description": "If you are thinking about suicide, or worried about someone, call or text any time.",
+      "url": "https://988.ca",
+      "status": "active",
+      "organization": { "id": "org-988", "name": "9-8-8 Suicide Crisis Helpline", "website": "https://988.ca" },
+      "phones": [{ "id": "ph-4", "number": "988", "type": "voice", "description": "Call or text 9-8-8, 24/7" }],
+      "schedules": [{ "id": "sc-4", "description": "Open 24 hours, every day" }],
+      "service_areas": [{ "id": "sa-4", "name": "Canada" }],
+      "service_at_locations": []
+    },
+    {
+      "id": "6f0d3c4e-1a2b-4c5d-8e9f-000000000005",
+      "name": "Kids Help Phone",
+      "description": "Counselling and support for young people, by phone or text (text CONNECT to 686868).",
+      "url": "https://kidshelpphone.ca",
+      "status": "active",
+      "organization": { "id": "org-khp", "name": "Kids Help Phone", "website": "https://kidshelpphone.ca" },
+      "phones": [{ "id": "ph-5", "number": "1-800-668-6868", "type": "voice", "description": "24/7" }],
+      "schedules": [{ "id": "sc-5", "description": "Open 24 hours, every day" }],
+      "service_areas": [{ "id": "sa-5", "name": "Canada" }],
+      "service_at_locations": []
+    }
+  ]
+}
