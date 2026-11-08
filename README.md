@@ -216,7 +216,7 @@ The website in [`landing/`](landing) is built with Astro and deployed on AWS Amp
 | | Role |
 |---|---|
 | **Raad** | Computer vision: face, emotion and mood switches |
-| **Giresh** | Computer vision: screen capture and content labels |
+| **Girish** | Computer vision: screen capture and content labels |
 | **Allen** | Backend, desktop packaging and release, landing page |
 | **Ahmad Cheema** | Frontend: the dashboard |
 

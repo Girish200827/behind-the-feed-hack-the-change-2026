@@ -2,7 +2,7 @@ import type { WeekComparison, WeeklyGoalInfo } from '../../data'
 import { capitalize, formatSpan } from '../../lib/format'
 
 /**
- * This week's goal. The text comes from Allen's GET /goal (A5; Giresh's G4 may reword it there). Without the
+ * This week's goal. The text comes from Allen's GET /goal (A5; Girish's G4 may reword it there). Without the
  * backend it's the same template computed on this device. The progress bar compares drained time with last week.
  */
 export default function WeeklyGoal({ goal, week }: { goal: WeeklyGoalInfo; week: WeekComparison | null }) {

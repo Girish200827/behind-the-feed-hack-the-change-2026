@@ -1,5 +1,5 @@
 // Plain-language privacy wording, shared by the Privacy page and the first-launch consent screen.
-// Keep it short, honest and in sync with what Raad, Giresh and Allen actually record.
+// Keep it short, honest and in sync with what Raad, Girish and Allen actually record.
 
 export const PLATFORMS_TEXT = 'Instagram, TikTok, YouTube, X or Facebook'
 
@@ -23,7 +23,7 @@ export const PRIVACY_FACTS = {
 } as const
 
 /**
- * ✏️ EDIT ME — to be confirmed with Giresh (screen labeller).
+ * ✏️ EDIT ME — to be confirmed with Girish (screen labeller).
  * If the screen labeller uses an online vision model, say so here. If it runs fully on this computer, change the
  * text and set ONLINE_LABELLING.confirmed to true.
  */

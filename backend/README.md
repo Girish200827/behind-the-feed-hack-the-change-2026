@@ -43,13 +43,13 @@ python3 scripts/fake_session.py --post     # also sends it to the running API
 | GET | `/status` | Raad (L3) | `{"scrolling", "session_id", "platform", "paused", "camera"}`. The camera runs only while `camera` is true (scrolling and not paused). |
 | POST | `/pause` | Cheema (C2) | The dashboard's Pause button. The camera turns off within a second; the session keeps counting time. |
 | POST | `/resume` | Cheema (C2) | The Resume button. |
-| POST | `/events` | Raad, Giresh (L2) | Takes any `emotion_sample`, `mood_switch` or `context_label` exactly as written in contracts.md. Returns 422 for anything else. |
+| POST | `/events` | Raad, Girish (L2) | Takes any `emotion_sample`, `mood_switch` or `context_label` exactly as written in contracts.md. Returns 422 for anything else. |
 | GET | `/sessions` | Cheema (L4) | All sessions, newest first. |
 | GET | `/sessions/{id}/timeline` | Cheema (L4) | `{session, emotions, switches, labels}`, ordered by time. |
 | POST | `/sessions` | testing / demo fallback | Starts a session by hand: `{"platform": "instagram"}`. |
 | PATCH | `/sessions/{id}` | testing / demo fallback | Ends it, with an optional `{"end": ts}`. |
 | GET | `/insights` | Cheema (C4) | Trigger score per category, mood at session start vs. end, platform mix, longest session. |
-| GET | `/goal` | Cheema, Giresh (G4) | One weekly goal built from the top trigger. |
+| GET | `/goal` | Cheema, Girish (G4) | One weekly goal built from the top trigger. |
 
 Sending an event from Python:
 

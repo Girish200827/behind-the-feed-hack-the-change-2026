@@ -10,7 +10,7 @@ It's for doomscrollers who want healthier habits.
 
 ## Team (only Cheema's part is built here)
 - **Raad** (Computer Vision, face): webcam → `emotion_sample` and `mood_switch` events
-- **Giresh** (Computer Vision, screen): in-memory screen grab → `context_label`; also goal wording (G4) and the main README
+- **Girish** (Computer Vision, screen): in-memory screen grab → `context_label`; also goal wording (G4) and the main README
 - **Allen** (Backend): fake session file (A1), SQLite + FastAPI event intake (A2), social media window detector (A3),
   local API for the dashboard (A4), insights and goal (A5)
 - **Cheema** (Frontend): C1, C2, C3, L4, C4
@@ -46,10 +46,10 @@ Design layer: Inter Variable (`@fontsource-variable/inter`), `motion`, `lucide-r
   `{"ts": 1794083400.5, "emotion": "sad", "valence": -0.6, "confidence": 0.81}`
   - emotion: `happy | sad | angry | fear | surprise | disgust | neutral`
   - valence: -1 (negative) to 1 (positive)
-- **mood_switch** (Raad → Giresh, Allen; when a new mood holds 2 s):
+- **mood_switch** (Raad → Girish, Allen; when a new mood holds 2 s):
   `{"id": "sw_0142", "ts": 1794083412.0, "from": "neutral", "to": "sad", "platform": "instagram"}`
   - platform: `instagram | tiktok | youtube | x | facebook`
-- **context_label** (Giresh → Allen; one per switch, never the image):
+- **context_label** (Girish → Allen; one per switch, never the image):
   `{"switch_id": "sw_0142", "ts": 1794083412.4, "platform": "instagram", "category": "news", "tone": "negative", "topic": "layoff headlines"}`
   - category: `news | politics | comedy | friends | fitness | food | drama | ads | other`
   - tone: `positive | neutral | negative`
@@ -94,7 +94,7 @@ Done when: the fake session shows as a mood timeline with switches and labels th
   - What is saved: emotion and time, mood switches, content category/tone/topic
   - What is never saved: camera frames, face images, screenshots (screens are labelled, then deleted)
   - A note: if the screen labeller uses an online vision model, the image is sent to that service for labelling
-    (a clearly marked editable line, pending Giresh's decision)
+    (a clearly marked editable line, pending Girish's decision)
   - "These are mood signals, not a diagnosis"
 - Pause / Resume button on the Privacy page and a camera-status pill in the sidebar (Watching / Paused / Off).
 - `pause()`, `resume()`, `getStatus()` in the data layer; in-memory state for now.
@@ -111,7 +111,7 @@ Done when: the fake session shows as a mood timeline with switches and labels th
 ### Phase 4 — C4 Insights and goals pages (after 11 PM; needs Allen's A5 and L4)
 - `getInsights()` in the data layer reading Allen's A5 output: trigger score per content category (share of switches
   that turned negative), mood before/after a session, longest streak, goal picked from the top trigger. Goal wording
-  from Giresh (G4); template text if missing.
+  from Girish (G4); template text if missing.
 - Fallback: if A5 isn't available, compute the same numbers in `src/data/insights.ts` from sessions and timelines.
 - Insights page: top triggers (horizontal bar chart, top one highlighted), platform mix (time and avg valence per
   platform), 2–3 plain-language insight cards.
@@ -122,7 +122,7 @@ Done when: the fake session shows as a mood timeline with switches and labels th
 ### Phase 5 — Ready for the 5 AM feature freeze
 - Production build with no errors; test every page in mock and api mode, including with the backend off.
 - Make the Session Report readable on a projector for the demo.
-- Provide a short "How to run the frontend" section for the team README (Giresh owns the README).
+- Provide a short "How to run the frontend" section for the team README (Girish owns the README).
 
 ## Screens
 - **Today** (`/today?date=YYYY-MM-DD`, default page): one local day across all platforms. Header with day arrows
@@ -155,7 +155,7 @@ Done when: the fake session shows as a mood timeline with switches and labels th
   template as backend/app/insights.py), so the pages never break.
 - Average mood per platform is computed in the frontend from the timelines (his platform_mix has no valence).
 - Insights page: 2–3 plain-language cards, top-triggers bars (top one in coral), platform mix. Goals page: weekly goal
-  text from /goal (Giresh's G4 wording lands there), with the drained-time bar vs last week.
+  text from /goal (Girish's G4 wording lands there), with the drained-time bar vs last week.
 
 ## Feature flags
 - Flags live in one file: `src/config/features.ts` (read from `frontend/.env` or the shell when the app starts).

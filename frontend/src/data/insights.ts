@@ -120,7 +120,7 @@ export function computeInsightsLocal(timelines: Timeline[], now = Date.now() / 1
   }
 }
 
-/** The same goal as GET /goal (template text; Giresh's G4 may reword it on the backend). */
+/** The same goal as GET /goal (template text; Girish's G4 may reword it on the backend). */
 export function computeGoalLocal(ins: Insights): WeeklyGoalInfo {
   const top = ins.triggers.find((t) => t.switches >= MIN_SWITCHES_FOR_GOAL && t.negative > 0)
   if (top) {

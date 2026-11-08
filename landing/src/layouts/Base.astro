@@ -70,8 +70,10 @@ const { title = `${site.name} — ${site.tagline}`, description = site.descripti
           if (navDownload) navDownload.setAttribute("href", navDownload.getAttribute("data-mac-href"));
         }
 
+        // Hide the nav once you scroll past the hero, in every browser. Under "reduce motion"
+        // (often on in Chrome/Edge on Windows) it still hides, just without the slide (see global.css).
         var floatNav = document.querySelector("[data-float-nav]");
-        if (floatNav && !reduceMotion) {
+        if (floatNav) {
           var hideThreshold = 180;
           var ticking = false;
           var updateOnScroll = function () {
@@ -89,6 +91,7 @@ const { title = `${site.name} — ${site.tagline}`, description = site.descripti
             },
             { passive: true }
           );
+          updateOnScroll(); // e.g. reloaded halfway down the page
         }
       })();
     </script>
