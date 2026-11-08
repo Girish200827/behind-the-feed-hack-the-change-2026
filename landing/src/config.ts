@@ -5,7 +5,7 @@ export const links = {
   downloadMac:
     "https://github.com/Girish200827/behind-the-feed-hack-the-change-2026/releases/latest/download/BehindFeed-mac-arm64.dmg", // 317 MB, Apple Silicon only
   github: "https://github.com/Girish200827/behind-the-feed-hack-the-change-2026",
-  devpost: "#", // TODO: Devpost submission URL
+  devpost: "https://devpost.com/software/behindfeed",
 };
 
 export const version = "v0.1 (hackathon build)";
