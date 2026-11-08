@@ -9,7 +9,11 @@ export const API_PATHS = {
   /** GET: { session, emotions, switches, labels } ordered by time. */
   timeline: (sessionId: string) => `/sessions/${encodeURIComponent(sessionId)}/timeline`,
   /** GET: { scrolling, session_id, platform, ... }. Used for the camera status pill. */
-  status: '/status'
+  status: '/status',
+  /** GET (A5): trigger scores, session moods, platform mix, longest session. */
+  insights: '/insights',
+  /** GET (A5): one weekly goal from the top trigger. */
+  goal: '/goal'
 } as const
 
 /** Give up on a request after this long and treat the backend as offline. */

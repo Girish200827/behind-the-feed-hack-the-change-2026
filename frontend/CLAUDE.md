@@ -145,6 +145,14 @@ Done when: the fake session shows as a mood timeline with switches and labels th
 - The loader also accepts a single timeline object ({session, emotions, switches, labels}), so Allen's
   `fake_session.json` can be dropped into `src/mock/` as-is.
 
+## Insights and weekly goal (C4)
+- `getInsights()` / `getWeeklyGoal()` (`src/data/index.ts`): Allen's `GET /insights` and `GET /goal` when the
+  backend is reachable; otherwise `src/data/insights.ts` computes the same numbers locally (same definitions and goal
+  template as backend/app/insights.py), so the pages never break.
+- Average mood per platform is computed in the frontend from the timelines (his platform_mix has no valence).
+- Insights page: 2–3 plain-language cards, top-triggers bars (top one in coral), platform mix. Goals page: weekly goal
+  text from /goal (Giresh's G4 wording lands there), with the drained-time bar vs last week.
+
 ## Well-being features (frontend-only; no contracts.md changes)
 - **Daily social goal** (`src/data/dailyGoal.ts`, pure + tested): picked from yesterday's sessions. Connection
   ("Swap one scroll session for a call or text" / "Message a friend before opening <platform>"), Timing ("No scrolling

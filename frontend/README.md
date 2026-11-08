@@ -40,6 +40,7 @@ The app window opens on **Today** with two weeks of demo data. On first launch y
 
 - **Today**: one day across all platforms: a 24-hour strip, a mood ribbon of every session side by side, moments (what was on screen when your mood switched), a daily summary, a platform breakdown and a sessions list. Click any session for its detail view.
 - **Daily social goal**: one small goal a day, picked from yesterday's patterns ("Message a friend before opening X", "No scrolling after 11 PM"...), with a progress ring, a one-tap check-in and a streak.
+- **Insights**: which content most often brings your mood down (top triggers), time and mood per platform, and a few plain-language findings.
 - **Goals**: the daily goal, the weekly goal, and *Support nearby* (Calgary/Alberta services in the Open Referral format) when the week has been draining.
 - **Circle**: share your goal and streak with friends through your own Discord webhook. You see the exact message first. Without a webhook it runs in demo mode.
 - **Connect-instead nudges**: after 5+ minutes of draining scrolling, a gentle suggestion to message a friend, step outside or call someone.

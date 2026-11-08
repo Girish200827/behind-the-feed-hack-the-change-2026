@@ -62,7 +62,8 @@ The webhook URL is stored only in this computer's app storage (localStorage). It
 - [ ] **Today**: daily goal card at the top (ring, why line, check-in, streak), day strip, ribbon fits on screen at 1920×1080.
 - [ ] **Session detail**: click a session panel → single-session report with "Back to …".
 - [ ] **Privacy**: nudge switch and Simulate button.
-- [ ] **Goals**: daily goal (full), weekly goal, Support nearby (shown when this week is more than 30% drained, labelled "Sample listings").
+- [ ] **Insights**: three finding cards, top triggers (top one in coral), platform mix; footnote says where the numbers came from.
+- [ ] **Goals**: daily goal (full), weekly goal (from `/goal` in live mode), Support nearby (shown when this week is more than 30% drained, labelled "Sample listings").
 - [ ] **Circle**: demo mode banner and sample messages without a webhook; preview and privacy note.
 
 ### Demo reset
