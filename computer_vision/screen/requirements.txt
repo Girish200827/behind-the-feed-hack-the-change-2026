@@ -1,0 +1,2 @@
+mss            # screen capture, in memory
+google-genai   # Gemini API

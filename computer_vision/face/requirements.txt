@@ -1,0 +1,9 @@
+# Python 3.11 or 3.12 recommended
+opencv-python>=4.8,<5   # 4.x: has imshow and the Haar fallback face detector
+numpy
+onnxruntime             # runs the emotion model on the CPU
+hsemotion-onnx          # HSEmotion facial emotion models (ONNX); model downloaded once into models/
+truststore              # downloads trust the Windows certificate store, like pip
+certifi                 # backup certificate list for downloads
+pytest                  # only for the tests
+# Optional second backend (large: pulls in TensorFlow):  pip install deepface
