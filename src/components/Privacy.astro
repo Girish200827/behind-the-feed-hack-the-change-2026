@@ -1,0 +1,46 @@
+---
+const cards = [
+  {
+    title: "Face frames never saved",
+    body: "Only the emotion label and a timestamp are stored — the camera frame itself is discarded instantly.",
+  },
+  {
+    title: "Screenshots labelled then deleted",
+    body: "A screen grab is used once to label category, tone and topic, then it's gone.",
+  },
+  {
+    title: "Camera only during social media",
+    body: "The camera turns on only while a short-form app is open, and off the rest of the time.",
+  },
+  {
+    title: "Pause anytime",
+    body: "One click stops all camera and screen access, instantly and completely.",
+  },
+];
+---
+
+<section class="section">
+  <div class="container">
+    <div class="glow-band" data-reveal>
+      <div class="section-head">
+        <p class="eyebrow">Privacy</p>
+        <h2>Built to watch less, not more</h2>
+      </div>
+
+      <div class="card-grid card-grid-4">
+        {
+          cards.map((card) => (
+            <div class="glass-card">
+              <h3>{card.title}</h3>
+              <p>{card.body}</p>
+            </div>
+          ))
+        }
+      </div>
+
+      <p class="note text-center mt-3">
+        These are mood signals across many switches, not a medical diagnosis.
+      </p>
+    </div>
+  </div>
+</section>

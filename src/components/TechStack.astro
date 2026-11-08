@@ -1,0 +1,46 @@
+---
+const groups = [
+  { label: "Vision (face)", chips: ["Python", "OpenCV", "MediaPipe", "DeepFace", "HSEmotion"] },
+  { label: "Vision (screen)", chips: ["mss", "Pillow", "Gemini", "Tesseract OCR"] },
+  { label: "Backend", chips: ["FastAPI", "SQLite", "pywinctl"] },
+  { label: "Frontend / desktop", chips: ["pywebview", "Electron", "Chart.js"] },
+];
+---
+
+<section class="section" id="stack">
+  <div class="container">
+    <div class="section-head" data-reveal>
+      <p class="eyebrow">Tech stack</p>
+      <h2>Built fast, built honestly</h2>
+    </div>
+
+    <div class="stack-grid" data-reveal>
+      {
+        groups.map((group) => (
+          <div class="chip-group">
+            <p class="chip-group-label">{group.label}</p>
+            <div class="chip-row">
+              {group.chips.map((chip) => (
+                <span class="chip">{chip}</span>
+              ))}
+            </div>
+          </div>
+        ))
+      }
+
+      <div class="chip-group">
+        <p class="chip-group-label">Hackathon resources</p>
+        <div class="chip-row">
+          <span class="chip chip-muted">APIs &amp; datasets — TBD</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .stack-grid {
+    max-width: 760px;
+    margin: 0 auto;
+  }
+</style>
