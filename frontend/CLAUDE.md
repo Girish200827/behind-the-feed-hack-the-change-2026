@@ -25,16 +25,20 @@ Do **NOT** build window detection, webcam access or screenshots in the frontend.
 ## Stack
 Electron + React + TypeScript (electron-vite), Tailwind CSS, Chart.js with react-chartjs-2 and
 chartjs-plugin-annotation (kept for Phase 4 charts), React Router.
-Design layer: Geist Sans/Mono (`geist`), `motion`, `lucide-react`, `simple-icons` (platform marks),
+Design layer: Inter Variable (`@fontsource-variable/inter`), `motion`, `lucide-react`, `simple-icons` (platform marks),
 `d3-shape` + `d3-scale` (custom SVG "mood ribbon" on the Session Report).
 
 ## Design system
-- Calm, dark-first, minimal (light mode via prefers-color-scheme). Frameless window with a custom draggable title strip.
-- All colors, radii and fonts are tokens in `src/index.css` (`:root` CSS variables + Tailwind `@theme`). Don't hard-code colors.
-- Mood colors: teal = uplifting (`--positive`), coral = draining (`--negative`), cool gray = neutral. Validated for
-  contrast and colorblind separation against both backgrounds. Color only where it carries meaning; `--accent` for UI focus/active.
-- Geist Mono for numbers, times and the small uppercase `.label`; Geist Sans for everything else.
-- Motion is 150–300 ms ease-out (line draw ~800 ms); everything respects prefers-reduced-motion.
+- Flat, bordered, minimal (shadcn-style), light only: white surfaces, 1px borders (`--border` #e4e4e7), subtle shadows.
+  Frameless window: 56px icon rail (`Sidebar.tsx`), header with camera avatar + page title/subtitle, and a pill status
+  footer (camera, data source, Pause/Resume) in `Layout.tsx`.
+- All colors, radii and fonts are tokens in `src/index.css`. Don't hard-code colors. Grayscale by default; blue
+  (`--accent-blue` #4672ee) only on interactive/primary things; `--accent-gradient` only on the brand mark and `.btn-primary`.
+- Shared classes: `.card` (cards), `.btn` / `.btn-primary` (buttons), `.icon-chip` / `.chip-accent` (square icon chips), `.label`.
+- Mood colors are data, not decoration: teal = uplifting (`--positive`), coral = draining (`--negative`), gray = neutral.
+- Inter Variable everywhere (`@fontsource-variable/inter`); `font-mono` now means tabular figures, same typeface.
+- Motion: ease `cubic-bezier(0.16, 1, 0.3, 1)`; page entrance fade + 22px rise over 0.8s; hovers 0.15s; everything is
+  instant under prefers-reduced-motion.
 - Platform marks: `<PlatformIcon platform=... />`, monochrome by default, `tint` for a subtle brand tint.
 
 ## Event formats (copied from the team's contracts.md; never rename fields; times are Unix seconds)
@@ -60,7 +64,7 @@ if its `ts` is between `start` and `end`. A `context_label` attaches to its `moo
 - All data access goes through one data layer in `src/data/`. Components never call `fetch` directly.
 - Never store or display images.
 - Keep components small and readable.
-- Calm wellness design: soft neutral background, gentle colors, readable type, light and dark mode. Muted red only for negative tone.
+- Calm wellness design: white surfaces, gentle colors, readable type. Muted red only for negative tone.
 - Wrap any `localStorage` use in try/catch.
 - These are mood signals, not a diagnosis. UI wording must reflect that.
 

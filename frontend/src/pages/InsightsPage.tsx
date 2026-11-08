@@ -37,7 +37,7 @@ export default function InsightsPage() {
               <span className="font-mono text-[11px] text-muted">share of mood switches that turned negative</span>
             </div>
             {state.data.triggers.length ? (
-              <div className="rounded-[var(--radius-lg)] border border-hairline bg-surface px-6 py-4">
+              <div className="card px-6 py-4">
                 <TopTriggers triggers={state.data.triggers} />
               </div>
             ) : (

@@ -8,7 +8,7 @@ import { capitalize, formatSpan } from '../../lib/format'
 export default function WeeklyGoal({ goal, week }: { goal: WeeklyGoalInfo; week: WeekComparison | null }) {
   const ratio = week && week.lastWeekDrainedSeconds > 0 ? week.thisWeekDrainedSeconds / week.lastWeekDrainedSeconds : null
   return (
-    <section className="rounded-[var(--radius-lg)] border border-hairline bg-surface px-8 py-7">
+    <section className="card px-8 py-7">
       <div className="flex items-center gap-3">
         <span className="label">This week</span>
         {goal.category && (

@@ -1,76 +1,60 @@
 @import "tailwindcss";
 
-/* ───────────────────────── Fonts ───────────────────────── */
+/* ───────────────────────── Font ─────────────────────────
+   Inter Variable everywhere (one typeface). Numbers use tabular figures instead of a mono font. */
 @font-face {
-  font-family: "Geist";
-  src: url("../node_modules/geist/dist/fonts/geist-sans/Geist-Variable.woff2") format("woff2");
-  font-weight: 100 900;
-  font-display: swap;
-}
-@font-face {
-  font-family: "Geist Mono";
-  src: url("../node_modules/geist/dist/fonts/geist-mono/GeistMono-Variable.woff2") format("woff2");
+  font-family: "Inter Variable";
+  src: url("../node_modules/@fontsource-variable/inter/files/inter-latin-wght-normal.woff2") format("woff2-variations");
   font-weight: 100 900;
   font-display: swap;
 }
 
 /* ───────────────────────── Design tokens ─────────────────────────
-   Dark is the primary theme. Mood colors are validated (dataviz validator)
-   against each theme's background: teal = uplifting, coral = draining, gray = neutral. */
+   Flat, bordered, minimal. Grayscale by default; blue only on interactive or primary
+   elements; the gradient only on the brand mark and primary buttons.
+   Mood colors (teal = uplifting, coral = draining) are data, not decoration. */
 :root {
-  --bg: #07080c;
-  --surface: #0b0d13;
-  --surface-2: #10131b;
-  --elevated: #141823;
-  --hairline: rgb(255 255 255 / 0.07);
-  --hairline-strong: rgb(255 255 255 / 0.13);
+  /* design-language names */
+  --surface-muted: #fafafa;
+  --text: #09090b;
+  --accent-blue: #4672ee;
+  --accent-blue-soft: #eef2ff;
+  --accent-gradient: linear-gradient(135deg, #7ba7ff, #4672ee);
+  --border: #e4e4e7;
+  --border-strong: #d4d4d8;
+  --radius: 12px;
+  --radius-pill: 999px;
+  --shadow: 0 1px 2px rgb(9 9 11 / 0.04);
+  --shadow-md: 0 2px 10px rgb(9 9 11 / 0.06);
+  --shadow-lg: 0 8px 24px rgb(9 9 11 / 0.08);
+  --ease: cubic-bezier(0.16, 1, 0.3, 1);
 
-  --ink: #eceff5;
-  --ink-2: #b9c0cf;
-  --muted: #8890a3;
-  --faint: #4b5265;
+  /* the names the components use, mapped onto the design language */
+  --bg: #ffffff;
+  --surface: #ffffff;
+  --surface-2: var(--surface-muted);
+  --elevated: #ffffff;
+  --hairline: var(--border);
+  --hairline-strong: var(--border-strong);
 
-  --accent: #9aa8ff;
-  --accent-soft: rgb(154 168 255 / 0.14);
+  --ink: var(--text);
+  --ink-2: #3f3f46;
+  --muted: #6b7280;
+  --faint: #a1a1aa;
 
-  --positive: #2eab93;
-  --positive-ink: #6fd8c1;
-  --negative: #e4685a;
-  --negative-ink: #f39a8f;
-  --neutral: #8890a3;
+  --accent: var(--accent-blue);
+  --accent-soft: var(--accent-blue-soft);
 
-  --shadow-pop: 0 1px 0 rgb(255 255 255 / 0.04) inset, 0 12px 32px -8px rgb(0 0 0 / 0.6);
+  --positive: #1a9a83;
+  --positive-ink: #137a68;
+  --negative: #d65a4b;
+  --negative-ink: #b0473a;
+  --neutral: #7a8296;
+
+  --shadow-pop: var(--shadow-lg);
   --titlebar-h: 40px;
 
-  color-scheme: dark;
-}
-
-@media (prefers-color-scheme: light) {
-  :root {
-    --bg: #f5f6f9;
-    --surface: #fbfbfd;
-    --surface-2: #eff1f5;
-    --elevated: #ffffff;
-    --hairline: rgb(12 18 40 / 0.08);
-    --hairline-strong: rgb(12 18 40 / 0.14);
-
-    --ink: #10131c;
-    --ink-2: #3a4152;
-    --muted: #5d6578;
-    --faint: #a3a9b8;
-
-    --accent: #4b5fd9;
-    --accent-soft: rgb(75 95 217 / 0.1);
-
-    --positive: #1a9a83;
-    --positive-ink: #137a68;
-    --negative: #d65a4b;
-    --negative-ink: #b0473a;
-    --neutral: #7a8296;
-
-    --shadow-pop: 0 12px 32px -10px rgb(16 19 28 / 0.18);
-    color-scheme: light;
-  }
+  color-scheme: light;
 }
 
 @theme inline {
@@ -92,15 +76,15 @@
   --color-negative-ink: var(--negative-ink);
   --color-neutral: var(--neutral);
 
-  --font-sans: "Geist", ui-sans-serif, sans-serif;
-  --font-mono: "Geist Mono", ui-monospace, monospace;
+  --font-sans: "Inter Variable", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "Inter Variable", ui-sans-serif, system-ui, sans-serif;
 
-  --radius-sm: 6px;
-  --radius-md: 10px;
-  --radius-lg: 14px;
+  --radius-sm: 8px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
 
   --shadow-pop: var(--shadow-pop);
-  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 /* ───────────────────────── Base ───────────────────────── */
@@ -108,6 +92,8 @@ html,
 body,
 #root {
   height: 100%;
+  overflow: hidden; /* only the content area scrolls, never the window */
+  overscroll-behavior: none;
 }
 
 body {
@@ -115,7 +101,9 @@ body {
   background: var(--bg);
   color: var(--ink);
   font-family: var(--font-sans);
-  font-feature-settings: "ss01", "cv11";
+  font-size: 16px;
+  line-height: 1.6;
+  font-feature-settings: "cv11", "ss03";
   -webkit-font-smoothing: antialiased;
   user-select: none;
 }
@@ -129,13 +117,100 @@ body {
   outline-offset: 2px;
 }
 
-/* Small uppercase mono labels used across the app. */
+/* Small uppercase group labels ("MOOD ACROSS THE DAY"). */
 .label {
-  font-family: var(--font-mono);
-  font-size: 10.5px;
-  letter-spacing: 0.12em;
+  font-size: 0.7rem;
+  font-weight: 550;
+  letter-spacing: 0.06em;
+  line-height: 1.4;
   text-transform: uppercase;
   color: var(--muted);
+}
+
+/* Former mono text (times, numbers): same typeface, tabular figures. */
+.font-mono {
+  font-variant-numeric: tabular-nums;
+}
+
+@layer base {
+h1,
+h2,
+h3 {
+  font-weight: 620;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+}
+}
+
+@layer components {
+/* Buttons: default = white + strong border, hover tints the fill (never the border). */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-strong);
+  background: var(--surface);
+  color: var(--text);
+  font-weight: 500;
+  transition: background-color 0.15s var(--ease), opacity 0.15s var(--ease), box-shadow 0.15s var(--ease);
+}
+.btn:hover:not(:disabled) {
+  background: var(--surface-muted);
+}
+/* Primary: the gradient. Re-declared on hover so the default hover can't replace it. */
+.btn-primary,
+.btn-primary:hover:not(:disabled) {
+  border-color: transparent;
+  background: var(--accent-gradient);
+  color: #ffffff;
+}
+.btn-primary:hover:not(:disabled) {
+  opacity: 0.92;
+  box-shadow: 0 4px 14px rgb(70 114 238 / 0.28);
+}
+.btn:disabled {
+  opacity: 0.45;
+}
+
+/* Cards: white, 1px border, 12px radius, a light lift. */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+
+/* Icon chips: neutral by default, .chip-accent for the one thing to emphasise. */
+.icon-chip {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  background: var(--surface-muted);
+  color: var(--muted);
+}
+.icon-chip.chip-accent {
+  border-color: transparent;
+  background: var(--accent-blue-soft);
+  color: var(--accent-blue);
+}
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0s !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0s !important;
+    transition-delay: 0s !important;
+  }
 }
 
 /* Native-feeling window chrome: drag from the title strip, but keep controls clickable. */

@@ -14,7 +14,7 @@ export default function PauseCard() {
   const { status, toggle } = useCameraStatus()
   const paused = status === 'paused'
   return (
-    <section className="flex items-center justify-between gap-8 rounded-[var(--radius-lg)] border border-hairline bg-surface px-8 py-7">
+    <section className="flex items-center justify-between gap-8 card px-8 py-7">
       <div>
         <div className="label">Camera</div>
         <div className="mt-2 flex items-center gap-3">
@@ -33,8 +33,8 @@ export default function PauseCard() {
         onClick={toggle}
         disabled={!status}
         aria-pressed={paused}
-        className={`no-drag flex h-14 shrink-0 items-center gap-3 rounded-[var(--radius-lg)] px-7 text-[16px] font-medium transition-[background-color,transform,opacity] duration-150 active:scale-[0.98] disabled:opacity-40 ${
-          paused ? 'bg-accent text-bg hover:opacity-90' : 'border border-hairline-strong text-ink hover:bg-surface-2 active:bg-elevated'
+        className={`no-drag btn h-14 shrink-0 gap-3 px-7 text-[16px] active:scale-[0.98] ${
+          paused ? 'btn-primary' : ''
         }`}
       >
         {paused ? <Play size={18} /> : <Pause size={18} />}

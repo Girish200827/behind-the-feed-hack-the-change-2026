@@ -82,7 +82,7 @@ export default function NudgeProvider({ children }: { children: ReactNode }) {
             className="no-drag fixed bottom-6 right-6 z-50 w-[360px] rounded-[var(--radius-lg)] border border-hairline-strong bg-elevated p-5 shadow-[var(--shadow-pop)]"
           >
             <div className="flex items-start gap-3">
-              <span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-accent-soft text-accent">
+              <span className="icon-chip chip-accent mt-0.5">
                 <Sparkles size={15} />
               </span>
               <div className="min-w-0 flex-1">

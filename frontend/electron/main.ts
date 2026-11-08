@@ -85,9 +85,10 @@ ipcMain.handle('notify', (_e, title: unknown, body: unknown) => {
 })
 
 // Keep in sync with --bg / --muted / --titlebar-h in src/index.css.
+// The design is light-only (white surfaces), so both system themes get the same colors.
 const THEME = {
-  dark: { bg: '#07080c', symbols: '#8890a3' },
-  light: { bg: '#f5f6f9', symbols: '#5d6578' }
+  dark: { bg: '#ffffff', symbols: '#6b7280' },
+  light: { bg: '#ffffff', symbols: '#6b7280' }
 }
 const TITLEBAR_HEIGHT = 40
 

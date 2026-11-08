@@ -31,7 +31,7 @@ export default function DailyGoalCard({ view, isToday, onCheckIn, variant = 'com
   return (
     <section
       aria-label="Daily goal"
-      className={`flex items-center gap-6 rounded-[var(--radius-lg)] border border-hairline bg-surface ${full ? 'px-8 py-7' : 'px-5 py-3'}`}
+      className={`flex items-center gap-6 card ${full ? 'px-8 py-7' : 'px-5 py-3'}`}
     >
       <ProgressRing progress={progress.progress} status={progress.status} size={full ? 72 : 44}>
         {progress.status === 'met' ? <Check size={full ? 22 : 16} /> : <Icon size={full ? 20 : 15} strokeWidth={1.75} />}
