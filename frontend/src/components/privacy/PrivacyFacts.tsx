@@ -1,6 +1,7 @@
 import { Eye, HardDrive, PencilLine, Send, ShieldOff, type LucideIcon } from 'lucide-react'
 import type { ReactNode } from 'react'
 import { ONLINE_LABELLING, PRIVACY_FACTS } from '../../content/privacy'
+import { FEATURES } from '../../config/features'
 
 /** What is and isn't recorded, in plain language. `compact` is used on the consent screen. */
 export default function PrivacyFacts({ compact = false }: { compact?: boolean }) {
@@ -16,10 +17,13 @@ export default function PrivacyFacts({ compact = false }: { compact?: boolean })
       <Fact icon={ShieldOff} title={f.neverSaved.title} compact={compact} tone="never">
         <List items={f.neverSaved.items} />
       </Fact>
-      <Fact icon={Send} title={f.circle.title} compact={compact}>
-        <p>{f.circle.body}</p>
-      </Fact>
-      <div className={compact ? '' : 'col-span-2'}>
+      {FEATURES.circle && (
+        <Fact icon={Send} title={f.circle.title} compact={compact}>
+          <p>{f.circle.body}</p>
+        </Fact>
+      )}
+      {/* Without the Circle card the grid has an odd number of facts, so online labelling sits beside "never saved". */}
+      <div className={compact || !FEATURES.circle ? '' : 'col-span-2'}>
         <Fact icon={PencilLine} title="Online labelling" compact={compact} pending={!ONLINE_LABELLING.confirmed}>
           <p>{ONLINE_LABELLING.text}</p>
         </Fact>

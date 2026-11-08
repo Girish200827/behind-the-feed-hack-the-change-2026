@@ -2,6 +2,7 @@
 // (localStorage, try/catch). Sending goes through the Electron main process via the preload bridge.
 import type { DiscordPayload, BehindFeedBridge, SendResult } from '../types/bridge'
 import { KEYS, readJson, writeJson } from './localStore'
+import { FEATURES } from '../config/features'
 
 export interface CircleSettings {
   webhookUrl: string
@@ -31,6 +32,7 @@ export const getSentLog = (): SentItem[] => readJson<SentItem[]>(KEYS.circleSent
 
 /** Sends a message to the configured webhook. Only `payload` leaves the device. */
 export async function shareToCircle(payload: DiscordPayload): Promise<SendResult> {
+  if (!FEATURES.circle) return { ok: false, error: 'unavailable', message: 'Scroll Circle is turned off.' }
   const { webhookUrl } = getCircleSettings()
   const b = bridge()
   if (!b) return { ok: false, error: 'unavailable', message: 'Sharing works in the BehindFeed desktop app.' }

@@ -3,8 +3,12 @@ import { buildChallengeInvite, buildProgressMessage, cleanName, CIRCLE_BOT_NAME 
 import { computeDayStats, selectDailyGoal } from '../data/dailyGoal'
 import { EMOTIONS } from '../types/contracts'
 import { at, moment, samples, session } from '../test/fixtures'
+import { FEATURES } from '../config/features'
 
-describe('Circle progress message', () => {
+// Scroll Circle is behind VITE_ENABLE_CIRCLE; its tests only run when it's on.
+const describeCircle = describe.skipIf(!FEATURES.circle)
+
+describeCircle('Circle progress message', () => {
   const base = { displayName: 'Ahmad', goalTitle: 'No scrolling after 11 PM', outcome: 'met' as const, streak: 4, drainedChange: -0.18 }
 
   it('contains only the allowed parts', () => {
@@ -55,7 +59,7 @@ describe('Circle progress message', () => {
   })
 })
 
-describe('Circle challenge invite', () => {
+describeCircle('Circle challenge invite', () => {
   it('names the challenge and nothing personal beyond the display name', () => {
     const msg = buildChallengeInvite('Ahmad', 'swap-for-call')
     expect(msg.content).toContain('**Ahmad** started a challenge: **Swap 1 session for a call**')

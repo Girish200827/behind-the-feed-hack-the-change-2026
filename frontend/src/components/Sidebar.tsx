@@ -3,6 +3,7 @@ import { motion } from 'motion/react'
 import { Activity, Lightbulb, ShieldCheck, Target, Users, type LucideIcon } from 'lucide-react'
 import Wordmark from './Wordmark'
 import CameraPill from './CameraPill'
+import { FEATURES } from '../config/features'
 import { useBackendStatus, type BackendState } from '../hooks/useBackendStatus'
 
 const DATA_PILL: Record<BackendState, { value: string; dot: string }> = {
@@ -12,13 +13,15 @@ const DATA_PILL: Record<BackendState, { value: string; dot: string }> = {
   connecting: { value: '…', dot: 'var(--faint)' }
 }
 
-const NAV: { to: string; label: string; icon: LucideIcon; also?: string[] }[] = [
+const ALL_NAV: { to: string; label: string; icon: LucideIcon; also?: string[] }[] = [
   { to: '/today', label: 'Today', icon: Activity, also: ['/session'] },
   { to: '/privacy', label: 'Privacy', icon: ShieldCheck },
   { to: '/insights', label: 'Insights', icon: Lightbulb },
   { to: '/goals', label: 'Goals', icon: Target },
   { to: '/circle', label: 'Circle', icon: Users }
 ]
+// Scroll Circle only shows when VITE_ENABLE_CIRCLE=true (src/config/features.ts).
+const NAV = ALL_NAV.filter((item) => item.to !== '/circle' || FEATURES.circle)
 
 export default function Sidebar() {
   const { pathname } = useLocation()

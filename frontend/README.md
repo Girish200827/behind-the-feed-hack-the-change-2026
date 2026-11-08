@@ -42,7 +42,7 @@ The app window opens on **Today** with two weeks of demo data. On first launch y
 - **Daily social goal**: one small goal a day, picked from yesterday's patterns ("Message a friend before opening X", "No scrolling after 11 PM"...), with a progress ring, a one-tap check-in and a streak.
 - **Insights**: which content most often brings your mood down (top triggers), time and mood per platform, and a few plain-language findings.
 - **Goals**: the daily goal, the weekly goal, and *Support nearby* (Calgary/Alberta services in the Open Referral format) when the week has been draining.
-- **Circle**: share your goal and streak with friends through your own Discord webhook. You see the exact message first. Without a webhook it runs in demo mode.
+- **Circle** *(hidden by default; set `VITE_ENABLE_CIRCLE=true` in `.env` to show it)*: share your goal and streak with friends through your own Discord webhook. You see the exact message first.
 - **Connect-instead nudges**: after 5+ minutes of draining scrolling, a gentle suggestion to message a friend, step outside or call someone.
 - **Privacy**: what is and isn't recorded, a Pause / Resume button, and the nudge setting.
 
@@ -50,7 +50,7 @@ The app window opens on **Today** with two weeks of demo data. On first launch y
 
 - The camera reads **facial expression only**, and only while a supported app is the active window.
 - **Never saved:** camera frames, face images or screenshots.
-- **Circle** only sends the message you preview, when you press Share.
+- **Circle** (when turned on) only sends the message you preview, when you press Share.
 - These are **mood signals, not a diagnosis**.
 
 ## Project layout

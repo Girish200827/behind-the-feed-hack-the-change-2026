@@ -5,6 +5,10 @@ import { afterEach, describe, expect, it } from 'vitest'
 import { sendWebhook } from './discord'
 import { isDiscordWebhookUrl } from '../src/lib/webhookUrl'
 import { buildProgressMessage } from '../src/lib/circleMessage'
+import { FEATURES } from '../src/config/features'
+
+// Scroll Circle is behind VITE_ENABLE_CIRCLE; its tests only run when it's on.
+const describeCircle = describe.skipIf(!FEATURES.circle)
 
 interface Received {
   method?: string
@@ -40,7 +44,7 @@ afterEach(async () => {
 
 const payload = buildProgressMessage({ displayName: 'Ahmad', goalTitle: 'No scrolling after 11 PM', outcome: 'met', streak: 4, drainedChange: -0.2 })
 
-describe('sendWebhook', () => {
+describeCircle('sendWebhook', () => {
   it('POSTs exactly the message JSON (plus no-mentions) to the webhook', async () => {
     const { base, received } = await startServer(204)
     const result = await sendWebhook(`${base}/api/webhooks/123/abc`, payload, { allowAnyUrl: true })
@@ -88,7 +92,7 @@ describe('sendWebhook', () => {
   })
 })
 
-describe('isDiscordWebhookUrl', () => {
+describeCircle('isDiscordWebhookUrl', () => {
   it.each([
     ['https://discord.com/api/webhooks/1234567890/abcDEF-123_x', true],
     ['https://discordapp.com/api/webhooks/1/token', true],
