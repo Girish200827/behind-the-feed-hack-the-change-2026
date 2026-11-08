@@ -49,7 +49,7 @@ describe('sendWebhook', () => {
     expect(received[0].method).toBe('POST')
     expect(received[0].url).toBe('/api/webhooks/123/abc')
     expect(received[0].contentType).toBe('application/json')
-    expect(received[0].body).toEqual({ username: 'Scroll Mood', content: payload.content, allowed_mentions: { parse: [] } })
+    expect(received[0].body).toEqual({ username: 'BehindFeed', content: payload.content, allowed_mentions: { parse: [] } })
   })
 
   it('strips anything extra a caller tries to add to the payload', async () => {
@@ -82,8 +82,8 @@ describe('sendWebhook', () => {
 
   it('refuses empty or oversized messages', async () => {
     const { base, received } = await startServer(204)
-    expect(await sendWebhook(`${base}/w`, { username: 'Scroll Mood', content: '  ' }, { allowAnyUrl: true })).toMatchObject({ ok: false })
-    expect(await sendWebhook(`${base}/w`, { username: 'Scroll Mood', content: 'x'.repeat(2001) }, { allowAnyUrl: true })).toMatchObject({ ok: false })
+    expect(await sendWebhook(`${base}/w`, { username: 'BehindFeed', content: '  ' }, { allowAnyUrl: true })).toMatchObject({ ok: false })
+    expect(await sendWebhook(`${base}/w`, { username: 'BehindFeed', content: 'x'.repeat(2001) }, { allowAnyUrl: true })).toMatchObject({ ok: false })
     expect(received).toHaveLength(0)
   })
 })

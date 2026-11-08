@@ -1,6 +1,6 @@
 // Scroll Circle: settings, the share path and the demo feed. Settings and the sent log stay on this device
 // (localStorage, try/catch). Sending goes through the Electron main process via the preload bridge.
-import type { DiscordPayload, ScrollMoodBridge, SendResult } from '../types/bridge'
+import type { DiscordPayload, BehindFeedBridge, SendResult } from '../types/bridge'
 import { KEYS, readJson, writeJson } from './localStore'
 
 export interface CircleSettings {
@@ -21,7 +21,7 @@ export interface CircleSample {
   sample: true
 }
 
-const bridge = (): ScrollMoodBridge | undefined => (window as unknown as { scrollMood?: ScrollMoodBridge }).scrollMood
+const bridge = (): BehindFeedBridge | undefined => (window as unknown as { behindfeed?: BehindFeedBridge }).behindfeed
 
 export const getCircleSettings = (): CircleSettings => ({ webhookUrl: '', displayName: '', ...readJson<Partial<CircleSettings>>(KEYS.circle, {}) })
 
@@ -33,7 +33,7 @@ export const getSentLog = (): SentItem[] => readJson<SentItem[]>(KEYS.circleSent
 export async function shareToCircle(payload: DiscordPayload): Promise<SendResult> {
   const { webhookUrl } = getCircleSettings()
   const b = bridge()
-  if (!b) return { ok: false, error: 'unavailable', message: 'Sharing works in the Scroll Mood desktop app.' }
+  if (!b) return { ok: false, error: 'unavailable', message: 'Sharing works in the BehindFeed desktop app.' }
   if (!webhookUrl) return { ok: false, error: 'invalid-url', message: 'Add a Discord webhook URL first.' }
   const result = await b.sendToCircle(webhookUrl, payload)
   if (result.ok) writeJson(KEYS.circleSent, [{ at: Date.now(), content: payload.content }, ...getSentLog()].slice(0, 20))

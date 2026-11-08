@@ -10,8 +10,8 @@ export type SendError = 'invalid-url' | 'offline' | 'rejected' | 'timeout' | 'un
 
 export type SendResult = { ok: true } | { ok: false; error: SendError; message: string; status?: number }
 
-/** The API the preload script exposes on window.scrollMood. */
-export interface ScrollMoodBridge {
+/** The API the preload script exposes on window.behindfeed. */
+export interface BehindFeedBridge {
   sendToCircle(webhookUrl: string, payload: DiscordPayload): Promise<SendResult>
   notify(title: string, body: string): Promise<void>
 }

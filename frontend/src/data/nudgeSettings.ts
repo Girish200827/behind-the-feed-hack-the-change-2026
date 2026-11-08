@@ -1,5 +1,5 @@
 // Nudge preferences and memory, on this device only (localStorage, try/catch).
-import type { ScrollMoodBridge } from '../types/bridge'
+import type { BehindFeedBridge } from '../types/bridge'
 import { KEYS, readJson, writeJson } from './localStore'
 
 interface NudgeState {
@@ -32,6 +32,6 @@ export function markStretchSeen(key: string): boolean {
 
 /** Native notification through the main process (no-op outside the desktop app). */
 export function notifyNative(title: string, body: string) {
-  const b = (window as unknown as { scrollMood?: ScrollMoodBridge }).scrollMood
+  const b = (window as unknown as { behindfeed?: BehindFeedBridge }).behindfeed
   return b?.notify(title, body).catch(() => undefined)
 }

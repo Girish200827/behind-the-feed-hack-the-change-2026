@@ -1,8 +1,8 @@
 {
-  "name": "scroll-mood-frontend",
+  "name": "behindfeed-frontend",
   "version": "0.1.0",
   "private": true,
-  "description": "Scroll Mood dashboard (Electron + React)",
+  "description": "BehindFeed dashboard (Electron + React)",
   "main": "./out/main/main.js",
   "scripts": {
     "dev": "electron-vite dev",
