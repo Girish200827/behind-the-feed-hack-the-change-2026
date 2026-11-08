@@ -1,10 +1,11 @@
 import { HashRouter, Navigate, Route, Routes } from 'react-router-dom'
 import { MotionConfig } from 'motion/react'
-import { Lightbulb, ShieldCheck, Target } from 'lucide-react'
+import { Lightbulb, ShieldCheck } from 'lucide-react'
 import Layout from './components/Layout'
 import SessionReport from './pages/SessionReport'
 import TodayPage from './pages/TodayPage'
 import PlaceholderPage from './pages/PlaceholderPage'
+import GoalsPage from './pages/GoalsPage'
 
 // HashRouter so routes work when Electron loads the built index.html from disk.
 // MotionConfig "user" turns transform/layout animations off under prefers-reduced-motion.
@@ -38,16 +39,7 @@ export default function App() {
                 />
               }
             />
-            <Route
-              path="/goals"
-              element={
-                <PlaceholderPage
-                  icon={Target}
-                  title="Goals"
-                  text="A gentle weekly goal, shaped by the patterns in your sessions, will live here."
-                />
-              }
-            />
+            <Route path="/goals" element={<GoalsPage />} />
             <Route path="*" element={<Navigate to="/today" replace />} />
           </Route>
         </Routes>

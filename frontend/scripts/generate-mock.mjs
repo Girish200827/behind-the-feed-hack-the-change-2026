@@ -1,7 +1,7 @@
 // Generates realistic mock data in the four contract formats.
 //   node scripts/generate-mock.mjs
 // Writes:
-//   src/mock/realistic.json  a week of scrolling (7 days x 3-6 sessions) across all five platforms, 1 Hz samples
+//   src/mock/realistic.json  two weeks of scrolling (14 days x 3-6 sessions) across all five platforms, 1 Hz samples
 //   src/mock/live.json       one session still in progress (end: null)
 // Seeded, so the output is the same every run. The mock source shifts the week so its last day is "today".
 import { writeFileSync } from 'node:fs'
@@ -170,11 +170,13 @@ const ANCHOR = { y: 2026, m: 10, d: 7 } // Nov 7 2026; the mock source moves it 
 // Default -6 = Calgary (America/Edmonton) as Electron resolves it in Nov 2026. Override: MOCK_UTC_OFFSET=-7 node ...
 const UTC_OFFSET_H = Number(process.env.MOCK_UTC_OFFSET ?? -6)
 const wallClock = (y, m, d, h, min, s) => Date.UTC(y, m, d, h, min, s) - UTC_OFFSET_H * 3600 * 1000
+// Two weeks, so "this week vs last week" has something to compare. Last week (7-13 days back) had a late-night
+// TikTok session every day, so this week reads as a gentle improvement.
 const week = []
-for (let back = 6; back >= 0; back--) {
+for (let back = 13; back >= 0; back--) {
   const count = 3 + Math.floor(r() * 4) // 3-6 sessions
   const optional = ['commute', 'lunch', 'afternoon', 'late'].sort(() => r() - 0.5)
-  const chosen = new Set(['morning', 'evening', ...optional.slice(0, count - 2)])
+  const chosen = new Set(['morning', 'evening', ...optional.slice(0, count - 2), ...(back >= 7 ? ['late'] : [])])
   for (const slot of ORDER.filter((s) => chosen.has(s))) {
     const cfg = SLOTS[slot]
     const hour = between(cfg.h[0], cfg.h[1])

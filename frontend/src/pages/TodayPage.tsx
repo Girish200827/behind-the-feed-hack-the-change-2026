@@ -13,6 +13,8 @@ import PlatformBreakdown from '../components/day/PlatformBreakdown'
 import SessionsList from '../components/day/SessionsList'
 import MoodRibbon, { type RibbonSegment } from '../components/report/MoodRibbon'
 import EmptyState from '../components/EmptyState'
+import DailyGoalCard from '../components/goals/DailyGoalCard'
+import { useDailyGoal } from '../hooks/useDailyGoal'
 import Notice from '../components/Notice'
 
 /** The main screen: one local day across all platforms. */
@@ -23,6 +25,7 @@ export default function TodayPage() {
   const param = params.get('date')
   const date: DayKey = isDayKey(param) && param <= today ? param : today
   const day = useDay(date)
+  const goal = useDailyGoal(date)
   const [highlightId, setHighlightId] = useState<string | null>(null)
 
   const goTo = (d: DayKey) => setParams(d === today ? {} : { date: d })
@@ -54,8 +57,12 @@ export default function TodayPage() {
   const totalSeconds = items.reduce((a, it) => a + sessionSeconds(it.timeline.session, now), 0)
 
   return (
-    <section className="flex flex-col gap-10">
+    <section className="flex flex-col gap-7">
       <DayHeader date={date} today={today} totalSeconds={totalSeconds} onStep={step} onToday={() => goTo(today)} />
+
+      {goal.state.status === 'ready' && (
+        <DailyGoalCard view={goal.state.data} isToday={date === today} onCheckIn={goal.toggleCheckIn} />
+      )}
 
       {day.status === 'loading' && <div className="h-[640px]" />}
       {day.status === 'error' && <Notice>This day could not be loaded. {day.message}</Notice>}
@@ -74,7 +81,7 @@ export default function TodayPage() {
         <>
           <DayStrip start={dayStart(date)} end={dayEnd(date)} items={items} now={now} onOpen={open} />
           <div>
-            <h2 className="label mb-4">Mood across the day</h2>
+            <h2 className="label mb-3">Mood across the day</h2>
             <MoodRibbon
               segments={items}
               mode="day"

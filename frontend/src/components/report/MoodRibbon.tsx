@@ -25,7 +25,7 @@ const CHART_H = 340
 const PAD_TOP = 24
 const PAD_BOTTOM = 20
 // Day view: shorter panels so the whole ribbon fits on a 1080p screen; padding keeps peaks inside the panels.
-const DAY_CHART_H = 240
+const DAY_CHART_H = 228
 const DAY_PAD = 16
 const LEFT = 32
 const RIGHT = 16
@@ -224,9 +224,9 @@ function Ribbon({ width, segments, mode, highlightId, onHighlight, onSelect }: P
   }, [groups, fontsReady]) // re-measure only when the chips on screen change
 
   const rows = Math.max(1, ...groups.map((g) => g.row + 1))
-  const laneTop = chartBottom + LANE_GAP
+  const laneTop = chartBottom + (day ? 12 : LANE_GAP)
   const axisTop = laneTop + rows * ROW_PITCH
-  const totalH = axisTop + (mode === 'session' ? 32 : 8)
+  const totalH = axisTop + (mode === 'session' ? 32 : 0)
 
   // Hover scrubber
   const [hover, setHover] = useState<{ seg: number; x: number } | null>(null)
