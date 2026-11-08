@@ -22,10 +22,24 @@ const isStr = (v: unknown): v is string => typeof v === 'string' && v.length > 0
 const oneOf = <T extends readonly string[]>(list: T, v: unknown): v is T[number] =>
   typeof v === 'string' && (list as readonly string[]).includes(v)
 
-/** Splits text into raw objects. Accepts a JSON array or JSONL (one object per line). */
+/**
+ * Splits text into raw objects. Accepts a JSON array, JSONL (one object per line), or a single timeline object
+ * { session, emotions | samples, switches, labels } like Allen's fake_session.json and GET /sessions/{id}/timeline.
+ */
 export function splitRaw(text: string): { items: unknown[]; problems: string[] } {
   const trimmed = text.trim()
   if (!trimmed) return { items: [], problems: [] }
+  if (trimmed.startsWith('{')) {
+    try {
+      const obj = JSON.parse(trimmed) as Record<string, unknown>
+      if (isObj(obj) && 'session' in obj && ('emotions' in obj || 'samples' in obj)) {
+        const list = (k: string) => (Array.isArray(obj[k]) ? (obj[k] as unknown[]) : [])
+        return { items: [obj.session, ...list('emotions'), ...list('samples'), ...list('switches'), ...list('labels')], problems: [] }
+      }
+    } catch {
+      // Not a single JSON object: fall through to JSONL.
+    }
+  }
   if (trimmed.startsWith('[')) {
     try {
       return { items: JSON.parse(trimmed) as unknown[], problems: [] }

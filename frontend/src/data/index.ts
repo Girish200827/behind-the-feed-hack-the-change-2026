@@ -1,13 +1,16 @@
 // The one entry point for data. Components import from here and nowhere else.
-import { ApiSource } from './apiSource'
+import { ApiSource, getScrollingStatus } from './apiSource'
 import { DATA_SOURCE } from './constants'
 import { getDayFrom, type DayKey } from './day'
 import { GoalService } from './goals'
 import { CameraControl, type CameraStatus } from './camera'
 import { MockSource } from './mockSource'
+import { ResilientSource } from './resilientSource'
 import type { DataSource } from './source'
 
-const source: DataSource = DATA_SOURCE === 'api' ? ApiSource : MockSource
+// API mode reads Allen's local API and falls back to the demo data if it can't be reached.
+const resilient = DATA_SOURCE === 'api' ? new ResilientSource(ApiSource, MockSource) : null
+const source: DataSource = resilient ?? MockSource
 
 export const getSessions = () => source.getSessions()
 export const getTimeline = (sessionId: string) => source.getTimeline(sessionId)
@@ -15,8 +18,12 @@ export const getTimeline = (sessionId: string) => source.getTimeline(sessionId)
 export const getDay = (date: DayKey) => getDayFrom(source, date)
 export const dataSourceName = DATA_SOURCE
 
+/** API mode: true when Allen's backend answers, false when we fell back to demo data, null before the first try. */
+export const backendOnline = () => resilient?.isOnline() ?? null
+export const onBackendChange = (fn: (online: boolean) => void) => resilient?.onChange(fn) ?? (() => {})
+
 // Camera status and pause/resume (in memory until the pause endpoint is in contracts.md).
-const camera = new CameraControl(source)
+const camera = new CameraControl(source, resilient ? getScrollingStatus : undefined)
 export const getStatus = () => camera.getStatus()
 export const pause = () => camera.pause()
 export const resume = () => camera.resume()

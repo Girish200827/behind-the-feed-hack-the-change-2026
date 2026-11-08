@@ -1,11 +1,22 @@
-// Allen's local API (task A4). Base URL and paths are placeholders.
-// TODO: confirm with Allen and check they match contracts.md before Phase 3.
-export const API_BASE_URL = 'http://localhost:8000'
+// Allen's local API (A4), as documented in backend/README.md.
+// 127.0.0.1 rather than localhost: on Windows "localhost" can resolve to IPv6 (::1) while uvicorn listens on IPv4.
+// Override with VITE_API_URL (the Content-Security-Policy in index.html must allow it too).
+export const API_BASE_URL: string = import.meta.env.VITE_API_URL ?? 'http://127.0.0.1:8000'
 
 export const API_PATHS = {
+  /** GET: all sessions, newest first. */
   sessions: '/sessions',
-  timeline: (sessionId: string) => `/sessions/${encodeURIComponent(sessionId)}/timeline`
+  /** GET: { session, emotions, switches, labels } ordered by time. */
+  timeline: (sessionId: string) => `/sessions/${encodeURIComponent(sessionId)}/timeline`,
+  /** GET: { scrolling, session_id, platform, ... }. Used for the camera status pill. */
+  status: '/status'
 } as const
+
+/** Give up on a request after this long and treat the backend as offline. */
+export const API_TIMEOUT_MS = 2500
+/** Phase 3 polling: the session list every 5 s; an open timeline every 2 s while its session is live. */
+export const POLL_SESSIONS_MS = 5000
+export const POLL_LIVE_MS = 2000
 
 export type DataSourceName = 'mock' | 'api'
 

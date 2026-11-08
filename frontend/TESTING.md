@@ -46,7 +46,18 @@ The webhook URL is stored only in this computer's app storage (localStorage). It
 3. If no Windows notification shows: check **Windows Settings → System → Notifications** (notifications on, Focus / Do not disturb off) and that "Electron" / "Scroll Mood" is allowed.
 4. Turn nudges off and click Simulate → [ ] the button is disabled and nothing appears.
 
-### 3. Quick visual pass (each page)
+### 3. Live data from the backend (L4)
+
+1. Start the backend: see `backend/README.md` (`uvicorn app.main:app --port 8000`).
+2. `npm run dev:api`. [ ] Sidebar shows **Data: Live**, no "Backend offline" banner.
+3. Start a session: open Instagram (or `POST /sessions {"platform":"instagram"}`) and let Raad's loop post events.
+   - [ ] Within ~5 s the session appears on Today with a **Live** badge; its ribbon grows every ~2 s.
+   - [ ] Camera pill shows **Watching** while `GET /status` says `scrolling: true`.
+4. Close the app/session. [ ] The Live badge goes away and the session shows its end time.
+5. Stop the backend. [ ] Within ~5 s: "Backend offline – showing demo data" banner, Data: **Offline**, demo sessions.
+6. Start it again. [ ] The banner disappears by itself and live data returns.
+
+### 4. Quick visual pass (each page)
 
 - [ ] **Today**: daily goal card at the top (ring, why line, check-in, streak), day strip, ribbon fits on screen at 1920×1080.
 - [ ] **Session detail**: click a session panel → single-session report with "Back to …".

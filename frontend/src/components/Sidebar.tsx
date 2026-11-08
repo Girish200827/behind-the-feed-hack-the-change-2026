@@ -1,9 +1,16 @@
 import { Link, useLocation } from 'react-router-dom'
 import { motion } from 'motion/react'
 import { Activity, Lightbulb, ShieldCheck, Target, Users, type LucideIcon } from 'lucide-react'
-import { dataSourceName } from '../data'
 import Wordmark from './Wordmark'
 import CameraPill from './CameraPill'
+import { useBackendStatus, type BackendState } from '../hooks/useBackendStatus'
+
+const DATA_PILL: Record<BackendState, { value: string; dot: string }> = {
+  demo: { value: 'Demo', dot: 'var(--accent)' },
+  live: { value: 'Live', dot: 'var(--positive)' },
+  offline: { value: 'Offline', dot: 'var(--negative)' },
+  connecting: { value: '…', dot: 'var(--faint)' }
+}
 
 const NAV: { to: string; label: string; icon: LucideIcon; also?: string[] }[] = [
   { to: '/today', label: 'Today', icon: Activity, also: ['/session'] },
@@ -15,6 +22,7 @@ const NAV: { to: string; label: string; icon: LucideIcon; also?: string[] }[] = 
 
 export default function Sidebar() {
   const { pathname } = useLocation()
+  const backend = useBackendStatus()
   const isActive = (item: (typeof NAV)[number]) =>
     [item.to, ...(item.also ?? [])].some((p) => pathname === p || pathname.startsWith(p + '/'))
   return (
@@ -63,7 +71,7 @@ export default function Sidebar() {
 
       <div className="mt-auto flex flex-col gap-3 border-t border-hairline px-5 py-5">
         <CameraPill />
-        <StatusRow label="Data" value={dataSourceName === 'mock' ? 'Demo' : 'Live'} dot={dataSourceName === 'mock' ? 'var(--accent)' : 'var(--positive)'} />
+        <StatusRow label="Data" value={DATA_PILL[backend].value} dot={DATA_PILL[backend].dot} />
       </div>
     </aside>
   )

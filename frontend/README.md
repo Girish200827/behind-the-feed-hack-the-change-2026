@@ -27,7 +27,7 @@ The app window opens on **Today** with two weeks of demo data. On first launch y
 | Command | What it does |
 |---|---|
 | `npm run dev` | Run the app with demo data |
-| `npm run dev:api` | Run against the backend API at `http://localhost:8000` |
+| `npm run dev:api` | Run against the backend API at `http://127.0.0.1:8000` (live data) |
 | `npm run dev:live` | Demo: only a session in progress |
 | `npm run dev:empty` | Demo: no sessions (empty states) |
 | `npm run dev:no-samples` | Demo: a session with no mood readings |
@@ -76,6 +76,6 @@ Stack: Electron, React, TypeScript (electron-vite), Tailwind CSS, d3-shape, moti
 
 ## Status
 
-- **Data:** demo data for now. The live connection to the backend API comes next (Phase 3).
+- **Data:** `npm run dev` uses demo data; `npm run dev:api` reads the backend live (start it first, see `backend/README.md`). If the backend is down, the app shows demo data with a "Backend offline" banner.
 - **Pause:** only works inside the app until the pause endpoint is agreed with the backend.
 - **Support listings:** labelled as samples; check them before relying on them.
